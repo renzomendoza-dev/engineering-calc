@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ConductorCountAdjustmentTable {
 
-	private static final String RESOURCE_PATH = "/reference/conductor-count-adjustment.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/conductor-count-adjustment.json";
 
 	private final List<Row> rows;
 

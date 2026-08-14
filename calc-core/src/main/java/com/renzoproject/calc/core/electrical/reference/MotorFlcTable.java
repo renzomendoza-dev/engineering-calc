@@ -18,10 +18,10 @@ import java.util.Objects;
  */
 public class MotorFlcTable {
 
-	private static final String DC_RESOURCE_PATH = "/reference/motor-flc-dc.json";
-	private static final String SINGLE_PHASE_RESOURCE_PATH = "/reference/motor-flc-single-phase.json";
-	private static final String TWO_PHASE_RESOURCE_PATH = "/reference/motor-flc-two-phase.json";
-	private static final String THREE_PHASE_RESOURCE_PATH = "/reference/motor-flc-three-phase.json";
+	private static final String DC_RESOURCE_PATH = "/reference/electrical/motor-flc-dc.json";
+	private static final String SINGLE_PHASE_RESOURCE_PATH = "/reference/electrical/motor-flc-single-phase.json";
+	private static final String TWO_PHASE_RESOURCE_PATH = "/reference/electrical/motor-flc-two-phase.json";
+	private static final String THREE_PHASE_RESOURCE_PATH = "/reference/electrical/motor-flc-three-phase.json";
 
 	private final Map<String, MotorFlcEntry> entries;
 

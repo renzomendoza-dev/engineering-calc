@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class LockedRotorSinglePhaseTable {
 
-	private static final String RESOURCE_PATH = "/reference/locked-rotor-single-phase.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/locked-rotor-single-phase.json";
 
 	private final Map<String, LockedRotorEntry> entries;
 

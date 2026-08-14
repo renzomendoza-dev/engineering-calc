@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class ConductorImpedanceTable {
 
-	private static final String RESOURCE_PATH = "/reference/table-10-1-1-9.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/table-10-1-1-9.json";
 	private static final double OHMS_PER_305_METERS_TO_PER_METER = 305.0;
 
 	private final Map<String, ConductorImpedanceEntry> entriesBySize;

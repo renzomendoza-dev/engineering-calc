@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class ConduitDimensionTable {
 
-	private static final String RESOURCE_PATH = "/reference/table-10-1-1-4.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/table-10-1-1-4.json";
 
 	private final Map<ConduitType, List<ConduitDimensionEntry>> entriesByType;
 

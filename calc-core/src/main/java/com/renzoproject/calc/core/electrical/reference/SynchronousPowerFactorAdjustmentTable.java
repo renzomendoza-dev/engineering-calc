@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class SynchronousPowerFactorAdjustmentTable {
 
-	private static final String RESOURCE_PATH = "/reference/synchronous-motor-pf-adjustment.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/synchronous-motor-pf-adjustment.json";
 
 	private final Map<Integer, Double> multipliers;
 
