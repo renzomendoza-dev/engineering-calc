@@ -1,0 +1,1486 @@
+[
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 115,
+    "flcAmps": 4.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 200,
+    "flcAmps": 2.5
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 208,
+    "flcAmps": 2.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 230,
+    "flcAmps": 2.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 400,
+    "flcAmps": 1.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 460,
+    "flcAmps": 1.1
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1/2",
+    "voltage": 575,
+    "flcAmps": 0.9
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 115,
+    "flcAmps": 6.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 200,
+    "flcAmps": 3.7
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 208,
+    "flcAmps": 3.5
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 230,
+    "flcAmps": 3.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 400,
+    "flcAmps": 1.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 460,
+    "flcAmps": 1.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3/4",
+    "voltage": 575,
+    "flcAmps": 1.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 115,
+    "flcAmps": 8.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 200,
+    "flcAmps": 4.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 208,
+    "flcAmps": 4.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 230,
+    "flcAmps": 4.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 400,
+    "flcAmps": 2.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 460,
+    "flcAmps": 2.1
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1",
+    "voltage": 575,
+    "flcAmps": 1.7
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 115,
+    "flcAmps": 12.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 200,
+    "flcAmps": 6.9
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 208,
+    "flcAmps": 6.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 230,
+    "flcAmps": 6.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 400,
+    "flcAmps": 3.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 460,
+    "flcAmps": 3.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "1 1/2",
+    "voltage": 575,
+    "flcAmps": 2.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 115,
+    "flcAmps": 13.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 200,
+    "flcAmps": 7.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 208,
+    "flcAmps": 7.5
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 230,
+    "flcAmps": 6.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 400,
+    "flcAmps": 4.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 460,
+    "flcAmps": 3.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "2",
+    "voltage": 575,
+    "flcAmps": 2.7
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 115,
+    "flcAmps": 19.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 200,
+    "flcAmps": 11.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 208,
+    "flcAmps": 10.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 230,
+    "flcAmps": 9.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 400,
+    "flcAmps": 6.1
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 460,
+    "flcAmps": 4.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "3",
+    "voltage": 575,
+    "flcAmps": 3.9
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 115,
+    "flcAmps": 30.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 200,
+    "flcAmps": 17.5
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 208,
+    "flcAmps": 16.7
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 230,
+    "flcAmps": 15.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 400,
+    "flcAmps": 9.7
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 460,
+    "flcAmps": 7.6
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "5",
+    "voltage": 575,
+    "flcAmps": 6.1
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 115,
+    "flcAmps": 44.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 200,
+    "flcAmps": 25.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 208,
+    "flcAmps": 24.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 230,
+    "flcAmps": 22
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 400,
+    "flcAmps": 14
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 460,
+    "flcAmps": 11
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "7 1/2",
+    "voltage": 575,
+    "flcAmps": 9
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 115,
+    "flcAmps": 56.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 200,
+    "flcAmps": 32.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 208,
+    "flcAmps": 30.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 230,
+    "flcAmps": 28
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 400,
+    "flcAmps": 18
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 460,
+    "flcAmps": 14
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "10",
+    "voltage": 575,
+    "flcAmps": 11
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 115,
+    "flcAmps": 84.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 200,
+    "flcAmps": 48.3
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 208,
+    "flcAmps": 46.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 230,
+    "flcAmps": 42
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 400,
+    "flcAmps": 27
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 460,
+    "flcAmps": 21
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "15",
+    "voltage": 575,
+    "flcAmps": 17
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 115,
+    "flcAmps": 108.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 200,
+    "flcAmps": 62.1
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 208,
+    "flcAmps": 59.4
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 230,
+    "flcAmps": 54
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 400,
+    "flcAmps": 34
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 460,
+    "flcAmps": 27
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "20",
+    "voltage": 575,
+    "flcAmps": 22
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 115,
+    "flcAmps": 136.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 200,
+    "flcAmps": 78.2
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 208,
+    "flcAmps": 74.8
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 230,
+    "flcAmps": 68
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 400,
+    "flcAmps": 44
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 460,
+    "flcAmps": 34
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "25",
+    "voltage": 575,
+    "flcAmps": 27
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 115,
+    "flcAmps": 160.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 200,
+    "flcAmps": 92
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 208,
+    "flcAmps": 88
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 230,
+    "flcAmps": 80
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 400,
+    "flcAmps": 51
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 460,
+    "flcAmps": 40
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "30",
+    "voltage": 575,
+    "flcAmps": 32
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 115,
+    "flcAmps": 208.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 200,
+    "flcAmps": 120
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 208,
+    "flcAmps": 114
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 230,
+    "flcAmps": 104
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 400,
+    "flcAmps": 66
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 460,
+    "flcAmps": 52
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "40",
+    "voltage": 575,
+    "flcAmps": 41
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 115,
+    "flcAmps": 260.0
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 200,
+    "flcAmps": 150
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 208,
+    "flcAmps": 143
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 230,
+    "flcAmps": 130
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 400,
+    "flcAmps": 83
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 460,
+    "flcAmps": 65
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "50",
+    "voltage": 575,
+    "flcAmps": 52
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 200,
+    "flcAmps": 177
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 208,
+    "flcAmps": 169
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 230,
+    "flcAmps": 154
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 400,
+    "flcAmps": 103
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 460,
+    "flcAmps": 77
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 575,
+    "flcAmps": 62
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "60",
+    "voltage": 2300,
+    "flcAmps": 16
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 200,
+    "flcAmps": 221
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 208,
+    "flcAmps": 211
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 230,
+    "flcAmps": 192
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 400,
+    "flcAmps": 128
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 460,
+    "flcAmps": 96
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 575,
+    "flcAmps": 77
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "75",
+    "voltage": 2300,
+    "flcAmps": 20
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 200,
+    "flcAmps": 285
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 208,
+    "flcAmps": 273
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 230,
+    "flcAmps": 248
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 400,
+    "flcAmps": 165
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 460,
+    "flcAmps": 124
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 575,
+    "flcAmps": 99
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "100",
+    "voltage": 2300,
+    "flcAmps": 26
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 200,
+    "flcAmps": 359
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 208,
+    "flcAmps": 343
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 230,
+    "flcAmps": 312
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 400,
+    "flcAmps": 208
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 460,
+    "flcAmps": 156
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 575,
+    "flcAmps": 125
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "125",
+    "voltage": 2300,
+    "flcAmps": 31
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 200,
+    "flcAmps": 414
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 208,
+    "flcAmps": 396
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 230,
+    "flcAmps": 360
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 400,
+    "flcAmps": 240
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 460,
+    "flcAmps": 180
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 575,
+    "flcAmps": 144
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "150",
+    "voltage": 2300,
+    "flcAmps": 37
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 200,
+    "flcAmps": 552
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 208,
+    "flcAmps": 528
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 230,
+    "flcAmps": 480
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 400,
+    "flcAmps": 320
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 460,
+    "flcAmps": 240
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 575,
+    "flcAmps": 192
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "200",
+    "voltage": 2300,
+    "flcAmps": 49
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "250",
+    "voltage": 230,
+    "flcAmps": 604
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "250",
+    "voltage": 400,
+    "flcAmps": 403
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "250",
+    "voltage": 460,
+    "flcAmps": 302
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "250",
+    "voltage": 575,
+    "flcAmps": 242
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "250",
+    "voltage": 2300,
+    "flcAmps": 60
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "300",
+    "voltage": 230,
+    "flcAmps": 722
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "300",
+    "voltage": 400,
+    "flcAmps": 482
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "300",
+    "voltage": 460,
+    "flcAmps": 361
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "300",
+    "voltage": 575,
+    "flcAmps": 289
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "300",
+    "voltage": 2300,
+    "flcAmps": 72
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "350",
+    "voltage": 230,
+    "flcAmps": 828
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "350",
+    "voltage": 400,
+    "flcAmps": 560
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "350",
+    "voltage": 460,
+    "flcAmps": 414
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "350",
+    "voltage": 575,
+    "flcAmps": 336
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "350",
+    "voltage": 2300,
+    "flcAmps": 83
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "400",
+    "voltage": 230,
+    "flcAmps": 954
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "400",
+    "voltage": 400,
+    "flcAmps": 636
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "400",
+    "voltage": 460,
+    "flcAmps": 477
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "400",
+    "voltage": 575,
+    "flcAmps": 382
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "400",
+    "voltage": 2300,
+    "flcAmps": 95
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "450",
+    "voltage": 230,
+    "flcAmps": 1030
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "450",
+    "voltage": 460,
+    "flcAmps": 515
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "450",
+    "voltage": 575,
+    "flcAmps": 412
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "450",
+    "voltage": 2300,
+    "flcAmps": 103
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "500",
+    "voltage": 230,
+    "flcAmps": 1180
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "500",
+    "voltage": 400,
+    "flcAmps": 786
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "500",
+    "voltage": 460,
+    "flcAmps": 590
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "500",
+    "voltage": 575,
+    "flcAmps": 472
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "INDUCTION",
+    "sizeLabel": "500",
+    "voltage": 2300,
+    "flcAmps": 118
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "25",
+    "voltage": 230,
+    "flcAmps": 53
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "25",
+    "voltage": 460,
+    "flcAmps": 26
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "25",
+    "voltage": 575,
+    "flcAmps": 21
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "30",
+    "voltage": 230,
+    "flcAmps": 63
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "30",
+    "voltage": 460,
+    "flcAmps": 32
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "30",
+    "voltage": 575,
+    "flcAmps": 26
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "40",
+    "voltage": 230,
+    "flcAmps": 83
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "40",
+    "voltage": 460,
+    "flcAmps": 41
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "40",
+    "voltage": 575,
+    "flcAmps": 33
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "50",
+    "voltage": 230,
+    "flcAmps": 104
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "50",
+    "voltage": 460,
+    "flcAmps": 52
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "50",
+    "voltage": 575,
+    "flcAmps": 42
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "60",
+    "voltage": 230,
+    "flcAmps": 123
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "60",
+    "voltage": 460,
+    "flcAmps": 61
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "60",
+    "voltage": 575,
+    "flcAmps": 49
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "60",
+    "voltage": 2300,
+    "flcAmps": 12
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "75",
+    "voltage": 230,
+    "flcAmps": 155
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "75",
+    "voltage": 460,
+    "flcAmps": 78
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "75",
+    "voltage": 575,
+    "flcAmps": 62
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "75",
+    "voltage": 2300,
+    "flcAmps": 15
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "100",
+    "voltage": 230,
+    "flcAmps": 202
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "100",
+    "voltage": 460,
+    "flcAmps": 101
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "100",
+    "voltage": 575,
+    "flcAmps": 81
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "100",
+    "voltage": 2300,
+    "flcAmps": 20
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "125",
+    "voltage": 230,
+    "flcAmps": 253
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "125",
+    "voltage": 460,
+    "flcAmps": 126
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "125",
+    "voltage": 575,
+    "flcAmps": 101
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "125",
+    "voltage": 2300,
+    "flcAmps": 25
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "150",
+    "voltage": 230,
+    "flcAmps": 302
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "150",
+    "voltage": 460,
+    "flcAmps": 151
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "150",
+    "voltage": 575,
+    "flcAmps": 121
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "150",
+    "voltage": 2300,
+    "flcAmps": 30
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "200",
+    "voltage": 230,
+    "flcAmps": 400
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "200",
+    "voltage": 460,
+    "flcAmps": 201
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "200",
+    "voltage": 575,
+    "flcAmps": 161
+  },
+  {
+    "phaseType": "THREE_PHASE",
+    "motorClass": "SYNCHRONOUS",
+    "sizeLabel": "200",
+    "voltage": 2300,
+    "flcAmps": 40
+  }
+]

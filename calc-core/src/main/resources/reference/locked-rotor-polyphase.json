@@ -1,0 +1,956 @@
+[
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 40
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 200,
+    "lockedRotorAmps": 23
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 22.1
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 400,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 460,
+    "lockedRotorAmps": 10
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1/2",
+    "voltage": 575,
+    "lockedRotorAmps": 8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 115,
+    "lockedRotorAmps": 50
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 200,
+    "lockedRotorAmps": 28.8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 208,
+    "lockedRotorAmps": 27.6
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 230,
+    "lockedRotorAmps": 25
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 400,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 460,
+    "lockedRotorAmps": 12.5
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3/4",
+    "voltage": 575,
+    "lockedRotorAmps": 10
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 115,
+    "lockedRotorAmps": 60
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 200,
+    "lockedRotorAmps": 34.5
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 208,
+    "lockedRotorAmps": 33
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 230,
+    "lockedRotorAmps": 30
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 400,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 460,
+    "lockedRotorAmps": 15
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1",
+    "voltage": 575,
+    "lockedRotorAmps": 12
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 80
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 200,
+    "lockedRotorAmps": 46
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 44
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 40
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 400,
+    "lockedRotorAmps": 27
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 460,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "1 1/2",
+    "voltage": 575,
+    "lockedRotorAmps": 16
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 115,
+    "lockedRotorAmps": 100
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 200,
+    "lockedRotorAmps": 57.5
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 208,
+    "lockedRotorAmps": 55
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 230,
+    "lockedRotorAmps": 50
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 400,
+    "lockedRotorAmps": 34
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 460,
+    "lockedRotorAmps": 25
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "2",
+    "voltage": 575,
+    "lockedRotorAmps": 20
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 115,
+    "lockedRotorAmps": 128
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 200,
+    "lockedRotorAmps": 73.6
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 208,
+    "lockedRotorAmps": 71
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 230,
+    "lockedRotorAmps": 64
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 400,
+    "lockedRotorAmps": 43
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 460,
+    "lockedRotorAmps": 32
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "3",
+    "voltage": 575,
+    "lockedRotorAmps": 25.6
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 115,
+    "lockedRotorAmps": 184
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 200,
+    "lockedRotorAmps": 105.8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 208,
+    "lockedRotorAmps": 102
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 230,
+    "lockedRotorAmps": 92
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 400,
+    "lockedRotorAmps": 61
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 460,
+    "lockedRotorAmps": 46
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "5",
+    "voltage": 575,
+    "lockedRotorAmps": 36.8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 254
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 200,
+    "lockedRotorAmps": 146
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 140
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 127
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 400,
+    "lockedRotorAmps": 84
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 460,
+    "lockedRotorAmps": 63.5
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "7 1/2",
+    "voltage": 575,
+    "lockedRotorAmps": 50.8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 115,
+    "lockedRotorAmps": 324
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 200,
+    "lockedRotorAmps": 186.3
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 208,
+    "lockedRotorAmps": 179
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 230,
+    "lockedRotorAmps": 162
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 400,
+    "lockedRotorAmps": 107
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 460,
+    "lockedRotorAmps": 81
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "10",
+    "voltage": 575,
+    "lockedRotorAmps": 64.8
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 115,
+    "lockedRotorAmps": 464
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 200,
+    "lockedRotorAmps": 267
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 208,
+    "lockedRotorAmps": 257
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 230,
+    "lockedRotorAmps": 232
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 400,
+    "lockedRotorAmps": 154
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 460,
+    "lockedRotorAmps": 116
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "15",
+    "voltage": 575,
+    "lockedRotorAmps": 93
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 115,
+    "lockedRotorAmps": 580
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 200,
+    "lockedRotorAmps": 334
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 208,
+    "lockedRotorAmps": 321
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 230,
+    "lockedRotorAmps": 290
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 400,
+    "lockedRotorAmps": 194
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 460,
+    "lockedRotorAmps": 145
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "20",
+    "voltage": 575,
+    "lockedRotorAmps": 116
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 115,
+    "lockedRotorAmps": 730
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 200,
+    "lockedRotorAmps": 420
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 208,
+    "lockedRotorAmps": 404
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 230,
+    "lockedRotorAmps": 365
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 400,
+    "lockedRotorAmps": 243
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 460,
+    "lockedRotorAmps": 183
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "25",
+    "voltage": 575,
+    "lockedRotorAmps": 146
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 115,
+    "lockedRotorAmps": 870
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 200,
+    "lockedRotorAmps": 500
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 208,
+    "lockedRotorAmps": 481
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 230,
+    "lockedRotorAmps": 435
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 400,
+    "lockedRotorAmps": 289
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 460,
+    "lockedRotorAmps": 218
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "30",
+    "voltage": 575,
+    "lockedRotorAmps": 174
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 115,
+    "lockedRotorAmps": 1160
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 200,
+    "lockedRotorAmps": 667
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 208,
+    "lockedRotorAmps": 641
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 230,
+    "lockedRotorAmps": 580
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 400,
+    "lockedRotorAmps": 387
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 460,
+    "lockedRotorAmps": 290
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "40",
+    "voltage": 575,
+    "lockedRotorAmps": 232
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 115,
+    "lockedRotorAmps": 1450
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 200,
+    "lockedRotorAmps": 834
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 208,
+    "lockedRotorAmps": 802
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 230,
+    "lockedRotorAmps": 725
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 400,
+    "lockedRotorAmps": 482
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 460,
+    "lockedRotorAmps": 363
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "50",
+    "voltage": 575,
+    "lockedRotorAmps": 290
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 200,
+    "lockedRotorAmps": 1001
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 208,
+    "lockedRotorAmps": 962
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 230,
+    "lockedRotorAmps": 870
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 400,
+    "lockedRotorAmps": 578
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 460,
+    "lockedRotorAmps": 435
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "60",
+    "voltage": 575,
+    "lockedRotorAmps": 348
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 200,
+    "lockedRotorAmps": 1248
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 208,
+    "lockedRotorAmps": 1200
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 230,
+    "lockedRotorAmps": 1085
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 400,
+    "lockedRotorAmps": 722
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 460,
+    "lockedRotorAmps": 543
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "75",
+    "voltage": 575,
+    "lockedRotorAmps": 434
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 200,
+    "lockedRotorAmps": 1668
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 208,
+    "lockedRotorAmps": 1603
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 230,
+    "lockedRotorAmps": 1450
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 400,
+    "lockedRotorAmps": 965
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 460,
+    "lockedRotorAmps": 725
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "100",
+    "voltage": 575,
+    "lockedRotorAmps": 580
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 200,
+    "lockedRotorAmps": 2087
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 208,
+    "lockedRotorAmps": 2007
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 230,
+    "lockedRotorAmps": 1815
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 400,
+    "lockedRotorAmps": 1207
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 460,
+    "lockedRotorAmps": 908
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "125",
+    "voltage": 575,
+    "lockedRotorAmps": 726
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 200,
+    "lockedRotorAmps": 2496
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 208,
+    "lockedRotorAmps": 2400
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 230,
+    "lockedRotorAmps": 2170
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 400,
+    "lockedRotorAmps": 1441
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 460,
+    "lockedRotorAmps": 1085
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "150",
+    "voltage": 575,
+    "lockedRotorAmps": 868
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 200,
+    "lockedRotorAmps": 3335
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 208,
+    "lockedRotorAmps": 3207
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 230,
+    "lockedRotorAmps": 2900
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 400,
+    "lockedRotorAmps": 1927
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 460,
+    "lockedRotorAmps": 1450
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "200",
+    "voltage": 575,
+    "lockedRotorAmps": 1160
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "250",
+    "voltage": 230,
+    "lockedRotorAmps": 3650
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "250",
+    "voltage": 460,
+    "lockedRotorAmps": 1825
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "250",
+    "voltage": 575,
+    "lockedRotorAmps": 1460
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "300",
+    "voltage": 230,
+    "lockedRotorAmps": 4400
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "300",
+    "voltage": 460,
+    "lockedRotorAmps": 2200
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "300",
+    "voltage": 575,
+    "lockedRotorAmps": 1760
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "350",
+    "voltage": 230,
+    "lockedRotorAmps": 5100
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "350",
+    "voltage": 460,
+    "lockedRotorAmps": 2550
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "350",
+    "voltage": 575,
+    "lockedRotorAmps": 2040
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "400",
+    "voltage": 230,
+    "lockedRotorAmps": 5800
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "400",
+    "voltage": 460,
+    "lockedRotorAmps": 2900
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "400",
+    "voltage": 575,
+    "lockedRotorAmps": 2320
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "450",
+    "voltage": 230,
+    "lockedRotorAmps": 6500
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "450",
+    "voltage": 460,
+    "lockedRotorAmps": 3250
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "450",
+    "voltage": 575,
+    "lockedRotorAmps": 2600
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "500",
+    "voltage": 230,
+    "lockedRotorAmps": 7250
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "500",
+    "voltage": 460,
+    "lockedRotorAmps": 3625
+  },
+  {
+    "designLetters": "B_C_D",
+    "sizeLabel": "500",
+    "voltage": 575,
+    "lockedRotorAmps": 2900
+  }
+]

@@ -1,0 +1,3446 @@
+[
+  {
+    "insulationType": "RFH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 9.6,
+    "approximateDiameterMm": 3.5
+  },
+  {
+    "insulationType": "RFH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 11.3,
+    "approximateDiameterMm": 3.8
+  },
+  {
+    "insulationType": "FFH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 9.6,
+    "approximateDiameterMm": 3.5
+  },
+  {
+    "insulationType": "FFH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 11.3,
+    "approximateDiameterMm": 3.8
+  },
+  {
+    "insulationType": "RFHH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 9.6,
+    "approximateDiameterMm": 3.5
+  },
+  {
+    "insulationType": "RFHH-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 11.3,
+    "approximateDiameterMm": 3.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 18.9,
+    "approximateDiameterMm": 4.9
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 22.9,
+    "approximateDiameterMm": 5.4
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 54.1,
+    "approximateDiameterMm": 8.3
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 66.5,
+    "approximateDiameterMm": 9.2
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 113.1,
+    "approximateDiameterMm": 12.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 196.1,
+    "approximateDiameterMm": 15.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 227.1,
+    "approximateDiameterMm": 17.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 263.0,
+    "approximateDiameterMm": 18.3
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 308.0,
+    "approximateDiameterMm": 19.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 404.7,
+    "approximateDiameterMm": 22.7
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 555.7,
+    "approximateDiameterMm": 26.6
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 651.4,
+    "approximateDiameterMm": 28.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 784.3,
+    "approximateDiameterMm": 31.6
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 876.2,
+    "approximateDiameterMm": 33.4
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 1146.1,
+    "approximateDiameterMm": 38.2
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1513.6,
+    "approximateDiameterMm": 43.9
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1734.9,
+    "approximateDiameterMm": 47.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1955.7,
+    "approximateDiameterMm": 49.9
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 2173.0,
+    "approximateDiameterMm": 52.6
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 18.9,
+    "approximateDiameterMm": 4.9
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 22.9,
+    "approximateDiameterMm": 5.4
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 54.1,
+    "approximateDiameterMm": 8.3
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 66.5,
+    "approximateDiameterMm": 9.2
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 113.1,
+    "approximateDiameterMm": 12.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 196.1,
+    "approximateDiameterMm": 15.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 227.1,
+    "approximateDiameterMm": 17.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 263.0,
+    "approximateDiameterMm": 18.3
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 308.0,
+    "approximateDiameterMm": 19.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 404.7,
+    "approximateDiameterMm": 22.7
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 555.7,
+    "approximateDiameterMm": 26.6
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 651.4,
+    "approximateDiameterMm": 28.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 784.3,
+    "approximateDiameterMm": 31.6
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 876.2,
+    "approximateDiameterMm": 33.4
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 1146.1,
+    "approximateDiameterMm": 38.2
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1513.6,
+    "approximateDiameterMm": 43.9
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1734.9,
+    "approximateDiameterMm": 47.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1955.7,
+    "approximateDiameterMm": 49.9
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 2173.0,
+    "approximateDiameterMm": 52.6
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 18.9,
+    "approximateDiameterMm": 4.9
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 22.9,
+    "approximateDiameterMm": 5.4
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 54.1,
+    "approximateDiameterMm": 8.3
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 66.5,
+    "approximateDiameterMm": 9.2
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 113.1,
+    "approximateDiameterMm": 12.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 196.1,
+    "approximateDiameterMm": 15.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 227.1,
+    "approximateDiameterMm": 17.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 263.0,
+    "approximateDiameterMm": 18.3
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 308.0,
+    "approximateDiameterMm": 19.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 404.7,
+    "approximateDiameterMm": 22.7
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 555.7,
+    "approximateDiameterMm": 26.6
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 651.4,
+    "approximateDiameterMm": 28.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 784.3,
+    "approximateDiameterMm": 31.6
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 876.2,
+    "approximateDiameterMm": 33.4
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 1146.1,
+    "approximateDiameterMm": 38.2
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1513.6,
+    "approximateDiameterMm": 43.9
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1734.9,
+    "approximateDiameterMm": 47.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1955.7,
+    "approximateDiameterMm": 49.9
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 2173.0,
+    "approximateDiameterMm": 52.6
+  },
+  {
+    "insulationType": "SF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 7.5,
+    "approximateDiameterMm": 3.1
+  },
+  {
+    "insulationType": "SF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "SF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 11.3,
+    "approximateDiameterMm": 3.8
+  },
+  {
+    "insulationType": "SFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 7.5,
+    "approximateDiameterMm": 3.1
+  },
+  {
+    "insulationType": "SFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "SFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 11.3,
+    "approximateDiameterMm": 3.8
+  },
+  {
+    "insulationType": "SF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 4.2,
+    "approximateDiameterMm": 2.3
+  },
+  {
+    "insulationType": "SFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 4.2,
+    "approximateDiameterMm": 2.3
+  },
+  {
+    "insulationType": "RFH-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 5.7,
+    "approximateDiameterMm": 2.7
+  },
+  {
+    "insulationType": "TF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 5.7,
+    "approximateDiameterMm": 2.7
+  },
+  {
+    "insulationType": "TFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 5.7,
+    "approximateDiameterMm": 2.7
+  },
+  {
+    "insulationType": "XF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 5.7,
+    "approximateDiameterMm": 2.7
+  },
+  {
+    "insulationType": "XFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 5.7,
+    "approximateDiameterMm": 2.7
+  },
+  {
+    "insulationType": "TF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 7.1,
+    "approximateDiameterMm": 3.0
+  },
+  {
+    "insulationType": "TFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 7.1,
+    "approximateDiameterMm": 3.0
+  },
+  {
+    "insulationType": "XF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 7.1,
+    "approximateDiameterMm": 3.0
+  },
+  {
+    "insulationType": "XFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 7.1,
+    "approximateDiameterMm": 3.0
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "XF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "XFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 13.2,
+    "approximateDiameterMm": 4.1
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 13.2,
+    "approximateDiameterMm": 4.1
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 13.2,
+    "approximateDiameterMm": 4.1
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 16.6,
+    "approximateDiameterMm": 4.6
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 16.6,
+    "approximateDiameterMm": 4.6
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 16.6,
+    "approximateDiameterMm": 4.6
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "XF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 16.6,
+    "approximateDiameterMm": 4.6
+  },
+  {
+    "insulationType": "XF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "XFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 16.6,
+    "approximateDiameterMm": 4.6
+  },
+  {
+    "insulationType": "XFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 36.3,
+    "approximateDiameterMm": 6.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 36.3,
+    "approximateDiameterMm": 6.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 36.3,
+    "approximateDiameterMm": 6.8
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "TW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "THW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "THHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "THW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "RHH",
+    "withoutOuterCovering": true,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "RHW",
+    "withoutOuterCovering": true,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 46.6,
+    "approximateDiameterMm": 7.7
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 86.6,
+    "approximateDiameterMm": 10.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 122.7,
+    "approximateDiameterMm": 12.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 201.1,
+    "approximateDiameterMm": 16.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 240.5,
+    "approximateDiameterMm": 17.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 295.6,
+    "approximateDiameterMm": 19.4
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 339.8,
+    "approximateDiameterMm": 20.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 426.4,
+    "approximateDiameterMm": 23.3
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 510.7,
+    "approximateDiameterMm": 25.5
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 629.0,
+    "approximateDiameterMm": 28.3
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 749.9,
+    "approximateDiameterMm": 30.9
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 951.2,
+    "approximateDiameterMm": 34.8
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1194.6,
+    "approximateDiameterMm": 39.0
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1398.7,
+    "approximateDiameterMm": 42.2
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1597.5,
+    "approximateDiameterMm": 45.1
+  },
+  {
+    "insulationType": "RHW-2",
+    "withoutOuterCovering": true,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1794.5,
+    "approximateDiameterMm": 47.8
+  },
+  {
+    "insulationType": "TFN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.5,
+    "approximateDiameterMm": 2.1
+  },
+  {
+    "insulationType": "TFN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.5,
+    "approximateDiameterMm": 2.4
+  },
+  {
+    "insulationType": "TFFN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.5,
+    "approximateDiameterMm": 2.1
+  },
+  {
+    "insulationType": "TFFN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.5,
+    "approximateDiameterMm": 2.4
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.2,
+    "approximateDiameterMm": 2.8
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 8.6,
+    "approximateDiameterMm": 3.3
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 13.9,
+    "approximateDiameterMm": 4.2
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 23.8,
+    "approximateDiameterMm": 5.5
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 33.2,
+    "approximateDiameterMm": 6.5
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 75.4,
+    "approximateDiameterMm": 9.8
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 100.3,
+    "approximateDiameterMm": 11.3
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 118.8,
+    "approximateDiameterMm": 12.3
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 208.7,
+    "approximateDiameterMm": 16.3
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 254.5,
+    "approximateDiameterMm": 18.0
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 298.6,
+    "approximateDiameterMm": 19.5
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 376.7,
+    "approximateDiameterMm": 21.9
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "375",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "THHN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.2,
+    "approximateDiameterMm": 2.8
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 8.6,
+    "approximateDiameterMm": 3.3
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 13.9,
+    "approximateDiameterMm": 4.2
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 23.8,
+    "approximateDiameterMm": 5.5
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 33.2,
+    "approximateDiameterMm": 6.5
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 75.4,
+    "approximateDiameterMm": 9.8
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 100.3,
+    "approximateDiameterMm": 11.3
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 118.8,
+    "approximateDiameterMm": 12.3
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 208.7,
+    "approximateDiameterMm": 16.3
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 254.5,
+    "approximateDiameterMm": 18.0
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 298.6,
+    "approximateDiameterMm": 19.5
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 376.7,
+    "approximateDiameterMm": 21.9
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "375",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "THWN",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.2,
+    "approximateDiameterMm": 2.8
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 8.6,
+    "approximateDiameterMm": 3.3
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 13.9,
+    "approximateDiameterMm": 4.2
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 23.8,
+    "approximateDiameterMm": 5.5
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 33.2,
+    "approximateDiameterMm": 6.5
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 75.4,
+    "approximateDiameterMm": 9.8
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 100.3,
+    "approximateDiameterMm": 11.3
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 118.8,
+    "approximateDiameterMm": 12.3
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 143.1,
+    "approximateDiameterMm": 13.5
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 172.0,
+    "approximateDiameterMm": 14.8
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 208.7,
+    "approximateDiameterMm": 16.3
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 254.5,
+    "approximateDiameterMm": 18.0
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 298.6,
+    "approximateDiameterMm": 19.5
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 376.7,
+    "approximateDiameterMm": 21.9
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 456.2,
+    "approximateDiameterMm": 24.1
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "375",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "THWN-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "PF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PGFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PGFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PGF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PGF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PTF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PTF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PAF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PAF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PTFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PTFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PAFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "PAFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 4.9,
+    "approximateDiameterMm": 2.5
+  },
+  {
+    "insulationType": "PF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PGFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PGF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PTF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PAF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PTFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PAFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 6.6,
+    "approximateDiameterMm": 2.9
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 30.2,
+    "approximateDiameterMm": 6.2
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 43.0,
+    "approximateDiameterMm": 7.4
+  },
+  {
+    "insulationType": "TFE",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 30.2,
+    "approximateDiameterMm": 6.2
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 43.0,
+    "approximateDiameterMm": 7.4
+  },
+  {
+    "insulationType": "FEP",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 30.2,
+    "approximateDiameterMm": 6.2
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 43.0,
+    "approximateDiameterMm": 7.4
+  },
+  {
+    "insulationType": "PFA",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 30.2,
+    "approximateDiameterMm": 6.2
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 43.0,
+    "approximateDiameterMm": 7.4
+  },
+  {
+    "insulationType": "FEPB",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 21.2,
+    "approximateDiameterMm": 5.2
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 30.2,
+    "approximateDiameterMm": 6.2
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 43.0,
+    "approximateDiameterMm": 7.4
+  },
+  {
+    "insulationType": "PFAH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 62.2,
+    "approximateDiameterMm": 8.9
+  },
+  {
+    "insulationType": "ZF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 2.8,
+    "approximateDiameterMm": 1.9
+  },
+  {
+    "insulationType": "ZF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "ZFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 2.8,
+    "approximateDiameterMm": 1.9
+  },
+  {
+    "insulationType": "ZFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "ZHF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 2.8,
+    "approximateDiameterMm": 1.9
+  },
+  {
+    "insulationType": "ZHF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 3.8,
+    "approximateDiameterMm": 2.2
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "ZF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "ZFF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "ZHF",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 7.5,
+    "approximateDiameterMm": 3.1
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 12.6,
+    "approximateDiameterMm": 4.0
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 19.6,
+    "approximateDiameterMm": 5.0
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 27.3,
+    "approximateDiameterMm": 5.9
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 40.7,
+    "approximateDiameterMm": 7.2
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 66.5,
+    "approximateDiameterMm": 9.2
+  },
+  {
+    "insulationType": "Z",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 81.7,
+    "approximateDiameterMm": 10.2
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 38.48,
+    "approximateDiameterMm": 7.0
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 73.9,
+    "approximateDiameterMm": 9.7
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 38.48,
+    "approximateDiameterMm": 7.0
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "ZW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 73.9,
+    "approximateDiameterMm": 9.7
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 38.48,
+    "approximateDiameterMm": 7.0
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 73.9,
+    "approximateDiameterMm": 9.7
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 9.1,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 11.9,
+    "approximateDiameterMm": 3.9
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 15.9,
+    "approximateDiameterMm": 4.5
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "8.0",
+    "approximateAreaMm2": 28.3,
+    "approximateDiameterMm": 6.0
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "14",
+    "approximateAreaMm2": 38.48,
+    "approximateDiameterMm": 7.0
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "22",
+    "approximateAreaMm2": 52.8,
+    "approximateDiameterMm": 8.2
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "30",
+    "approximateAreaMm2": 73.9,
+    "approximateDiameterMm": 9.7
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 98.5,
+    "approximateDiameterMm": 11.2
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 116.9,
+    "approximateDiameterMm": 12.2
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 141.0,
+    "approximateDiameterMm": 13.4
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 206.1,
+    "approximateDiameterMm": 16.2
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 251.7,
+    "approximateDiameterMm": 17.9
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 292.6,
+    "approximateDiameterMm": 19.3
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 373.3,
+    "approximateDiameterMm": 21.8
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 452.4,
+    "approximateDiameterMm": 24.0
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1110.4,
+    "approximateDiameterMm": 37.6
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1301.0,
+    "approximateDiameterMm": 40.7
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1493.0,
+    "approximateDiameterMm": 43.6
+  },
+  {
+    "insulationType": "XHHW",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1683.7,
+    "approximateDiameterMm": 46.3
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 98.5,
+    "approximateDiameterMm": 11.2
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 116.9,
+    "approximateDiameterMm": 12.2
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 141.0,
+    "approximateDiameterMm": 13.4
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 206.1,
+    "approximateDiameterMm": 16.2
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 251.7,
+    "approximateDiameterMm": 17.9
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 292.6,
+    "approximateDiameterMm": 19.3
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 373.3,
+    "approximateDiameterMm": 21.8
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 452.4,
+    "approximateDiameterMm": 24.0
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1110.4,
+    "approximateDiameterMm": 37.6
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1301.0,
+    "approximateDiameterMm": 40.7
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1493.0,
+    "approximateDiameterMm": 43.6
+  },
+  {
+    "insulationType": "XHHW-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1683.7,
+    "approximateDiameterMm": 46.3
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "38",
+    "approximateAreaMm2": 98.5,
+    "approximateDiameterMm": 11.2
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "50",
+    "approximateAreaMm2": 116.9,
+    "approximateDiameterMm": 12.2
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "60",
+    "approximateAreaMm2": 141.0,
+    "approximateDiameterMm": 13.4
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "80",
+    "approximateAreaMm2": 169.7,
+    "approximateDiameterMm": 14.7
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "100",
+    "approximateAreaMm2": 206.1,
+    "approximateDiameterMm": 16.2
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "125",
+    "approximateAreaMm2": 251.7,
+    "approximateDiameterMm": 17.9
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "150",
+    "approximateAreaMm2": 292.6,
+    "approximateDiameterMm": 19.3
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "200",
+    "approximateAreaMm2": 373.3,
+    "approximateDiameterMm": 21.8
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "250",
+    "approximateAreaMm2": 452.4,
+    "approximateDiameterMm": 24.0
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "325",
+    "approximateAreaMm2": 559.9,
+    "approximateDiameterMm": 26.7
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "400",
+    "approximateAreaMm2": 678.9,
+    "approximateDiameterMm": 29.4
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "500",
+    "approximateAreaMm2": 870.9,
+    "approximateDiameterMm": 33.3
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "600",
+    "approximateAreaMm2": 1110.4,
+    "approximateDiameterMm": 37.6
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "750",
+    "approximateAreaMm2": 1301.0,
+    "approximateDiameterMm": 40.7
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "875",
+    "approximateAreaMm2": 1493.0,
+    "approximateDiameterMm": 43.6
+  },
+  {
+    "insulationType": "XHH",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1000",
+    "approximateAreaMm2": 1683.7,
+    "approximateDiameterMm": 46.3
+  },
+  {
+    "insulationType": "KF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 2.0,
+    "approximateDiameterMm": 1.6
+  },
+  {
+    "insulationType": "KF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 2.8,
+    "approximateDiameterMm": 1.9
+  },
+  {
+    "insulationType": "KF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 4.1,
+    "approximateDiameterMm": 2.3
+  },
+  {
+    "insulationType": "KF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 6.0,
+    "approximateDiameterMm": 2.8
+  },
+  {
+    "insulationType": "KF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 9.0,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "KFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 2.0,
+    "approximateDiameterMm": 1.6
+  },
+  {
+    "insulationType": "KFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 2.8,
+    "approximateDiameterMm": 1.9
+  },
+  {
+    "insulationType": "KFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 4.1,
+    "approximateDiameterMm": 2.3
+  },
+  {
+    "insulationType": "KFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 6.0,
+    "approximateDiameterMm": 2.8
+  },
+  {
+    "insulationType": "KFF-2",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 9.0,
+    "approximateDiameterMm": 3.4
+  },
+  {
+    "insulationType": "KF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 1.5,
+    "approximateDiameterMm": 1.4
+  },
+  {
+    "insulationType": "KF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 2.5,
+    "approximateDiameterMm": 1.8
+  },
+  {
+    "insulationType": "KF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 3.5,
+    "approximateDiameterMm": 2.1
+  },
+  {
+    "insulationType": "KF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "KF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 8.0,
+    "approximateDiameterMm": 3.2
+  },
+  {
+    "insulationType": "KFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "0.75",
+    "approximateAreaMm2": 1.5,
+    "approximateDiameterMm": 1.4
+  },
+  {
+    "insulationType": "KFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "1.25",
+    "approximateAreaMm2": 2.5,
+    "approximateDiameterMm": 1.8
+  },
+  {
+    "insulationType": "KFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "2.0",
+    "approximateAreaMm2": 3.5,
+    "approximateDiameterMm": 2.1
+  },
+  {
+    "insulationType": "KFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "3.5",
+    "approximateAreaMm2": 5.3,
+    "approximateDiameterMm": 2.6
+  },
+  {
+    "insulationType": "KFF-1",
+    "withoutOuterCovering": false,
+    "sizeLabel": "5.5",
+    "approximateAreaMm2": 8.0,
+    "approximateDiameterMm": 3.2
+  }
+]

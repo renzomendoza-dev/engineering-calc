@@ -1,0 +1,38 @@
+[
+  {
+    "conductorCountRangeLabel": "4-6",
+    "conductorCountMin": 4,
+    "conductorCountMax": 6,
+    "adjustmentFactorPercent": 80
+  },
+  {
+    "conductorCountRangeLabel": "7-9",
+    "conductorCountMin": 7,
+    "conductorCountMax": 9,
+    "adjustmentFactorPercent": 70
+  },
+  {
+    "conductorCountRangeLabel": "10-20",
+    "conductorCountMin": 10,
+    "conductorCountMax": 20,
+    "adjustmentFactorPercent": 50
+  },
+  {
+    "conductorCountRangeLabel": "21-30",
+    "conductorCountMin": 21,
+    "conductorCountMax": 30,
+    "adjustmentFactorPercent": 45
+  },
+  {
+    "conductorCountRangeLabel": "31-40",
+    "conductorCountMin": 31,
+    "conductorCountMax": 40,
+    "adjustmentFactorPercent": 40
+  },
+  {
+    "conductorCountRangeLabel": "41 and above",
+    "conductorCountMin": 41,
+    "conductorCountMax": null,
+    "adjustmentFactorPercent": 35
+  }
+]

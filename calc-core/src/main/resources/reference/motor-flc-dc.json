@@ -1,0 +1,530 @@
+[
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/4",
+    "voltage": 90,
+    "flcAmps": 4.0
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/4",
+    "voltage": 115,
+    "flcAmps": 3.1
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/4",
+    "voltage": 180,
+    "flcAmps": 2.0
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/4",
+    "voltage": 230,
+    "flcAmps": 1.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/3",
+    "voltage": 90,
+    "flcAmps": 5.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/3",
+    "voltage": 115,
+    "flcAmps": 4.1
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/3",
+    "voltage": 180,
+    "flcAmps": 2.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/3",
+    "voltage": 230,
+    "flcAmps": 2.0
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/2",
+    "voltage": 90,
+    "flcAmps": 6.8
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/2",
+    "voltage": 115,
+    "flcAmps": 5.4
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/2",
+    "voltage": 180,
+    "flcAmps": 3.4
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1/2",
+    "voltage": 230,
+    "flcAmps": 2.7
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3/4",
+    "voltage": 90,
+    "flcAmps": 9.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3/4",
+    "voltage": 115,
+    "flcAmps": 7.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3/4",
+    "voltage": 180,
+    "flcAmps": 4.8
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3/4",
+    "voltage": 230,
+    "flcAmps": 3.8
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3/4",
+    "voltage": 550,
+    "flcAmps": 1.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1",
+    "voltage": 90,
+    "flcAmps": 12.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1",
+    "voltage": 115,
+    "flcAmps": 9.5
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1",
+    "voltage": 180,
+    "flcAmps": 6.1
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1",
+    "voltage": 230,
+    "flcAmps": 4.7
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1",
+    "voltage": 550,
+    "flcAmps": 2.0
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1 1/2",
+    "voltage": 115,
+    "flcAmps": 13.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1 1/2",
+    "voltage": 180,
+    "flcAmps": 8.3
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1 1/2",
+    "voltage": 230,
+    "flcAmps": 6.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "1 1/2",
+    "voltage": 550,
+    "flcAmps": 2.7
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "2",
+    "voltage": 115,
+    "flcAmps": 17
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "2",
+    "voltage": 180,
+    "flcAmps": 10.8
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "2",
+    "voltage": 230,
+    "flcAmps": 8.5
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "2",
+    "voltage": 550,
+    "flcAmps": 3.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3",
+    "voltage": 115,
+    "flcAmps": 25
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3",
+    "voltage": 180,
+    "flcAmps": 16
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3",
+    "voltage": 230,
+    "flcAmps": 12.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "3",
+    "voltage": 550,
+    "flcAmps": 5.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "5",
+    "voltage": 115,
+    "flcAmps": 40
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "5",
+    "voltage": 180,
+    "flcAmps": 27
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "5",
+    "voltage": 230,
+    "flcAmps": 20
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "5",
+    "voltage": 550,
+    "flcAmps": 8.3
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "7 1/2",
+    "voltage": 115,
+    "flcAmps": 58
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "7 1/2",
+    "voltage": 230,
+    "flcAmps": 29
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "7 1/2",
+    "voltage": 500,
+    "flcAmps": 13.6
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "7 1/2",
+    "voltage": 550,
+    "flcAmps": 12.2
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "10",
+    "voltage": 115,
+    "flcAmps": 76
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "10",
+    "voltage": 230,
+    "flcAmps": 38
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "10",
+    "voltage": 500,
+    "flcAmps": 18
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "10",
+    "voltage": 550,
+    "flcAmps": 16
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "15",
+    "voltage": 115,
+    "flcAmps": 110
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "15",
+    "voltage": 230,
+    "flcAmps": 55
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "15",
+    "voltage": 500,
+    "flcAmps": 27
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "15",
+    "voltage": 550,
+    "flcAmps": 24
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "20",
+    "voltage": 115,
+    "flcAmps": 148
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "20",
+    "voltage": 230,
+    "flcAmps": 72
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "20",
+    "voltage": 500,
+    "flcAmps": 34
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "20",
+    "voltage": 550,
+    "flcAmps": 31
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "25",
+    "voltage": 115,
+    "flcAmps": 184
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "25",
+    "voltage": 230,
+    "flcAmps": 89
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "25",
+    "voltage": 500,
+    "flcAmps": 43
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "25",
+    "voltage": 550,
+    "flcAmps": 38
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "30",
+    "voltage": 115,
+    "flcAmps": 220
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "30",
+    "voltage": 230,
+    "flcAmps": 106
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "30",
+    "voltage": 500,
+    "flcAmps": 51
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "30",
+    "voltage": 550,
+    "flcAmps": 46
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "40",
+    "voltage": 115,
+    "flcAmps": 292
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "40",
+    "voltage": 230,
+    "flcAmps": 140
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "40",
+    "voltage": 500,
+    "flcAmps": 67
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "40",
+    "voltage": 550,
+    "flcAmps": 61
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "50",
+    "voltage": 115,
+    "flcAmps": 360
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "50",
+    "voltage": 230,
+    "flcAmps": 173
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "50",
+    "voltage": 500,
+    "flcAmps": 83
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "50",
+    "voltage": 550,
+    "flcAmps": 75
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "60",
+    "voltage": 230,
+    "flcAmps": 206
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "60",
+    "voltage": 500,
+    "flcAmps": 99
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "60",
+    "voltage": 550,
+    "flcAmps": 90
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "75",
+    "voltage": 230,
+    "flcAmps": 255
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "75",
+    "voltage": 500,
+    "flcAmps": 123
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "75",
+    "voltage": 550,
+    "flcAmps": 111
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "100",
+    "voltage": 230,
+    "flcAmps": 341
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "100",
+    "voltage": 500,
+    "flcAmps": 164
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "100",
+    "voltage": 550,
+    "flcAmps": 148
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "125",
+    "voltage": 230,
+    "flcAmps": 425
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "125",
+    "voltage": 500,
+    "flcAmps": 205
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "125",
+    "voltage": 550,
+    "flcAmps": 185
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "150",
+    "voltage": 230,
+    "flcAmps": 506
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "150",
+    "voltage": 500,
+    "flcAmps": 246
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "150",
+    "voltage": 550,
+    "flcAmps": 222
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "200",
+    "voltage": 230,
+    "flcAmps": 675
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "200",
+    "voltage": 500,
+    "flcAmps": 330
+  },
+  {
+    "phaseType": "DC",
+    "sizeLabel": "200",
+    "voltage": 550,
+    "flcAmps": 294
+  }
+]

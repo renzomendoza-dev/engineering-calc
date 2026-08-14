@@ -1,0 +1,164 @@
+[
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 58.8
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 32.5
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 29.4
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 115,
+    "lockedRotorAmps": 82.8
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 208,
+    "lockedRotorAmps": 45.8
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 230,
+    "lockedRotorAmps": 41.4
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1",
+    "voltage": 115,
+    "lockedRotorAmps": 96
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1",
+    "voltage": 208,
+    "lockedRotorAmps": 53
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1",
+    "voltage": 230,
+    "lockedRotorAmps": 48
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 120
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 66
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 60
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "2",
+    "voltage": 115,
+    "lockedRotorAmps": 144
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "2",
+    "voltage": 208,
+    "lockedRotorAmps": 80
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "2",
+    "voltage": 230,
+    "lockedRotorAmps": 72
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3",
+    "voltage": 115,
+    "lockedRotorAmps": 204
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3",
+    "voltage": 208,
+    "lockedRotorAmps": 113
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "3",
+    "voltage": 230,
+    "lockedRotorAmps": 102
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "5",
+    "voltage": 115,
+    "lockedRotorAmps": 336
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "5",
+    "voltage": 208,
+    "lockedRotorAmps": 186
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "5",
+    "voltage": 230,
+    "lockedRotorAmps": 168
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 115,
+    "lockedRotorAmps": 480
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 208,
+    "lockedRotorAmps": 265
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 230,
+    "lockedRotorAmps": 240
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "10",
+    "voltage": 115,
+    "lockedRotorAmps": 1000
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "10",
+    "voltage": 208,
+    "lockedRotorAmps": 332
+  },
+  {
+    "phaseType": "SINGLE_PHASE",
+    "sizeLabel": "10",
+    "voltage": 230,
+    "lockedRotorAmps": 300
+  }
+]

@@ -1,0 +1,130 @@
+[
+  {
+    "ambientTempRangeLabel": "10 or less",
+    "ambientTempLowC": null,
+    "ambientTempHighC": 10,
+    "factor60C": 1.29,
+    "factor75C": 1.2,
+    "factor90C": 1.15
+  },
+  {
+    "ambientTempRangeLabel": "11-15",
+    "ambientTempLowC": 11,
+    "ambientTempHighC": 15,
+    "factor60C": 1.22,
+    "factor75C": 1.15,
+    "factor90C": 1.12
+  },
+  {
+    "ambientTempRangeLabel": "16-20",
+    "ambientTempLowC": 16,
+    "ambientTempHighC": 20,
+    "factor60C": 1.15,
+    "factor75C": 1.11,
+    "factor90C": 1.08
+  },
+  {
+    "ambientTempRangeLabel": "21-25",
+    "ambientTempLowC": 21,
+    "ambientTempHighC": 25,
+    "factor60C": 1.08,
+    "factor75C": 1.05,
+    "factor90C": 1.04
+  },
+  {
+    "ambientTempRangeLabel": "26-30",
+    "ambientTempLowC": 26,
+    "ambientTempHighC": 30,
+    "factor60C": 1.0,
+    "factor75C": 1.0,
+    "factor90C": 1.0
+  },
+  {
+    "ambientTempRangeLabel": "31-35",
+    "ambientTempLowC": 31,
+    "ambientTempHighC": 35,
+    "factor60C": 0.91,
+    "factor75C": 0.94,
+    "factor90C": 0.96
+  },
+  {
+    "ambientTempRangeLabel": "36-40",
+    "ambientTempLowC": 36,
+    "ambientTempHighC": 40,
+    "factor60C": 0.82,
+    "factor75C": 0.88,
+    "factor90C": 0.91
+  },
+  {
+    "ambientTempRangeLabel": "41-45",
+    "ambientTempLowC": 41,
+    "ambientTempHighC": 45,
+    "factor60C": 0.71,
+    "factor75C": 0.82,
+    "factor90C": 0.87
+  },
+  {
+    "ambientTempRangeLabel": "46-50",
+    "ambientTempLowC": 46,
+    "ambientTempHighC": 50,
+    "factor60C": 0.58,
+    "factor75C": 0.75,
+    "factor90C": 0.82
+  },
+  {
+    "ambientTempRangeLabel": "51-55",
+    "ambientTempLowC": 51,
+    "ambientTempHighC": 55,
+    "factor60C": 0.41,
+    "factor75C": 0.67,
+    "factor90C": 0.76
+  },
+  {
+    "ambientTempRangeLabel": "56-60",
+    "ambientTempLowC": 56,
+    "ambientTempHighC": 60,
+    "factor60C": null,
+    "factor75C": 0.58,
+    "factor90C": 0.71
+  },
+  {
+    "ambientTempRangeLabel": "61-65",
+    "ambientTempLowC": 61,
+    "ambientTempHighC": 65,
+    "factor60C": null,
+    "factor75C": 0.47,
+    "factor90C": 0.65
+  },
+  {
+    "ambientTempRangeLabel": "66-70",
+    "ambientTempLowC": 66,
+    "ambientTempHighC": 70,
+    "factor60C": null,
+    "factor75C": 0.33,
+    "factor90C": 0.58
+  },
+  {
+    "ambientTempRangeLabel": "71-75",
+    "ambientTempLowC": 71,
+    "ambientTempHighC": 75,
+    "factor60C": null,
+    "factor75C": null,
+    "factor90C": 0.5
+  },
+  {
+    "ambientTempRangeLabel": "76-80",
+    "ambientTempLowC": 76,
+    "ambientTempHighC": 80,
+    "factor60C": null,
+    "factor75C": null,
+    "factor90C": 0.41
+  },
+  {
+    "ambientTempRangeLabel": "81-85",
+    "ambientTempLowC": 81,
+    "ambientTempHighC": 85,
+    "factor60C": null,
+    "factor75C": null,
+    "factor90C": 0.29
+  }
+]

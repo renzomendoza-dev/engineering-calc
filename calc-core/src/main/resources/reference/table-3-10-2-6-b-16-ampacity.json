@@ -1,0 +1,740 @@
+[
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "2.0",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 15
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "2.0",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 20
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "2.0",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 25
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 20
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 25
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 30
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 15
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 20
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "3.5",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 25
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 30
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 35
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 40
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 25
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 30
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "5.5",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 35
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 40
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 50
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 55
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 30
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 40
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "8.0",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 45
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 55
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 65
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 75
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 40
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 50
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "14",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 65
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 70
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 85
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 95
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 55
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 65
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "22",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 80
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 85
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 100
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 115
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 65
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 80
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "30",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 90
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 100
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 115
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 130
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 75
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 90
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "38",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 105
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 115
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 140
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 150
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 90
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 110
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "50",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 125
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 130
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 155
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 170
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 100
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 120
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "60",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 135
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 155
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 190
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 205
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 120
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 145
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "80",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 165
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 185
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 220
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 240
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 140
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 170
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "100",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 190
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 210
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 255
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 285
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 165
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 200
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "125",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 225
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 240
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 285
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 320
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 190
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 230
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "150",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 255
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 260
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 305
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 345
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 205
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 245
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "175",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 275
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 275
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 325
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 360
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 220
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 265
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "200",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 300
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 315
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 375
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 425
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 255
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 305
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "250",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 345
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 370
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 435
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 490
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 300
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 355
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "325",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 405
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 395
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 470
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 530
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 315
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 380
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "375",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 430
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 400
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 480
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 535
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 320
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 385
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "400",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 440
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 445
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 530
+  },
+  {
+    "conductorMaterial": "COPPER",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 595
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 60,
+    "ampacityAmps": 365
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 75,
+    "ampacityAmps": 435
+  },
+  {
+    "conductorMaterial": "ALUMINUM",
+    "sizeLabel": "500",
+    "tempRatingCelsius": 90,
+    "ampacityAmps": 485
+  }
+]

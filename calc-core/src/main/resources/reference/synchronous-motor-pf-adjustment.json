@@ -1,0 +1,14 @@
+[
+  {
+    "powerFactorPercent": 100,
+    "multiplier": 1.0
+  },
+  {
+    "powerFactorPercent": 90,
+    "multiplier": 1.1
+  },
+  {
+    "powerFactorPercent": 80,
+    "multiplier": 1.25
+  }
+]

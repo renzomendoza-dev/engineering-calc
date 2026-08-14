@@ -1,0 +1,23 @@
+[
+  { "sizeLabel": "2.0",  "xlPvcAluminum": 0.058, "xlSteel": 0.073, "rCuPvc": 3.1,   "rCuAluminumConduit": 3.1,   "rCuSteel": 3.1,   "rAlPvc": null,  "rAlAluminumConduit": null,  "rAlSteel": null  },
+  { "sizeLabel": "3.5",  "xlPvcAluminum": 0.054, "xlSteel": 0.068, "rCuPvc": 2.0,   "rCuAluminumConduit": 2.0,   "rCuSteel": 2.0,   "rAlPvc": 3.2,   "rAlAluminumConduit": 3.2,   "rAlSteel": 3.2   },
+  { "sizeLabel": "5.5",  "xlPvcAluminum": 0.050, "xlSteel": 0.063, "rCuPvc": 1.2,   "rCuAluminumConduit": 1.2,   "rCuSteel": 1.2,   "rAlPvc": 2.0,   "rAlAluminumConduit": 2.0,   "rAlSteel": 2.0   },
+  { "sizeLabel": "8.0",  "xlPvcAluminum": 0.052, "xlSteel": 0.065, "rCuPvc": 0.78,  "rCuAluminumConduit": 0.78,  "rCuSteel": 0.78,  "rAlPvc": 1.3,   "rAlAluminumConduit": 1.3,   "rAlSteel": 1.3   },
+  { "sizeLabel": "14",   "xlPvcAluminum": 0.051, "xlSteel": 0.064, "rCuPvc": 0.49,  "rCuAluminumConduit": 0.49,  "rCuSteel": 0.49,  "rAlPvc": 0.81,  "rAlAluminumConduit": 0.81,  "rAlSteel": 0.81  },
+  { "sizeLabel": "22",   "xlPvcAluminum": 0.048, "xlSteel": 0.060, "rCuPvc": 0.31,  "rCuAluminumConduit": 0.31,  "rCuSteel": 0.31,  "rAlPvc": 0.51,  "rAlAluminumConduit": 0.51,  "rAlSteel": 0.51  },
+  { "sizeLabel": "30",   "xlPvcAluminum": 0.045, "xlSteel": 0.057, "rCuPvc": 0.19,  "rCuAluminumConduit": 0.20,  "rCuSteel": 0.20,  "rAlPvc": 0.32,  "rAlAluminumConduit": 0.32,  "rAlSteel": 0.32  },
+  { "sizeLabel": "38",   "xlPvcAluminum": 0.046, "xlSteel": 0.057, "rCuPvc": 0.15,  "rCuAluminumConduit": 0.16,  "rCuSteel": 0.16,  "rAlPvc": 0.25,  "rAlAluminumConduit": 0.26,  "rAlSteel": 0.25  },
+  { "sizeLabel": "50",   "xlPvcAluminum": 0.044, "xlSteel": 0.055, "rCuPvc": 0.12,  "rCuAluminumConduit": 0.13,  "rCuSteel": 0.12,  "rAlPvc": 0.20,  "rAlAluminumConduit": 0.21,  "rAlSteel": 0.20  },
+  { "sizeLabel": "60",   "xlPvcAluminum": 0.043, "xlSteel": 0.054, "rCuPvc": 0.10,  "rCuAluminumConduit": 0.10,  "rCuSteel": 0.10,  "rAlPvc": 0.16,  "rAlAluminumConduit": 0.16,  "rAlSteel": 0.16  },
+  { "sizeLabel": "80",   "xlPvcAluminum": 0.042, "xlSteel": 0.052, "rCuPvc": 0.077, "rCuAluminumConduit": 0.082, "rCuSteel": 0.079, "rAlPvc": 0.13,  "rAlAluminumConduit": 0.13,  "rAlSteel": 0.13  },
+  { "sizeLabel": "100",  "xlPvcAluminum": 0.041, "xlSteel": 0.051, "rCuPvc": 0.062, "rCuAluminumConduit": 0.067, "rCuSteel": 0.063, "rAlPvc": 0.10,  "rAlAluminumConduit": 0.11,  "rAlSteel": 0.10  },
+  { "sizeLabel": "125",  "xlPvcAluminum": 0.041, "xlSteel": 0.052, "rCuPvc": 0.052, "rCuAluminumConduit": 0.057, "rCuSteel": 0.054, "rAlPvc": 0.085, "rAlAluminumConduit": 0.090, "rAlSteel": 0.086 },
+  { "sizeLabel": "150",  "xlPvcAluminum": 0.041, "xlSteel": 0.051, "rCuPvc": 0.044, "rCuAluminumConduit": 0.049, "rCuSteel": 0.045, "rAlPvc": 0.071, "rAlAluminumConduit": 0.076, "rAlSteel": 0.072 },
+  { "sizeLabel": "175",  "xlPvcAluminum": 0.040, "xlSteel": 0.050, "rCuPvc": 0.038, "rCuAluminumConduit": 0.043, "rCuSteel": 0.039, "rAlPvc": 0.061, "rAlAluminumConduit": 0.066, "rAlSteel": 0.063 },
+  { "sizeLabel": "200",  "xlPvcAluminum": 0.040, "xlSteel": 0.049, "rCuPvc": 0.033, "rCuAluminumConduit": 0.038, "rCuSteel": 0.035, "rAlPvc": 0.054, "rAlAluminumConduit": 0.059, "rAlSteel": 0.055 },
+  { "sizeLabel": "250",  "xlPvcAluminum": 0.039, "xlSteel": 0.048, "rCuPvc": 0.027, "rCuAluminumConduit": 0.032, "rCuSteel": 0.029, "rAlPvc": 0.043, "rAlAluminumConduit": 0.048, "rAlSteel": 0.045 },
+  { "sizeLabel": "325",  "xlPvcAluminum": 0.039, "xlSteel": 0.048, "rCuPvc": 0.023, "rCuAluminumConduit": 0.028, "rCuSteel": 0.025, "rAlPvc": 0.036, "rAlAluminumConduit": 0.041, "rAlSteel": 0.038 },
+  { "sizeLabel": "375",  "xlPvcAluminum": 0.038, "xlSteel": 0.048, "rCuPvc": 0.019, "rCuAluminumConduit": 0.024, "rCuSteel": 0.021, "rAlPvc": 0.029, "rAlAluminumConduit": 0.034, "rAlSteel": 0.031 },
+  { "sizeLabel": "400",  "xlPvcAluminum": 0.038, "xlSteel": 0.048, "rCuPvc": 0.019, "rCuAluminumConduit": 0.024, "rCuSteel": 0.021, "rAlPvc": 0.029, "rAlAluminumConduit": 0.034, "rAlSteel": 0.031 },
+  { "sizeLabel": "500",  "xlPvcAluminum": 0.037, "xlSteel": 0.046, "rCuPvc": 0.015, "rCuAluminumConduit": 0.019, "rCuSteel": 0.018, "rAlPvc": 0.023, "rAlAluminumConduit": 0.027, "rAlSteel": 0.025 }
+]

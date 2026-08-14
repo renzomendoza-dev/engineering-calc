@@ -1,0 +1,446 @@
+[
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 115,
+    "flcAmps": 4.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 230,
+    "flcAmps": 2.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 460,
+    "flcAmps": 1.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1/2",
+    "voltage": 575,
+    "flcAmps": 0.8
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 115,
+    "flcAmps": 4.8
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 230,
+    "flcAmps": 2.4
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 460,
+    "flcAmps": 1.2
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3/4",
+    "voltage": 575,
+    "flcAmps": 1.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1",
+    "voltage": 115,
+    "flcAmps": 6.4
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1",
+    "voltage": 230,
+    "flcAmps": 3.2
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1",
+    "voltage": 460,
+    "flcAmps": 1.6
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1",
+    "voltage": 575,
+    "flcAmps": 1.3
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 115,
+    "flcAmps": 9.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 230,
+    "flcAmps": 4.5
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 460,
+    "flcAmps": 2.3
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "1 1/2",
+    "voltage": 575,
+    "flcAmps": 1.8
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "2",
+    "voltage": 115,
+    "flcAmps": 11.8
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "2",
+    "voltage": 230,
+    "flcAmps": 5.9
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "2",
+    "voltage": 460,
+    "flcAmps": 3.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "2",
+    "voltage": 575,
+    "flcAmps": 2.4
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3",
+    "voltage": 230,
+    "flcAmps": 8.3
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3",
+    "voltage": 460,
+    "flcAmps": 4.2
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "3",
+    "voltage": 575,
+    "flcAmps": 3.3
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "5",
+    "voltage": 230,
+    "flcAmps": 13.2
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "5",
+    "voltage": 460,
+    "flcAmps": 6.6
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "5",
+    "voltage": 575,
+    "flcAmps": 5.3
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 230,
+    "flcAmps": 19
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 460,
+    "flcAmps": 9.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "7 1/2",
+    "voltage": 575,
+    "flcAmps": 8.0
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "10",
+    "voltage": 230,
+    "flcAmps": 24
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "10",
+    "voltage": 460,
+    "flcAmps": 12
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "10",
+    "voltage": 575,
+    "flcAmps": 10
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "15",
+    "voltage": 230,
+    "flcAmps": 36
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "15",
+    "voltage": 460,
+    "flcAmps": 18
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "15",
+    "voltage": 575,
+    "flcAmps": 14
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "20",
+    "voltage": 230,
+    "flcAmps": 47
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "20",
+    "voltage": 460,
+    "flcAmps": 23
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "20",
+    "voltage": 575,
+    "flcAmps": 19
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "25",
+    "voltage": 230,
+    "flcAmps": 59
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "25",
+    "voltage": 460,
+    "flcAmps": 29
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "25",
+    "voltage": 575,
+    "flcAmps": 24
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "30",
+    "voltage": 230,
+    "flcAmps": 69
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "30",
+    "voltage": 460,
+    "flcAmps": 35
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "30",
+    "voltage": 575,
+    "flcAmps": 28
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "40",
+    "voltage": 230,
+    "flcAmps": 90
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "40",
+    "voltage": 460,
+    "flcAmps": 45
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "40",
+    "voltage": 575,
+    "flcAmps": 36
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "50",
+    "voltage": 230,
+    "flcAmps": 113
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "50",
+    "voltage": 460,
+    "flcAmps": 56
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "50",
+    "voltage": 575,
+    "flcAmps": 45
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "60",
+    "voltage": 230,
+    "flcAmps": 133
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "60",
+    "voltage": 460,
+    "flcAmps": 67
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "60",
+    "voltage": 575,
+    "flcAmps": 53
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "60",
+    "voltage": 2300,
+    "flcAmps": 14
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "75",
+    "voltage": 230,
+    "flcAmps": 166
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "75",
+    "voltage": 460,
+    "flcAmps": 83
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "75",
+    "voltage": 575,
+    "flcAmps": 66
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "75",
+    "voltage": 2300,
+    "flcAmps": 18
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "100",
+    "voltage": 230,
+    "flcAmps": 218
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "100",
+    "voltage": 460,
+    "flcAmps": 109
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "100",
+    "voltage": 575,
+    "flcAmps": 87
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "100",
+    "voltage": 2300,
+    "flcAmps": 23
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "125",
+    "voltage": 230,
+    "flcAmps": 270
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "125",
+    "voltage": 460,
+    "flcAmps": 135
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "125",
+    "voltage": 575,
+    "flcAmps": 108
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "125",
+    "voltage": 2300,
+    "flcAmps": 28
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "150",
+    "voltage": 230,
+    "flcAmps": 312
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "150",
+    "voltage": 460,
+    "flcAmps": 156
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "150",
+    "voltage": 575,
+    "flcAmps": 125
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "150",
+    "voltage": 2300,
+    "flcAmps": 32
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "200",
+    "voltage": 230,
+    "flcAmps": 416
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "200",
+    "voltage": 460,
+    "flcAmps": 208
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "200",
+    "voltage": 575,
+    "flcAmps": 167
+  },
+  {
+    "phaseType": "TWO_PHASE",
+    "sizeLabel": "200",
+    "voltage": 2300,
+    "flcAmps": 43
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "engineering-calc-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:\\Users\\rcm12\\Desktop\\Projects\\engineering-calc-web", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "calc-api",
+      "runtimeExecutable": "calc-api\\mvnw.cmd",
+      "runtimeArgs": ["-f", "pom.xml", "-pl", "calc-api", "spring-boot:run"],
+      "port": 8080
+    }
+  ]
+}
