@@ -47,5 +47,10 @@
         { "nominalSize": "110", "nominalLabel": "DN110 PN20", "dn": 110, "outsideDiameterMm": 110, "wallThicknessMm": 15.1, "internalDiameterMm": 79.8 }
       ]
     }
-  ]
+  ],
+  "hydraulics": {
+    "absoluteRoughnessMm": 0.007,
+    "confidence": "placeholder",
+    "source": "Generic PPR absolute roughness reference value — same placeholder caveat as this file's dimension data"
+  }
 }

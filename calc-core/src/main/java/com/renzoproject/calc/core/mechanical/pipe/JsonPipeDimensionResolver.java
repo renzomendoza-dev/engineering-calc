@@ -29,7 +29,7 @@ import java.util.Map;
  * material means adding one more entry to {@link #RESOURCE_PATHS_BY_MATERIAL} — a one-line
  * change, not a structural one.
  */
-public class JsonPipeDimensionResolver implements PipeDimensionResolver {
+public class JsonPipeDimensionResolver implements PipeDimensionResolver, PipeRoughnessResolver {
 
 	private static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(Units.METRE);
 
@@ -96,6 +96,15 @@ public class JsonPipeDimensionResolver implements PipeDimensionResolver {
 							+ ", schedule=" + schedule + " has an internal diameter >= " + minMm
 							+ " mm (largest available: " + largest + " mm)");
 				});
+	}
+
+	@Override
+	public double resolveAbsoluteRoughnessMm(String material) {
+		PipeDimensionFile file = fileFor(material);
+		if (file.hydraulics() == null) {
+			throw new CalculationException("No hydraulics data for material: " + material);
+		}
+		return file.hydraulics().absoluteRoughnessMm();
 	}
 
 	@Override

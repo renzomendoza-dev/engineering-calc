@@ -12,6 +12,7 @@ record PipeDimensionFile(
 		String standard,
 		String source,
 		String confidence,
-		List<PipeScheduleGroup> schedules) {
+		List<PipeScheduleGroup> schedules,
+		PipeHydraulics hydraulics) {
 
 }

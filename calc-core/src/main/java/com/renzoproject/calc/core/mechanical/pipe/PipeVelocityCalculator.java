@@ -51,7 +51,7 @@ public class PipeVelocityCalculator implements Calculator<PipeVelocityInput, Pip
 	}
 
 	private VelocityResult calculateVelocityFromDiameter(PipeVelocityInput input, double flowRateM3s) {
-		Quantity<Length> internalDiameter = resolveDiameter(input.diameterSpec());
+		Quantity<Length> internalDiameter = DiameterSpecResolver.resolveInternalDiameter(input.diameterSpec(), dimensionResolver);
 		double diameterM = internalDiameter.to(Units.METRE).getValue().doubleValue();
 		double velocityMs = velocityFor(flowRateM3s, diameterM);
 		return new VelocityResult(Quantities.getQuantity(velocityMs, Units.METRE_PER_SECOND));
@@ -79,14 +79,6 @@ public class PipeVelocityCalculator implements Calculator<PipeVelocityInput, Pip
 				resolved.nominalLabel(),
 				resolved.internalDiameter(),
 				Quantities.getQuantity(actualVelocityMs, Units.METRE_PER_SECOND));
-	}
-
-	private Quantity<Length> resolveDiameter(DiameterSpec diameterSpec) {
-		return switch (diameterSpec) {
-			case RawDiameter raw -> raw.internalDiameter();
-			case NominalSize nominal ->
-					dimensionResolver.resolve(nominal.material(), nominal.schedule(), nominal.nominalLabel()).internalDiameter();
-		};
 	}
 
 	private static double velocityFor(double flowRateM3s, double diameterM) {

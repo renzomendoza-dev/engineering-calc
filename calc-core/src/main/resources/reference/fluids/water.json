@@ -1,0 +1,21 @@
+{
+  "fluid": "WATER",
+  "fluidName": "Water",
+  "source": "Standard water property tables (density and dynamic viscosity vs. temperature)",
+  "confidence": "verified",
+  "densityUnit": "kg/m3",
+  "viscosityUnit": "Pa.s",
+  "properties": [
+    { "temperatureC": 0,   "density": 999.8, "dynamicViscosity": 0.001787 },
+    { "temperatureC": 10,  "density": 999.7, "dynamicViscosity": 0.001307 },
+    { "temperatureC": 20,  "density": 998.2, "dynamicViscosity": 0.001002 },
+    { "temperatureC": 30,  "density": 995.6, "dynamicViscosity": 0.000798 },
+    { "temperatureC": 40,  "density": 992.2, "dynamicViscosity": 0.000653 },
+    { "temperatureC": 50,  "density": 988.0, "dynamicViscosity": 0.000547 },
+    { "temperatureC": 60,  "density": 983.2, "dynamicViscosity": 0.000466 },
+    { "temperatureC": 70,  "density": 977.7, "dynamicViscosity": 0.000404 },
+    { "temperatureC": 80,  "density": 971.6, "dynamicViscosity": 0.000355 },
+    { "temperatureC": 90,  "density": 965.3, "dynamicViscosity": 0.000315 },
+    { "temperatureC": 100, "density": 958.4, "dynamicViscosity": 0.000282 }
+  ]
+}

@@ -23,5 +23,10 @@
         { "nominalSize": "6",     "nominalLabel": "6\" (DN150)",    "dn": 150, "outsideDiameterMm": 168.3, "wallThicknessMm": 7.11, "internalDiameterMm": 154.08 }
       ]
     }
-  ]
+  ],
+  "hydraulics": {
+    "absoluteRoughnessMm": 0.15,
+    "confidence": "verified",
+    "source": "Typical galvanized steel pipe absolute roughness (Moody chart reference values)"
+  }
 }

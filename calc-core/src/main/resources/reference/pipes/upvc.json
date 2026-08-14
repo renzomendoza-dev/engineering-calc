@@ -18,5 +18,10 @@
         { "nominalSize": "4",     "nominalLabel": "4\" (DN100)",    "dn": 100, "outsideDiameterMm": 114.3, "wallThicknessMm": 6.02, "internalDiameterMm": 102.26 }
       ]
     }
-  ]
+  ],
+  "hydraulics": {
+    "absoluteRoughnessMm": 0.0015,
+    "confidence": "placeholder",
+    "source": "Generic PVC absolute roughness reference value — same placeholder caveat as this file's dimension data, verify against PNS 65 / manufacturer data"
+  }
 }
