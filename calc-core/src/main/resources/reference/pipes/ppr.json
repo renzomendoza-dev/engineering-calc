@@ -1,0 +1,51 @@
+{
+  "material": "PPR",
+  "materialName": "Polypropylene Random Copolymer Pipe",
+  "standard": "DIN 8077/8078 / ISO 15874 (generic placeholder)",
+  "source": "Widely-cited international DIN/ISO PN10/PN16/PN20 figures. LOW CONFIDENCE — not verified against a specific supplier datasheet in this session. Cross-check against a local PPR brand's technical catalogue before relying on this for real designs.",
+  "confidence": "placeholder",
+  "schedules": [
+    {
+      "schedule": "PN10",
+      "sizes": [
+        { "nominalSize": "20",  "nominalLabel": "DN20 PN10",  "dn": 20,  "outsideDiameterMm": 20,  "wallThicknessMm": 1.9,  "internalDiameterMm": 16.2 },
+        { "nominalSize": "25",  "nominalLabel": "DN25 PN10",  "dn": 25,  "outsideDiameterMm": 25,  "wallThicknessMm": 2.3,  "internalDiameterMm": 20.4 },
+        { "nominalSize": "32",  "nominalLabel": "DN32 PN10",  "dn": 32,  "outsideDiameterMm": 32,  "wallThicknessMm": 2.9,  "internalDiameterMm": 26.2 },
+        { "nominalSize": "40",  "nominalLabel": "DN40 PN10",  "dn": 40,  "outsideDiameterMm": 40,  "wallThicknessMm": 3.7,  "internalDiameterMm": 32.6 },
+        { "nominalSize": "50",  "nominalLabel": "DN50 PN10",  "dn": 50,  "outsideDiameterMm": 50,  "wallThicknessMm": 4.6,  "internalDiameterMm": 40.8 },
+        { "nominalSize": "63",  "nominalLabel": "DN63 PN10",  "dn": 63,  "outsideDiameterMm": 63,  "wallThicknessMm": 5.8,  "internalDiameterMm": 51.4 },
+        { "nominalSize": "75",  "nominalLabel": "DN75 PN10",  "dn": 75,  "outsideDiameterMm": 75,  "wallThicknessMm": 6.8,  "internalDiameterMm": 61.4 },
+        { "nominalSize": "90",  "nominalLabel": "DN90 PN10",  "dn": 90,  "outsideDiameterMm": 90,  "wallThicknessMm": 8.2,  "internalDiameterMm": 73.6 },
+        { "nominalSize": "110", "nominalLabel": "DN110 PN10", "dn": 110, "outsideDiameterMm": 110, "wallThicknessMm": 10.0, "internalDiameterMm": 90.0 }
+      ]
+    },
+    {
+      "schedule": "PN16",
+      "sizes": [
+        { "nominalSize": "20",  "nominalLabel": "DN20 PN16",  "dn": 20,  "outsideDiameterMm": 20,  "wallThicknessMm": 2.3,  "internalDiameterMm": 15.4 },
+        { "nominalSize": "25",  "nominalLabel": "DN25 PN16",  "dn": 25,  "outsideDiameterMm": 25,  "wallThicknessMm": 2.8,  "internalDiameterMm": 19.4 },
+        { "nominalSize": "32",  "nominalLabel": "DN32 PN16",  "dn": 32,  "outsideDiameterMm": 32,  "wallThicknessMm": 3.6,  "internalDiameterMm": 24.8 },
+        { "nominalSize": "40",  "nominalLabel": "DN40 PN16",  "dn": 40,  "outsideDiameterMm": 40,  "wallThicknessMm": 4.5,  "internalDiameterMm": 31.0 },
+        { "nominalSize": "50",  "nominalLabel": "DN50 PN16",  "dn": 50,  "outsideDiameterMm": 50,  "wallThicknessMm": 5.6,  "internalDiameterMm": 38.8 },
+        { "nominalSize": "63",  "nominalLabel": "DN63 PN16",  "dn": 63,  "outsideDiameterMm": 63,  "wallThicknessMm": 7.1,  "internalDiameterMm": 48.8 },
+        { "nominalSize": "75",  "nominalLabel": "DN75 PN16",  "dn": 75,  "outsideDiameterMm": 75,  "wallThicknessMm": 8.4,  "internalDiameterMm": 58.2 },
+        { "nominalSize": "90",  "nominalLabel": "DN90 PN16",  "dn": 90,  "outsideDiameterMm": 90,  "wallThicknessMm": 10.1, "internalDiameterMm": 69.8 },
+        { "nominalSize": "110", "nominalLabel": "DN110 PN16", "dn": 110, "outsideDiameterMm": 110, "wallThicknessMm": 12.3, "internalDiameterMm": 85.4 }
+      ]
+    },
+    {
+      "schedule": "PN20",
+      "sizes": [
+        { "nominalSize": "20",  "nominalLabel": "DN20 PN20",  "dn": 20,  "outsideDiameterMm": 20,  "wallThicknessMm": 2.8,  "internalDiameterMm": 14.4 },
+        { "nominalSize": "25",  "nominalLabel": "DN25 PN20",  "dn": 25,  "outsideDiameterMm": 25,  "wallThicknessMm": 3.5,  "internalDiameterMm": 18.0 },
+        { "nominalSize": "32",  "nominalLabel": "DN32 PN20",  "dn": 32,  "outsideDiameterMm": 32,  "wallThicknessMm": 4.4,  "internalDiameterMm": 23.2 },
+        { "nominalSize": "40",  "nominalLabel": "DN40 PN20",  "dn": 40,  "outsideDiameterMm": 40,  "wallThicknessMm": 5.5,  "internalDiameterMm": 29.0 },
+        { "nominalSize": "50",  "nominalLabel": "DN50 PN20",  "dn": 50,  "outsideDiameterMm": 50,  "wallThicknessMm": 6.9,  "internalDiameterMm": 36.2 },
+        { "nominalSize": "63",  "nominalLabel": "DN63 PN20",  "dn": 63,  "outsideDiameterMm": 63,  "wallThicknessMm": 8.6,  "internalDiameterMm": 45.8 },
+        { "nominalSize": "75",  "nominalLabel": "DN75 PN20",  "dn": 75,  "outsideDiameterMm": 75,  "wallThicknessMm": 10.3, "internalDiameterMm": 54.4 },
+        { "nominalSize": "90",  "nominalLabel": "DN90 PN20",  "dn": 90,  "outsideDiameterMm": 90,  "wallThicknessMm": 12.3, "internalDiameterMm": 65.4 },
+        { "nominalSize": "110", "nominalLabel": "DN110 PN20", "dn": 110, "outsideDiameterMm": 110, "wallThicknessMm": 15.1, "internalDiameterMm": 79.8 }
+      ]
+    }
+  ]
+}
