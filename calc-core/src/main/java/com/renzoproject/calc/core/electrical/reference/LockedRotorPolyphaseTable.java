@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class LockedRotorPolyphaseTable {
 
-	private static final String RESOURCE_PATH = "/reference/locked-rotor-polyphase.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/locked-rotor-polyphase.json";
 
 	private final Map<String, LockedRotorEntry> entries;
 

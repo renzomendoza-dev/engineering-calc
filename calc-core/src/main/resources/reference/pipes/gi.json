@@ -1,0 +1,27 @@
+{
+  "material": "GI",
+  "materialName": "Galvanized Iron Pipe",
+  "standard": "ANSI/ASME B36.10M",
+  "source": "Standard NPS Schedule 40 dimension tables",
+  "confidence": "verified",
+  "schedules": [
+    {
+      "schedule": "SCH40",
+      "sizes": [
+        { "nominalSize": "1/8",   "nominalLabel": "1/8\" (DN6)",    "dn": 6,   "outsideDiameterMm": 10.3,  "wallThicknessMm": 1.73, "internalDiameterMm": 6.84 },
+        { "nominalSize": "1/4",   "nominalLabel": "1/4\" (DN8)",    "dn": 8,   "outsideDiameterMm": 13.7,  "wallThicknessMm": 2.24, "internalDiameterMm": 9.22 },
+        { "nominalSize": "3/8",   "nominalLabel": "3/8\" (DN10)",   "dn": 10,  "outsideDiameterMm": 17.1,  "wallThicknessMm": 2.31, "internalDiameterMm": 12.48 },
+        { "nominalSize": "1/2",   "nominalLabel": "1/2\" (DN15)",   "dn": 15,  "outsideDiameterMm": 21.3,  "wallThicknessMm": 2.77, "internalDiameterMm": 15.76 },
+        { "nominalSize": "3/4",   "nominalLabel": "3/4\" (DN20)",   "dn": 20,  "outsideDiameterMm": 26.7,  "wallThicknessMm": 2.87, "internalDiameterMm": 20.96 },
+        { "nominalSize": "1",     "nominalLabel": "1\" (DN25)",     "dn": 25,  "outsideDiameterMm": 33.4,  "wallThicknessMm": 3.38, "internalDiameterMm": 26.64 },
+        { "nominalSize": "1-1/4", "nominalLabel": "1-1/4\" (DN32)", "dn": 32,  "outsideDiameterMm": 42.2,  "wallThicknessMm": 3.56, "internalDiameterMm": 35.08 },
+        { "nominalSize": "1-1/2", "nominalLabel": "1-1/2\" (DN40)", "dn": 40,  "outsideDiameterMm": 48.3,  "wallThicknessMm": 3.68, "internalDiameterMm": 40.94 },
+        { "nominalSize": "2",     "nominalLabel": "2\" (DN50)",     "dn": 50,  "outsideDiameterMm": 60.3,  "wallThicknessMm": 3.91, "internalDiameterMm": 52.48 },
+        { "nominalSize": "2-1/2", "nominalLabel": "2-1/2\" (DN65)", "dn": 65,  "outsideDiameterMm": 73.0,  "wallThicknessMm": 5.16, "internalDiameterMm": 62.68 },
+        { "nominalSize": "3",     "nominalLabel": "3\" (DN80)",     "dn": 80,  "outsideDiameterMm": 88.9,  "wallThicknessMm": 5.49, "internalDiameterMm": 77.92 },
+        { "nominalSize": "4",     "nominalLabel": "4\" (DN100)",    "dn": 100, "outsideDiameterMm": 114.3, "wallThicknessMm": 6.02, "internalDiameterMm": 102.26 },
+        { "nominalSize": "6",     "nominalLabel": "6\" (DN150)",    "dn": 150, "outsideDiameterMm": 168.3, "wallThicknessMm": 7.11, "internalDiameterMm": 154.08 }
+      ]
+    }
+  ]
+}

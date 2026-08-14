@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class ConductorDimensionTable {
 
-	private static final String RESOURCE_PATH = "/reference/table-10-1-1-5.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/table-10-1-1-5.json";
 
 	private final Map<String, ConductorDimensionEntry> entries;
 

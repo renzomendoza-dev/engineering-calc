@@ -1,0 +1,7 @@
+{
+  "standard": "NFPA 20 (edition TBD - verify against your project's applicable code year)",
+  "confidence": "verify",
+  "churnMaxPercentOfRated": 140,
+  "overloadFlowPercentOfRated": 150,
+  "overloadMinPressurePercentOfRated": 65
+}

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class InsulationTypeTempRating {
 
-	private static final String RESOURCE_PATH = "/reference/insulation-type-temp-rating.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/insulation-type-temp-rating.json";
 
 	private final Map<String, Integer> entries;
 

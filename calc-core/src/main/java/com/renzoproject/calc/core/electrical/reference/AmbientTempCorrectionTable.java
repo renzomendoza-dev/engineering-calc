@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class AmbientTempCorrectionTable {
 
-	private static final String RESOURCE_PATH = "/reference/ambient-temp-correction-30c.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/ambient-temp-correction-30c.json";
 
 	private final List<Row> rows;
 

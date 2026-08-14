@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class AmpacityTable {
 
-	private static final String RESOURCE_PATH = "/reference/table-3-10-2-6-b-16-ampacity.json";
+	private static final String RESOURCE_PATH = "/reference/electrical/table-3-10-2-6-b-16-ampacity.json";
 
 	private final Map<String, AmpacityEntry> entries;
 
