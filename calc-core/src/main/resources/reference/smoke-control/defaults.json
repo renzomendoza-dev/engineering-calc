@@ -1,0 +1,21 @@
+{
+  "description": "Smoke-control-specific default assumptions for NFPA 92 plume calculations",
+  "defaults": {
+    "fractionConvectiveHeatInSmokeLayer": {
+      "symbol": "Ks",
+      "value": 1.0,
+      "unit": "dimensionless",
+      "confidence": "verified",
+      "source": "NFPA 92 - default assumption for unobstructed axisymmetric plume, no significant heat loss to boundaries before entering smoke layer",
+      "overridable": true
+    },
+    "convectiveFraction": {
+      "symbol": "chi",
+      "value": 0.7,
+      "unit": "dimensionless",
+      "confidence": "verified",
+      "source": "NFPA 92 / SFPE Handbook - commonly cited range 0.6-0.8 for flaming combustion; 0.7 is the typical default",
+      "overridable": true
+    }
+  }
+}

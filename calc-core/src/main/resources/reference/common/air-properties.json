@@ -1,0 +1,26 @@
+{
+  "description": "General physical properties of air/combustion gases, reusable across any calculator involving air or gas thermodynamics (smoke control, HVAC, ventilation, etc.)",
+  "properties": {
+    "specificHeat": {
+      "symbol": "Cp",
+      "value": 1.0,
+      "unit": "kJ/kg-K",
+      "confidence": "verified",
+      "source": "NFPA 92, Standard for Smoke Control Systems; SFPE Handbook of Fire Protection Engineering"
+    },
+    "atmosphericPressure": {
+      "symbol": "Patm",
+      "value": 101325,
+      "unit": "Pa",
+      "confidence": "verified",
+      "source": "Standard atmosphere, ISO 2533"
+    },
+    "specificGasConstant": {
+      "symbol": "R",
+      "value": 287,
+      "unit": "J/kg-K",
+      "confidence": "verified",
+      "source": "Specific gas constant for air/combustion gases, SFPE Handbook of Fire Protection Engineering"
+    }
+  }
+}
