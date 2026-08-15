@@ -15,13 +15,15 @@ import javax.measure.quantity.Length;
 import java.util.Map;
 
 /**
- * Shared unit-string parsing and {@link DiameterSpec} construction, used by both
- * {@link PipeVelocityMapper} and {@link PipePressureLossMapper} so the two mappers don't each
- * duplicate the NOMINAL/RAW branching or the flow-rate/length unit maps — {@code flowRateUnit}
- * handling in particular needs to behave identically across both endpoints, not just similarly.
- * Package-private since only mappers in this package need it.
+ * Shared unit-string parsing and {@link DiameterSpec} construction, used by
+ * {@link PipeVelocityMapper}, {@link PipePressureLossMapper}, and (across the package boundary)
+ * {@code com.renzoproject.calc_api.mechanical.pump.PumpTDHMapper} so none of them duplicate the
+ * NOMINAL/RAW branching or the flow-rate/length unit maps — {@code flowRateUnit} handling in
+ * particular needs to behave identically across all three endpoints, not just similarly. Public
+ * since the third caller (pump) lives in a different package; widened at that point rather than
+ * copied a fourth time.
  */
-final class PipeUnitParsing {
+public final class PipeUnitParsing {
 
 	private static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(Units.METRE);
 
@@ -41,7 +43,7 @@ final class PipeUnitParsing {
 	private PipeUnitParsing() {
 	}
 
-	static Unit<VolumetricFlowRate> parseFlowRateUnit(String rawValue) {
+	public static Unit<VolumetricFlowRate> parseFlowRateUnit(String rawValue) {
 		Unit<VolumetricFlowRate> unit = FLOW_RATE_UNITS.get(rawValue);
 		if (unit == null) {
 			throw new CalculationException("Unknown flow rate unit: " + rawValue + " (supported: " + FLOW_RATE_UNITS.keySet() + ")");
@@ -49,7 +51,7 @@ final class PipeUnitParsing {
 		return unit;
 	}
 
-	static Unit<Length> parseLengthUnit(String rawValue) {
+	public static Unit<Length> parseLengthUnit(String rawValue) {
 		Unit<Length> unit = LENGTH_UNITS.get(rawValue);
 		if (unit == null) {
 			throw new CalculationException("Unknown length unit: " + rawValue + " (supported: " + LENGTH_UNITS.keySet() + ")");
@@ -57,7 +59,7 @@ final class PipeUnitParsing {
 		return unit;
 	}
 
-	static DiameterSpec toCoreDiameterSpec(
+	public static DiameterSpec toCoreDiameterSpec(
 			DiameterSpecTypeDto diameterSpecType,
 			String nominalMaterial,
 			String nominalSchedule,

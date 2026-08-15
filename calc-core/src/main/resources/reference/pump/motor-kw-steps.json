@@ -1,0 +1,7 @@
+{
+  "standard": "IEC 60072 standard motor power ratings",
+  "confidence": "verify",
+  "driverType": "ELECTRIC",
+  "unit": "kW",
+  "steps": [0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 150, 160, 185, 200, 220, 250, 280, 315, 355, 400]
+}
