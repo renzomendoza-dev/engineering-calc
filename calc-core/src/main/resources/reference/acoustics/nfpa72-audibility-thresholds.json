@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "standard": "NFPA 72",
+    "edition": "2022",
+    "section": "18.4",
+    "description": "Audibility threshold rules for fire alarm notification appliances. Thresholds are RELATIVE (computed against a measured ambient sound level), not fixed dB targets. The audibility calculator must take a measured ambient reading as input, not assume one.",
+    "notes": [
+      "publicMode and privateMode both use a 'greater of two rules' comparison: (ambient average + offset) vs (60-second max ambient + fixedOffsetDb). The calculator's Result should surface WHICH rule governed, not just the final number — useful for the pass/fail explanation.",
+      "sleepingArea threshold is an absolute floor (dBA at pillow), not ambient-relative, but the relative public/private rule can still override it upward if the space's ambient is high enough. Both must be checked and the greater taken.",
+      "maximumAllowedDba is a hard ceiling across all modes — exists to prevent hearing damage. Any calculated target above this should be flagged as a design conflict (occupancy needs sound suppression/ANC, not a louder horn), not silently capped."
+    ]
+  },
+  "notificationModes": {
+    "public": {
+      "aboveAverageAmbientDb": 15,
+      "aboveMaxSustainedDb": 5,
+      "maxSustainedDurationSeconds": 60,
+      "rule": "greaterOf",
+      "measurementHeightMeters": 1.5,
+      "sourceSection": "18.4.4",
+      "confidence": "verified"
+    },
+    "private": {
+      "aboveAverageAmbientDb": 10,
+      "aboveMaxSustainedDb": 5,
+      "maxSustainedDurationSeconds": 60,
+      "rule": "greaterOf",
+      "measurementHeightMeters": 1.5,
+      "sourceSection": "18.4.5",
+      "confidence": "verified",
+      "notes": "Typical use case: healthcare occupancies, staff-alert-only zones."
+    }
+  },
+  "sleepingArea": {
+    "minimumDbaAtPillow": 75,
+    "lowFrequencySignalRequiredHz": 520,
+    "lowFrequencyAppliesTo": "New installations per 2019+ editions; verify applicability for retrofit/existing systems before enforcing in calculator output.",
+    "rule": "absoluteFloor_overriddenByRelativeRuleIfGreater",
+    "sourceSection": "18.4.5.1 / 18.4.5.3 (verify exact subsection against your copy)",
+    "confidence": "verified"
+  },
+  "systemWideLimits": {
+    "maximumAllowedDba": 110,
+    "sourceSection": "18.4.1 (verify exact subsection against your copy)",
+    "confidence": "verified"
+  },
+  "averageAmbientSoundLevelByOccupancy": {
+    "_status": "placeholder — NOT populated",
+    "_action_required": "Transcribe from NFPA 72 Table A.18.4.3 (2022 ed.) using your existing PEC-table transcription workflow (image -> Python script -> spot-check). Do not hand-populate from memory or search fragments — this table feeds pass/fail life-safety output and should follow the same verified-source discipline as PEC Table 10.1.1.1.",
+    "_shape_once_populated": {
+      "occupancyType": "string, e.g. 'business', 'educational', 'industrial'",
+      "typicalAmbientDba": "number",
+      "confidence": "'verified' | 'placeholder'"
+    },
+    "entries": []
+  }
+}
