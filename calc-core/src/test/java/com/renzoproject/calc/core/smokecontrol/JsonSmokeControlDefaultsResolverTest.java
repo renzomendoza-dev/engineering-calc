@@ -20,6 +20,7 @@ class JsonSmokeControlDefaultsResolverTest {
 
 		assertEquals(1.0, defaults.fractionConvectiveHeatInSmokeLayer(), DELTA);
 		assertEquals(0.7, defaults.convectiveFraction(), DELTA);
+		assertEquals(0.6, defaults.ventDischargeCoefficient(), DELTA);
 	}
 
 }

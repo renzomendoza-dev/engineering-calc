@@ -1,6 +1,15 @@
 /**
- * Smoke control calculators (NFPA 92-aligned), starting with the axisymmetric plume smoke
- * production calculation.
+ * Smoke control calculators (NFPA 92-aligned): the axisymmetric plume smoke production
+ * calculation, in two deliberately separate forms -- {@code SmokeProductionCalculator} (fixed
+ * area/HRR-density design fire) and {@code TSquaredSmokeProductionCalculator} (t-squared growth
+ * capped at a peak HRR, evaluated at one time point). Steps 2-8 of the plume correlation are
+ * identical NFPA 92 math between the two, but they are intentionally NOT shared/refactored into
+ * one calculator or a common base -- each has its own input shape, sealed plume-regime hierarchy,
+ * and result record, so a change to one growth model never risks the other.
+ *
+ * <p>{@code common.AirPropertiesResolver} and this package's {@code SmokeControlDefaultsResolver}
+ * ARE shared between both calculators -- that reference data is genuinely calculator-agnostic,
+ * unlike the duplicated calculation logic above.
  *
  * <p><b>Units: this package works in plain SI-magnitude doubles throughout (m, m2, kW, kW/m2,
  * degC, kg/s, kg/m3, m3/s) rather than Indriya {@code Quantity} types.</b> This mirrors

@@ -9,7 +9,12 @@ package com.renzoproject.calc.core.smokecontrol;
  *                                            layer
  * @param convectiveFraction                 chi, dimensionless -- typical default for flaming
  *                                            combustion
+ * @param ventDischargeCoefficient           Cd, dimensionless -- typical discharge coefficient
+ *                                            for natural smoke vents
  */
-public record SmokeControlDefaults(double fractionConvectiveHeatInSmokeLayer, double convectiveFraction) {
+public record SmokeControlDefaults(
+		double fractionConvectiveHeatInSmokeLayer,
+		double convectiveFraction,
+		double ventDischargeCoefficient) {
 
 }

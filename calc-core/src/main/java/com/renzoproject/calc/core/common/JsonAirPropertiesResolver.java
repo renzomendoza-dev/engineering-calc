@@ -23,7 +23,8 @@ public class JsonAirPropertiesResolver implements AirPropertiesResolver {
 		this.properties = new AirProperties(
 				file.properties().specificHeat().value(),
 				file.properties().atmosphericPressure().value(),
-				file.properties().specificGasConstant().value());
+				file.properties().specificGasConstant().value(),
+				file.properties().gravitationalAcceleration().value());
 	}
 
 	private static AirPropertiesFile load() {

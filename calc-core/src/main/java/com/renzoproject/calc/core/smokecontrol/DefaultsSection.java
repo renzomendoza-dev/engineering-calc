@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 record DefaultsSection(
 		DefaultEntry fractionConvectiveHeatInSmokeLayer,
-		DefaultEntry convectiveFraction) {
+		DefaultEntry convectiveFraction,
+		DefaultEntry ventDischargeCoefficient) {
 
 }

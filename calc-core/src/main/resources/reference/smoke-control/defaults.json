@@ -1,5 +1,5 @@
 {
-  "description": "Smoke-control-specific default assumptions for NFPA 92 plume calculations",
+  "description": "Smoke-control-specific default assumptions for NFPA 92 plume and vent calculations",
   "defaults": {
     "fractionConvectiveHeatInSmokeLayer": {
       "symbol": "Ks",
@@ -15,6 +15,14 @@
       "unit": "dimensionless",
       "confidence": "verified",
       "source": "NFPA 92 / SFPE Handbook - commonly cited range 0.6-0.8 for flaming combustion; 0.7 is the typical default",
+      "overridable": true
+    },
+    "ventDischargeCoefficient": {
+      "symbol": "Cd",
+      "value": 0.6,
+      "unit": "dimensionless",
+      "confidence": "verified",
+      "source": "NFPA 204 / NFPA 92 - typical discharge coefficient for natural smoke vents; validated against Warehouse 1 project reference calculation",
       "overridable": true
     }
   }

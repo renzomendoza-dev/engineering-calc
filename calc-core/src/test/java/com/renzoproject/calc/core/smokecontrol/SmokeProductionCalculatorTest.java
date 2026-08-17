@@ -17,8 +17,8 @@ class SmokeProductionCalculatorTest {
 	private static final double SPOT_CHECK_DELTA = 0.01;
 
 	// Mirrors the published reference values from air-properties.json / defaults.json.
-	private final AirPropertiesResolver airPropertiesResolver = new FakeAirPropertiesResolver(new AirProperties(1.0, 101325.0, 287.0));
-	private final SmokeControlDefaultsResolver defaultsResolver = new FakeSmokeControlDefaultsResolver(new SmokeControlDefaults(1.0, 0.7));
+	private final AirPropertiesResolver airPropertiesResolver = new FakeAirPropertiesResolver(new AirProperties(1.0, 101325.0, 287.0, 9.81));
+	private final SmokeControlDefaultsResolver defaultsResolver = new FakeSmokeControlDefaultsResolver(new SmokeControlDefaults(1.0, 0.7, 0.6));
 
 	private final SmokeProductionCalculator calculator = new SmokeProductionCalculator(airPropertiesResolver, defaultsResolver);
 

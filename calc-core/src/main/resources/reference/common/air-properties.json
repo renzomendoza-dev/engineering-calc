@@ -21,6 +21,13 @@
       "unit": "J/kg-K",
       "confidence": "verified",
       "source": "Specific gas constant for air/combustion gases, SFPE Handbook of Fire Protection Engineering"
+    },
+    "gravitationalAcceleration": {
+      "symbol": "g",
+      "value": 9.81,
+      "unit": "m/s2",
+      "confidence": "verified",
+      "source": "Standard gravity, ISO 80000-3"
     }
   }
 }

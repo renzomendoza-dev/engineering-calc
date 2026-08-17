@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 record PropertiesSection(
 		AirPropertyEntry specificHeat,
 		AirPropertyEntry atmosphericPressure,
-		AirPropertyEntry specificGasConstant) {
+		AirPropertyEntry specificGasConstant,
+		AirPropertyEntry gravitationalAcceleration) {
 
 }

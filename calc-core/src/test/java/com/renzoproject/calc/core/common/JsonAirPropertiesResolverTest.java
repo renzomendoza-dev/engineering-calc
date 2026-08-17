@@ -21,6 +21,7 @@ class JsonAirPropertiesResolverTest {
 		assertEquals(1.0, properties.specificHeatKjPerKgK(), DELTA);
 		assertEquals(101325.0, properties.atmosphericPressurePa(), DELTA);
 		assertEquals(287.0, properties.specificGasConstantJPerKgK(), DELTA);
+		assertEquals(9.81, properties.gravitationalAccelerationMPerS2(), DELTA);
 	}
 
 }

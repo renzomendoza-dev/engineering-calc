@@ -22,7 +22,8 @@ public class JsonSmokeControlDefaultsResolver implements SmokeControlDefaultsRes
 		SmokeControlDefaultsFile file = load();
 		this.defaults = new SmokeControlDefaults(
 				file.defaults().fractionConvectiveHeatInSmokeLayer().value(),
-				file.defaults().convectiveFraction().value());
+				file.defaults().convectiveFraction().value(),
+				file.defaults().ventDischargeCoefficient().value());
 	}
 
 	private static SmokeControlDefaultsFile load() {

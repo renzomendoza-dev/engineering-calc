@@ -17,14 +17,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class SmokeControlController {
 
 	private final SmokeProductionService smokeProductionService;
+	private final TSquaredSmokeProductionService tSquaredSmokeProductionService;
+	private final VentAreaService ventAreaService;
 
-	public SmokeControlController(SmokeProductionService smokeProductionService) {
+	public SmokeControlController(
+			SmokeProductionService smokeProductionService,
+			TSquaredSmokeProductionService tSquaredSmokeProductionService,
+			VentAreaService ventAreaService) {
 		this.smokeProductionService = smokeProductionService;
+		this.tSquaredSmokeProductionService = tSquaredSmokeProductionService;
+		this.ventAreaService = ventAreaService;
 	}
 
 	@PostMapping("/plume")
 	public SmokeProductionResponse calculatePlume(@Valid @RequestBody SmokeProductionRequest request) {
 		return smokeProductionService.calculate(request);
+	}
+
+	@PostMapping("/plume-tsquared")
+	public TSquaredSmokeProductionResponse calculatePlumeTSquared(@Valid @RequestBody TSquaredSmokeProductionRequest request) {
+		return tSquaredSmokeProductionService.calculate(request);
+	}
+
+	@PostMapping("/vent-area")
+	public VentAreaResponse calculateVentArea(@Valid @RequestBody VentAreaRequest request) {
+		return ventAreaService.calculate(request);
 	}
 
 }
