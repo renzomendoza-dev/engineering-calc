@@ -41,6 +41,9 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 	@Override
 	public WireSizingResult calculate(WireSizingInput input) {
 		double requiredAmpacityAmps = input.loadCurrentAmps() * (input.isContinuousLoad() ? CONTINUOUS_LOAD_FACTOR : 1.0);
+		// Splitting the run into N parallel conductors means each one only has to carry 1/N of
+		// the total — this is the value actually sized against below, not requiredAmpacityAmps.
+		double requiredAmpacityPerSetAmps = requiredAmpacityAmps / input.numberOfParallelSets();
 
 		int tempRatingCelsius = insulationTypeTempRating.lookup(input.insulationType(), input.conductorMaterial());
 		double tempCorrectionFactor = ambientTempCorrectionTable.lookup(input.ambientTempCelsius(), tempRatingCelsius);
@@ -57,7 +60,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				continue;
 			}
 			double derated = baseAmpacity * tempCorrectionFactor * adjustmentFactor;
-			if (derated >= requiredAmpacityAmps) {
+			if (derated >= requiredAmpacityPerSetAmps) {
 				recommendedSize = size;
 				baseAmpacityAmps = baseAmpacity;
 				deratedAmpacityAmps = derated;
@@ -66,15 +69,16 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 		}
 
 		if (recommendedSize == null) {
-			throw new CalculationException("No conductor size in the table satisfies the required ampacity under these conditions");
+			throw new CalculationException("No conductor size in the table satisfies the required ampacity under these conditions"
+					+ (input.numberOfParallelSets() > 1 ? " (per conductor, splitting the load across " + input.numberOfParallelSets() + " parallel sets)" : ""));
 		}
 
-		boolean meetsTerminationRating = checkMeetsTerminationRating(input, recommendedSize, adjustmentFactor, requiredAmpacityAmps);
+		boolean meetsTerminationRating = checkMeetsTerminationRating(input, recommendedSize, adjustmentFactor, requiredAmpacityPerSetAmps);
 
 		VoltageDropCheckResult voltageDropCheckResult = input.voltageDropCheck() == null
 				? null
 				: performVoltageDropCheck(input, recommendedSize, sizesAscending, tempRatingCelsius,
-						tempCorrectionFactor, adjustmentFactor, requiredAmpacityAmps);
+						tempCorrectionFactor, adjustmentFactor, requiredAmpacityPerSetAmps);
 
 		return new WireSizingResult(
 				recommendedSize.label(),
@@ -83,6 +87,8 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				adjustmentFactor,
 				deratedAmpacityAmps,
 				requiredAmpacityAmps,
+				input.numberOfParallelSets(),
+				requiredAmpacityPerSetAmps,
 				meetsTerminationRating,
 				voltageDropCheckResult);
 	}
@@ -106,13 +112,13 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 	 * fresh lookup, not a reuse of the insulation temp rating's correction factor, since the
 	 * two temperature ratings can differ.
 	 */
-	private boolean checkMeetsTerminationRating(WireSizingInput input, ConductorSize recommendedSize, double adjustmentFactor, double requiredAmpacityAmps) {
+	private boolean checkMeetsTerminationRating(WireSizingInput input, ConductorSize recommendedSize, double adjustmentFactor, double requiredAmpacityPerSetAmps) {
 		double terminationCorrectionFactor = ambientTempCorrectionTable.lookup(
 				input.ambientTempCelsius(), input.terminationTempRatingCelsius());
 		double terminationBaseAmpacity = ampacityTable.lookup(
 				input.conductorMaterial(), recommendedSize.label(), input.terminationTempRatingCelsius());
 		double terminationDeratedAmpacity = terminationBaseAmpacity * terminationCorrectionFactor * adjustmentFactor;
-		return terminationDeratedAmpacity >= requiredAmpacityAmps;
+		return terminationDeratedAmpacity >= requiredAmpacityPerSetAmps;
 	}
 
 	/**
@@ -131,7 +137,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 			int tempRatingCelsius,
 			double tempCorrectionFactor,
 			double adjustmentFactor,
-			double requiredAmpacityAmps) {
+			double requiredAmpacityPerSetAmps) {
 
 		VoltageDropCheckRequest vdCheck = input.voltageDropCheck();
 		VoltageDropResult checkedResult = runVoltageDropForSize(input, vdCheck, recommendedSize);
@@ -149,7 +155,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				continue;
 			}
 			double derated = baseAmpacity * tempCorrectionFactor * adjustmentFactor;
-			if (derated < requiredAmpacityAmps) {
+			if (derated < requiredAmpacityPerSetAmps) {
 				continue;
 			}
 			VoltageDropResult candidateResult = runVoltageDropForSize(input, vdCheck, candidate);

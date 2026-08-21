@@ -26,7 +26,7 @@ class MotorConductorSizingCalculatorTest {
 		// THREE_PHASE INDUCTION "10" HP @ 230V = 28A published FLC.
 		MotorConductorSizingInput input = new MotorConductorSizingInput(
 				MotorPhaseType.THREE_PHASE, MotorClass.INDUCTION, "10", 230, null,
-				30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		MotorConductorSizingResult result = calculator.calculate(input);
 
@@ -44,7 +44,7 @@ class MotorConductorSizingCalculatorTest {
 		// not baseFlcAmps.
 		MotorConductorSizingInput input = new MotorConductorSizingInput(
 				MotorPhaseType.THREE_PHASE, MotorClass.SYNCHRONOUS, "25", 230, 90,
-				30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		MotorConductorSizingResult result = calculator.calculate(input);
 
@@ -59,7 +59,7 @@ class MotorConductorSizingCalculatorTest {
 				CircuitType.THREE_PHASE_AC, 10.0, 0.9, 230.0, ConduitMaterial.PVC, 1);
 		MotorConductorSizingInput input = new MotorConductorSizingInput(
 				MotorPhaseType.THREE_PHASE, MotorClass.INDUCTION, "10", 230, null,
-				30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, voltageDropCheck);
+				30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, voltageDropCheck);
 
 		MotorConductorSizingResult result = calculator.calculate(input);
 
@@ -72,7 +72,7 @@ class MotorConductorSizingCalculatorTest {
 	void voltageDropCheckNotProvided_wireSizingResultOmitsIt() {
 		MotorConductorSizingInput input = new MotorConductorSizingInput(
 				MotorPhaseType.THREE_PHASE, MotorClass.INDUCTION, "10", 230, null,
-				30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		MotorConductorSizingResult result = calculator.calculate(input);
 
@@ -83,7 +83,7 @@ class MotorConductorSizingCalculatorTest {
 	void invalidMotorInput_threePhaseWithNullMotorClass_throwsCalculationException() {
 		assertThrows(CalculationException.class, () -> new MotorConductorSizingInput(
 				MotorPhaseType.THREE_PHASE, null, "10", 230, null,
-				30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null));
+				30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null));
 	}
 
 }

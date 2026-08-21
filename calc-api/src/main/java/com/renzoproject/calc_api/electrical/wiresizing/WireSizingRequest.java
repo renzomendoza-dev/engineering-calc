@@ -24,6 +24,7 @@ public record WireSizingRequest(
 		boolean isContinuousLoad,
 		double ambientTempCelsius,
 		@Min(1) int numberOfCurrentCarryingConductors,
+		@Min(1) int numberOfParallelSets,
 		@NotBlank String insulationType,
 		@NotBlank String conductorMaterial,
 		@Min(60) int terminationTempRatingCelsius,

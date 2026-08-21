@@ -13,6 +13,8 @@ public record WireSizingResponse(
 		double adjustmentFactor,
 		double deratedAmpacityAmps,
 		double requiredAmpacityAmps,
+		int numberOfParallelSets,
+		double requiredAmpacityPerSetAmps,
 		boolean meetsTerminationRating,
 		VoltageDropCheckResponseDto voltageDropCheckResult) {
 
@@ -27,6 +29,8 @@ public record WireSizingResponse(
 				result.adjustmentFactor(),
 				result.deratedAmpacityAmps(),
 				result.requiredAmpacityAmps(),
+				result.numberOfParallelSets(),
+				result.requiredAmpacityPerSetAmps(),
 				result.meetsTerminationRating(),
 				voltageDropCheckResponseDto);
 	}

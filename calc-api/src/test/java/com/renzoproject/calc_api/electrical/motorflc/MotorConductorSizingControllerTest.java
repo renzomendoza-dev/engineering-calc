@@ -34,7 +34,7 @@ class MotorConductorSizingControllerTest {
 		// THREE_PHASE INDUCTION "10" HP @ 230V = 28A published FLC.
 		MotorConductorSizingRequest request = new MotorConductorSizingRequest(
 				"THREE_PHASE", "INDUCTION", "10", 230, null,
-				30.0, 2, "THHN", "COPPER", 75, null);
+				30.0, 2, 1, "THHN", "COPPER", 75, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ class MotorConductorSizingControllerTest {
 		// -> adjusted flcAmps = 58.3A. requiredAmpacityAmps must be based on the ADJUSTED value.
 		MotorConductorSizingRequest request = new MotorConductorSizingRequest(
 				"THREE_PHASE", "SYNCHRONOUS", "25", 230, 90,
-				30.0, 2, "THHN", "COPPER", 75, null);
+				30.0, 2, 1, "THHN", "COPPER", 75, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ class MotorConductorSizingControllerTest {
 				"THREE_PHASE_AC", 10.0, 0.9, 230.0, "PVC", 1);
 		MotorConductorSizingRequest request = new MotorConductorSizingRequest(
 				"THREE_PHASE", "INDUCTION", "10", 230, null,
-				30.0, 2, "THHN", "COPPER", 75, voltageDropCheck);
+				30.0, 2, 1, "THHN", "COPPER", 75, voltageDropCheck);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +101,7 @@ class MotorConductorSizingControllerTest {
 	void voltageDropCheckNotProvided_wireSizingResultOmitsIt() throws Exception {
 		MotorConductorSizingRequest request = new MotorConductorSizingRequest(
 				"THREE_PHASE", "INDUCTION", "10", 230, null,
-				30.0, 2, "THHN", "COPPER", 75, null);
+				30.0, 2, 1, "THHN", "COPPER", 75, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +119,7 @@ class MotorConductorSizingControllerTest {
 	void invalidMotorInput_threePhaseWithNullMotorClass_returns400() throws Exception {
 		MotorConductorSizingRequest request = new MotorConductorSizingRequest(
 				"THREE_PHASE", null, "10", 230, null,
-				30.0, 2, "THHN", "COPPER", 75, null);
+				30.0, 2, 1, "THHN", "COPPER", 75, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)

@@ -166,4 +166,45 @@ class ConductorReferenceControllerTest {
 				.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	void ampacityTable_returns200WithKnownEntry() throws Exception {
+		// COPPER "2.0" @ 90C = 25A -- the same worked-example value WireSizingCalculatorTest
+		// asserts on directly.
+		mockMvc.perform(get(BASE_URL + "/ampacity-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.conductorMaterial == 'COPPER' && @.sizeLabel == '2.0' && @.tempRatingCelsius == 90)].ampacityAmps")
+						.value(org.hamcrest.Matchers.contains(25.0)));
+	}
+
+	@Test
+	void insulationTypeTempRatingTable_returns200WithThhnAt90C() throws Exception {
+		mockMvc.perform(get(BASE_URL + "/insulation-type-temp-rating-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.insulationType == 'THHN' && @.conductorMaterial == 'COPPER')].tempRatingCelsius")
+						.value(org.hamcrest.Matchers.contains(90)));
+	}
+
+	@Test
+	void ambientTempCorrectionTable_returns200WithThirtyCBaselineOfOne() throws Exception {
+		// 30C is the table's own base temperature -- every column is 1.0 (no correction) at
+		// that row, matching every other test in this codebase that assumes 30C = no
+		// correction.
+		mockMvc.perform(get(BASE_URL + "/ambient-temp-correction-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.ambientTempRangeLabel == '26-30')].factor90C")
+						.value(org.hamcrest.Matchers.contains(1.0)));
+	}
+
+	@Test
+	void conductorCountAdjustmentTable_returns200WithFourToSixAtEightyPercent() throws Exception {
+		mockMvc.perform(get(BASE_URL + "/conductor-count-adjustment-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.conductorCountMin == 4 && @.conductorCountMax == 6)].adjustmentFactorPercent")
+						.value(org.hamcrest.Matchers.contains(80.0)));
+	}
+
 }

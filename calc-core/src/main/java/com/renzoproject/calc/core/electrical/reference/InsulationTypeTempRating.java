@@ -5,7 +5,9 @@ import com.renzoproject.calc.core.exception.CalculationException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,24 +19,25 @@ public class InsulationTypeTempRating {
 
 	private static final String RESOURCE_PATH = "/reference/electrical/insulation-type-temp-rating.json";
 
-	private final Map<String, Integer> entries;
+	private final List<InsulationTypeTempRatingEntry> rows;
+	private final Map<String, Integer> byKey;
 
 	public InsulationTypeTempRating() {
-		this.entries = loadEntries();
+		this.rows = loadEntries();
+		Map<String, Integer> byKey = new HashMap<>();
+		for (InsulationTypeTempRatingEntry row : rows) {
+			byKey.put(key(row.insulationType(), row.conductorMaterial()), row.tempRatingCelsius());
+		}
+		this.byKey = byKey;
 	}
 
-	private static Map<String, Integer> loadEntries() {
+	private static List<InsulationTypeTempRatingEntry> loadEntries() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try (InputStream in = InsulationTypeTempRating.class.getResourceAsStream(RESOURCE_PATH)) {
 			if (in == null) {
 				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
 			}
-			Row[] rows = objectMapper.readValue(in, Row[].class);
-			Map<String, Integer> byKey = new HashMap<>();
-			for (Row row : rows) {
-				byKey.put(key(row.insulationType, row.conductorMaterial), row.tempRatingCelsius);
-			}
-			return byKey;
+			return List.of(objectMapper.readValue(in, InsulationTypeTempRatingEntry[].class));
 		} catch (IOException e) {
 			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
 		}
@@ -49,7 +52,7 @@ public class InsulationTypeTempRating {
 	 *                               for that material (e.g. ZW is copper-only)
 	 */
 	public int lookup(InsulationType type, ConductorMaterial material) {
-		Integer tempRating = entries.get(key(type, material));
+		Integer tempRating = byKey.get(key(type, material));
 		if (tempRating == null) {
 			throw new CalculationException("No published temperature rating for insulation type "
 					+ type.toLabel() + " with conductor material " + material);
@@ -57,7 +60,18 @@ public class InsulationTypeTempRating {
 		return tempRating;
 	}
 
-	private record Row(InsulationType insulationType, ConductorMaterial conductorMaterial, int tempRatingCelsius) {
+	/**
+	 * All raw rows, as published, ascending by temperature rating then insulation type.
+	 * Intended for displaying the table itself (e.g. a frontend reference table), as opposed
+	 * to {@link #lookup} which resolves a single combination.
+	 */
+	public List<InsulationTypeTempRatingEntry> allEntries() {
+		return rows.stream()
+				.sorted(Comparator
+						.comparingInt(InsulationTypeTempRatingEntry::tempRatingCelsius)
+						.thenComparing(entry -> entry.insulationType().toLabel())
+						.thenComparing(entry -> entry.conductorMaterial().name()))
+				.toList();
 	}
 
 }

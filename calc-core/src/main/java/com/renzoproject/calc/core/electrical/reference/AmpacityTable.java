@@ -75,4 +75,18 @@ public class AmpacityTable {
 				.toList();
 	}
 
+	/**
+	 * All raw rows, as published, ascending by material then cross-sectional area then
+	 * temperature rating. Intended for displaying the table itself (e.g. a frontend reference
+	 * table), as opposed to {@link #lookup} which resolves a single combination.
+	 */
+	public List<AmpacityEntry> allEntries() {
+		return entries.values().stream()
+				.sorted(Comparator
+						.comparing((AmpacityEntry entry) -> entry.conductorMaterial().name())
+						.thenComparingDouble(entry -> Double.parseDouble(entry.sizeLabel()))
+						.thenComparingInt(AmpacityEntry::tempRatingCelsius))
+				.toList();
+	}
+
 }

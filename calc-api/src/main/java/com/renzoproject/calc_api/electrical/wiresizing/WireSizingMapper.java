@@ -40,6 +40,7 @@ public final class WireSizingMapper {
 				request.isContinuousLoad(),
 				request.ambientTempCelsius(),
 				request.numberOfCurrentCarryingConductors(),
+				request.numberOfParallelSets(),
 				insulationType,
 				conductorMaterial,
 				request.terminationTempRatingCelsius(),

@@ -10,12 +10,14 @@ import com.renzoproject.calc.core.electrical.voltagedrop.CircuitType;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropCalculator;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropInput;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropResult;
+import com.renzoproject.calc.core.exception.CalculationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WireSizingCalculatorTest {
@@ -29,7 +31,7 @@ class WireSizingCalculatorTest {
 		// THHN copper -> 90C column. 30C ambient, 90C factor = 1.0 (26-30 row). count=2 -> no
 		// adjustment. COPPER "2.0" @ 90C = 25A >= 15A required -> recommended immediately.
 		WireSizingInput input = new WireSizingInput(
-				15.0, false, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		WireSizingResult result = calculator.calculate(input);
 
@@ -45,7 +47,7 @@ class WireSizingCalculatorTest {
 	@Test
 	void continuousLoad_appliesOneTwentyFivePercentFactor() {
 		WireSizingInput input = new WireSizingInput(
-				15.0, true, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				15.0, true, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		WireSizingResult result = calculator.calculate(input);
 
@@ -58,7 +60,7 @@ class WireSizingCalculatorTest {
 	void moreThanThreeConductors_adjustmentFactorPushesToLargerSize() {
 		// Baseline: 1 current-carrying conductor, no adjustment -> "2.0" (25A) covers 20A.
 		WireSizingInput baselineInput = new WireSizingInput(
-				20.0, false, 30.0, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				20.0, false, 30.0, 1, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 		WireSizingResult baseline = calculator.calculate(baselineInput);
 		assertEquals("2.0", baseline.recommendedSizeLabel());
 		assertEquals(1.0, baseline.adjustmentFactor(), DELTA);
@@ -66,7 +68,7 @@ class WireSizingCalculatorTest {
 		// 8 current-carrying conductors -> 70% adjustment. "2.0" derates to 25*0.7=17.5 < 20A,
 		// so it must step up to "3.5" (30A @ 90C, derates to 21A >= 20A).
 		WireSizingInput input = new WireSizingInput(
-				20.0, false, 30.0, 8, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				20.0, false, 30.0, 8, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 		WireSizingResult result = calculator.calculate(input);
 
 		assertEquals(0.70, result.adjustmentFactor(), DELTA);
@@ -79,14 +81,14 @@ class WireSizingCalculatorTest {
 	void elevatedAmbientTemp_correctionFactorPushesToLargerSize() {
 		// Baseline at 30C ambient (factor 1.0): "2.0" (25A) covers 20A.
 		WireSizingInput baselineInput = new WireSizingInput(
-				20.0, false, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				20.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 		WireSizingResult baseline = calculator.calculate(baselineInput);
 		assertEquals("2.0", baseline.recommendedSizeLabel());
 
 		// At 55C ambient, 90C factor = 0.76 (51-55 row). "2.0" derates to 25*0.76=19 < 20A, so
 		// it must step up to "3.5" (30A @ 90C, derates to 30*0.76=22.8 >= 20A).
 		WireSizingInput input = new WireSizingInput(
-				20.0, false, 55.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				20.0, false, 55.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 		WireSizingResult result = calculator.calculate(input);
 
 		assertEquals(0.76, result.tempCorrectionFactor(), DELTA);
@@ -102,7 +104,7 @@ class WireSizingCalculatorTest {
 		// which — under the SAME derating — cannot carry the 20A load: a common real-world
 		// mismatch when terminals/lugs are only rated for 60C.
 		WireSizingInput input = new WireSizingInput(
-				20.0, false, 30.0, 1, InsulationType.THHN, ConductorMaterial.COPPER, 60, null);
+				20.0, false, 30.0, 1, 1, InsulationType.THHN, ConductorMaterial.COPPER, 60, null);
 
 		WireSizingResult result = calculator.calculate(input);
 
@@ -113,7 +115,7 @@ class WireSizingCalculatorTest {
 	@Test
 	void voltageDropCheck_ampacityBasedSizeAlsoPasses_upsizedRecommendationNull() throws Exception {
 		WireSizingInput input = new WireSizingInput(
-				15.0, false, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75,
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75,
 				new VoltageDropCheckRequest(CircuitType.SINGLE_PHASE_AC, 5.0, 0.9, 230.0, ConduitMaterial.PVC, 1));
 
 		WireSizingResult result = calculator.calculate(input);
@@ -134,7 +136,7 @@ class WireSizingCalculatorTest {
 		// Same ampacity scenario as the passing case, but a 200m run pushes voltage drop at
 		// "2.0" far past the 3% limit, forcing the calculator to walk up to a larger size.
 		WireSizingInput input = new WireSizingInput(
-				15.0, false, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75,
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75,
 				new VoltageDropCheckRequest(CircuitType.SINGLE_PHASE_AC, 200.0, 0.9, 230.0, ConduitMaterial.PVC, 1));
 
 		WireSizingResult result = calculator.calculate(input);
@@ -165,7 +167,7 @@ class WireSizingCalculatorTest {
 	@Test
 	void noVoltageDropCheck_resultFieldIsNull() {
 		WireSizingInput input = new WireSizingInput(
-				15.0, false, 30.0, 2, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
 
 		WireSizingResult result = calculator.calculate(input);
 
@@ -173,6 +175,31 @@ class WireSizingCalculatorTest {
 		// ConductorPropertiesResolver/VoltageDropCalculator is guarded behind that same null
 		// check, so a null result here is structural proof neither was invoked.
 		assertNull(result.voltageDropCheckResult());
+	}
+
+	@Test
+	void parallelSets_singleConductorTooLargeForTable_splittingIntoTwoSucceeds() {
+		// 1000A total load, 90C COPPER column, 30C ambient (factor 1.0), count=2 (no
+		// adjustment). The largest published single conductor is 500 COPPER @ 90C = 595A --
+		// nowhere near 1000A, so a single conductor (numberOfParallelSets=1) must throw.
+		WireSizingInput singleConductorInput = new WireSizingInput(
+				1000.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 90, null);
+		assertThrows(CalculationException.class, () -> calculator.calculate(singleConductorInput));
+
+		// Splitting across 2 parallel sets means each conductor only needs to satisfy 500A
+		// (1000/2), not 1000A. Ascending COPPER 90C ampacities near that point: "325"=490A (too
+		// small), "375"=530A (first size >= 500A) -- so "375" is recommended, not "500".
+		WireSizingInput twoSetsInput = new WireSizingInput(
+				1000.0, false, 30.0, 2, 2, InsulationType.THHN, ConductorMaterial.COPPER, 90, null);
+		WireSizingResult result = calculator.calculate(twoSetsInput);
+
+		assertEquals("375", result.recommendedSizeLabel());
+		assertEquals(530.0, result.baseAmpacityAmps(), DELTA);
+		assertEquals(530.0, result.deratedAmpacityAmps(), DELTA);
+		assertEquals(2, result.numberOfParallelSets());
+		assertEquals(500.0, result.requiredAmpacityPerSetAmps(), DELTA);
+		assertEquals(1000.0, result.requiredAmpacityAmps(), DELTA);
+		assertTrue(result.meetsTerminationRating());
 	}
 
 	/**

@@ -27,6 +27,10 @@ import com.renzoproject.calc.core.exception.CalculationException;
  *                                            through
  * @param numberOfCurrentCarryingConductors  current-carrying conductors sharing the same
  *                                            raceway/cable; must be at least 1
+ * @param numberOfParallelSets               how many identical conductors run in parallel to
+ *                                            carry this motor's current; must be at least 1 —
+ *                                            see {@code WireSizingInput}'s Javadoc for the full
+ *                                            explanation
  * @param insulationType                     conductor insulation type
  * @param conductorMaterial                  conductor material
  * @param terminationTempRatingCelsius       must be 60, 75, or 90
@@ -42,6 +46,7 @@ public record MotorConductorSizingInput(
 		Integer synchronousPowerFactorPercent,
 		double ambientTempCelsius,
 		int numberOfCurrentCarryingConductors,
+		int numberOfParallelSets,
 		InsulationType insulationType,
 		ConductorMaterial conductorMaterial,
 		int terminationTempRatingCelsius,
@@ -58,10 +63,13 @@ public record MotorConductorSizingInput(
 		// positive), but that field doesn't exist yet at this stage — it's derived later from
 		// the FLC result (see MotorConductorSizingCalculator). Building a placeholder
 		// WireSizingInput here just to borrow its validation would mean faking a
-		// loadCurrentAmps value, which is worse than duplicating these two simple checks
-		// (neither depends on loadCurrentAmps) with matching messages.
+		// loadCurrentAmps value, which is worse than duplicating these three simple checks
+		// (none depend on loadCurrentAmps) with matching messages.
 		if (numberOfCurrentCarryingConductors < 1) {
 			throw new CalculationException("numberOfCurrentCarryingConductors must be at least 1");
+		}
+		if (numberOfParallelSets < 1) {
+			throw new CalculationException("numberOfParallelSets must be at least 1");
 		}
 		if (terminationTempRatingCelsius != 60 && terminationTempRatingCelsius != 75 && terminationTempRatingCelsius != 90) {
 			throw new CalculationException("terminationTempRatingCelsius must be 60, 75, or 90");

@@ -48,6 +48,7 @@ public class MotorConductorSizingCalculator implements Calculator<MotorConductor
 				true,
 				input.ambientTempCelsius(),
 				input.numberOfCurrentCarryingConductors(),
+				input.numberOfParallelSets(),
 				input.insulationType(),
 				input.conductorMaterial(),
 				input.terminationTempRatingCelsius(),

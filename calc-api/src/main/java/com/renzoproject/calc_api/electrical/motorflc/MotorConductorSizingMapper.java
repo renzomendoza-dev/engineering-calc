@@ -49,6 +49,7 @@ public final class MotorConductorSizingMapper {
 				request.synchronousPowerFactorPercent(),
 				request.ambientTempCelsius(),
 				request.numberOfCurrentCarryingConductors(),
+				request.numberOfParallelSets(),
 				insulationType,
 				conductorMaterial,
 				request.terminationTempRatingCelsius(),

@@ -112,4 +112,24 @@ public class ConductorReferenceController {
 		return service.listLockedRotorPolyphaseTable();
 	}
 
+	@GetMapping("/ampacity-table")
+	public List<AmpacityEntryDto> ampacityTable() {
+		return service.listAmpacityTable();
+	}
+
+	@GetMapping("/insulation-type-temp-rating-table")
+	public List<InsulationTypeTempRatingEntryDto> insulationTypeTempRatingTable() {
+		return service.listInsulationTypeTempRatingTable();
+	}
+
+	@GetMapping("/ambient-temp-correction-table")
+	public List<AmbientTempCorrectionEntryDto> ambientTempCorrectionTable() {
+		return service.listAmbientTempCorrectionTable();
+	}
+
+	@GetMapping("/conductor-count-adjustment-table")
+	public List<ConductorCountAdjustmentEntryDto> conductorCountAdjustmentTable() {
+		return service.listConductorCountAdjustmentTable();
+	}
+
 }

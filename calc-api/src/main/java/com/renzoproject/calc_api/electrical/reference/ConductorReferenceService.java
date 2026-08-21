@@ -1,5 +1,8 @@
 package com.renzoproject.calc_api.electrical.reference;
 
+import com.renzoproject.calc.core.electrical.reference.AmbientTempCorrectionTable;
+import com.renzoproject.calc.core.electrical.reference.AmpacityTable;
+import com.renzoproject.calc.core.electrical.reference.ConductorCountAdjustmentTable;
 import com.renzoproject.calc.core.electrical.reference.ConductorDimensionTable;
 import com.renzoproject.calc.core.electrical.reference.ConductorMaterial;
 import com.renzoproject.calc.core.electrical.reference.ConductorPropertiesResolver;
@@ -7,6 +10,7 @@ import com.renzoproject.calc.core.electrical.reference.ConduitDimensionTable;
 import com.renzoproject.calc.core.electrical.reference.ConduitMaterial;
 import com.renzoproject.calc.core.electrical.reference.ConduitType;
 import com.renzoproject.calc.core.electrical.reference.InsulationType;
+import com.renzoproject.calc.core.electrical.reference.InsulationTypeTempRating;
 import com.renzoproject.calc.core.electrical.reference.LockedRotorPolyphaseTable;
 import com.renzoproject.calc.core.electrical.reference.LockedRotorSinglePhaseTable;
 import com.renzoproject.calc.core.electrical.reference.MotorClass;
@@ -34,6 +38,10 @@ public class ConductorReferenceService {
 	private final MotorFlcTable motorFlcTable = new MotorFlcTable();
 	private final LockedRotorSinglePhaseTable lockedRotorSinglePhaseTable = new LockedRotorSinglePhaseTable();
 	private final LockedRotorPolyphaseTable lockedRotorPolyphaseTable = new LockedRotorPolyphaseTable();
+	private final AmpacityTable ampacityTable = new AmpacityTable();
+	private final InsulationTypeTempRating insulationTypeTempRating = new InsulationTypeTempRating();
+	private final AmbientTempCorrectionTable ambientTempCorrectionTable = new AmbientTempCorrectionTable();
+	private final ConductorCountAdjustmentTable conductorCountAdjustmentTable = new ConductorCountAdjustmentTable();
 
 	public List<ConductorSizeDto> listConductorSizes() {
 		return resolver.allSizes().stream()
@@ -180,6 +188,44 @@ public class ConductorReferenceService {
 	public List<LockedRotorEntryDto> listLockedRotorPolyphaseTable() {
 		return lockedRotorPolyphaseTable.allEntries().stream()
 				.map(LockedRotorEntryDto::from)
+				.toList();
+	}
+
+	/** Raw rows of PEC Table 3.10.2.6(B)(16) (base ampacities), for display purposes. */
+	public List<AmpacityEntryDto> listAmpacityTable() {
+		return ampacityTable.allEntries().stream()
+				.map(AmpacityEntryDto::from)
+				.toList();
+	}
+
+	/**
+	 * Raw rows of the insulation-type-to-temperature-rating mapping (which
+	 * {@link #listAmpacityTable} column each insulation type + material uses), for display
+	 * purposes.
+	 */
+	public List<InsulationTypeTempRatingEntryDto> listInsulationTypeTempRatingTable() {
+		return insulationTypeTempRating.allEntries().stream()
+				.map(InsulationTypeTempRatingEntryDto::from)
+				.toList();
+	}
+
+	/**
+	 * Raw rows of PEC Table 3.10.2.6(B)(2)(a) (ambient temperature correction factors), for
+	 * display purposes.
+	 */
+	public List<AmbientTempCorrectionEntryDto> listAmbientTempCorrectionTable() {
+		return ambientTempCorrectionTable.allEntries().stream()
+				.map(AmbientTempCorrectionEntryDto::from)
+				.toList();
+	}
+
+	/**
+	 * Raw rows of PEC Table 3.10.2.6(B)(3)(a) (ampacity adjustment for more than three
+	 * current-carrying conductors), for display purposes.
+	 */
+	public List<ConductorCountAdjustmentEntryDto> listConductorCountAdjustmentTable() {
+		return conductorCountAdjustmentTable.allEntries().stream()
+				.map(ConductorCountAdjustmentEntryDto::from)
 				.toList();
 	}
 

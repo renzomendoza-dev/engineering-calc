@@ -5,6 +5,7 @@ import com.renzoproject.calc.core.exception.CalculationException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -15,19 +16,19 @@ public class ConductorCountAdjustmentTable {
 
 	private static final String RESOURCE_PATH = "/reference/electrical/conductor-count-adjustment.json";
 
-	private final List<Row> rows;
+	private final List<ConductorCountAdjustmentEntry> rows;
 
 	public ConductorCountAdjustmentTable() {
 		this.rows = loadEntries();
 	}
 
-	private static List<Row> loadEntries() {
+	private static List<ConductorCountAdjustmentEntry> loadEntries() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try (InputStream in = ConductorCountAdjustmentTable.class.getResourceAsStream(RESOURCE_PATH)) {
 			if (in == null) {
 				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
 			}
-			return List.of(objectMapper.readValue(in, Row[].class));
+			return List.of(objectMapper.readValue(in, ConductorCountAdjustmentEntry[].class));
 		} catch (IOException e) {
 			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
 		}
@@ -47,20 +48,24 @@ public class ConductorCountAdjustmentTable {
 		if (conductorCount <= 3) {
 			return 1.0;
 		}
-		for (Row row : rows) {
-			boolean withinMax = row.conductorCountMax == null || conductorCount <= row.conductorCountMax;
-			if (conductorCount >= row.conductorCountMin && withinMax) {
-				return row.adjustmentFactorPercent / 100.0;
+		for (ConductorCountAdjustmentEntry row : rows) {
+			boolean withinMax = row.conductorCountMax() == null || conductorCount <= row.conductorCountMax();
+			if (conductorCount >= row.conductorCountMin() && withinMax) {
+				return row.adjustmentFactorPercent() / 100.0;
 			}
 		}
 		throw new CalculationException("No conductor count adjustment factor found for count " + conductorCount);
 	}
 
-	private record Row(
-			String conductorCountRangeLabel,
-			int conductorCountMin,
-			Integer conductorCountMax,
-			double adjustmentFactorPercent) {
+	/**
+	 * All raw rows, as published, ascending by conductor count. Intended for displaying the
+	 * table itself (e.g. a frontend reference table), as opposed to {@link #lookup} which
+	 * resolves a single count.
+	 */
+	public List<ConductorCountAdjustmentEntry> allEntries() {
+		return rows.stream()
+				.sorted(Comparator.comparingInt(ConductorCountAdjustmentEntry::conductorCountMin))
+				.toList();
 	}
 
 }
