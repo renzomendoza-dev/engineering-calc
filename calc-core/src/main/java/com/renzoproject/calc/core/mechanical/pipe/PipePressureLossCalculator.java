@@ -2,6 +2,7 @@ package com.renzoproject.calc.core.mechanical.pipe;
 
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.mechanical.FrictionFactorCalculator;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -12,6 +13,12 @@ import javax.measure.quantity.Length;
  * Darcy-Weisbach straight-pipe friction loss, generalized across fluids and both
  * Colebrook-White/Swamee-Jain friction-factor correlations. SI units throughout (metres, m/s,
  * Pa, kg/m3) — unlike {@code mechanical.firepump}, which deliberately works in psi/GPM.
+ *
+ * <p>The turbulent/transitional friction factor correlations themselves live in
+ * {@link FrictionFactorCalculator} — extracted so {@code mechanical.duct}'s
+ * {@code DuctSizingCalculator} can reuse the identical math; this class still owns resolving the
+ * roughness/diameter into a relative roughness and branching on flow regime (laminar's
+ * {@code 64/Re} was never part of the extracted method).
  *
  * <p>Minor losses (fittings, valves, elbows) are explicitly out of scope — straight-pipe
  * friction only.
@@ -31,8 +38,6 @@ public class PipePressureLossCalculator implements Calculator<PipePressureLossIn
 	private static final double GRAVITY_M_S2 = 9.80665;
 	private static final double LAMINAR_UPPER_RE = 2300.0;
 	private static final double TURBULENT_LOWER_RE = 4000.0;
-	private static final double CONVERGENCE_RELATIVE_TOLERANCE = 1e-6;
-	private static final int MAX_COLEBROOK_ITERATIONS = 50;
 
 	private final PipeDimensionResolver dimensionResolver;
 	private final FluidPropertiesResolver fluidPropertiesResolver;
@@ -94,20 +99,11 @@ public class PipePressureLossCalculator implements Calculator<PipePressureLossIn
 				Quantities.getQuantity(pressureLossPa, Units.PASCAL));
 	}
 
-	/**
-	 * Swamee-Jain is always computed first (it's explicit, and doubles as the Colebrook-White
-	 * seed value when that method is requested), then refined via Colebrook-White if that's
-	 * what {@code input.method()} asked for.
-	 */
 	private double turbulentFrictionFactor(PipePressureLossInput input, double diameterM, double reynoldsNumber) {
 		String material = requireMaterialForRoughness(input.diameterSpec());
 		double roughnessM = roughnessResolver.resolveAbsoluteRoughnessMm(material) / 1000.0;
 		double relativeRoughness = roughnessM / diameterM;
-
-		double swameeJain = swameeJainFrictionFactor(relativeRoughness, reynoldsNumber);
-		return input.method() == FrictionFactorMethod.SWAMEE_JAIN
-				? swameeJain
-				: colebrookWhiteFrictionFactor(relativeRoughness, reynoldsNumber, swameeJain);
+		return FrictionFactorCalculator.frictionFactor(reynoldsNumber, relativeRoughness, input.method());
 	}
 
 	private static String requireMaterialForRoughness(DiameterSpec diameterSpec) {
@@ -118,31 +114,6 @@ public class PipePressureLossCalculator implements Calculator<PipePressureLossIn
 				+ "TURBULENT/TRANSITIONAL flow -- the friction factor correlation needs the pipe material's "
 				+ "absolute roughness, and RawDiameter carries no material. Use a NominalSize instead, or "
 				+ "confirm the flow is actually LAMINAR (which doesn't need roughness at all).");
-	}
-
-	private static double swameeJainFrictionFactor(double relativeRoughness, double reynoldsNumber) {
-		double term = relativeRoughness / 3.7 + 5.74 / Math.pow(reynoldsNumber, 0.9);
-		double log10Term = Math.log10(term);
-		return 0.25 / (log10Term * log10Term);
-	}
-
-	/**
-	 * Standard fixed-point iteration on {@code x = 1/sqrt(f)}:
-	 * {@code x_next = -2*log10(relativeRoughness/3.7 + 2.51*x/Re)} — converges reliably for this
-	 * equation's shape (the textbook approach), unlike iterating on {@code f} directly.
-	 */
-	private static double colebrookWhiteFrictionFactor(double relativeRoughness, double reynoldsNumber, double initialGuess) {
-		double x = 1.0 / Math.sqrt(initialGuess);
-		for (int iteration = 0; iteration < MAX_COLEBROOK_ITERATIONS; iteration++) {
-			double xNext = -2.0 * Math.log10(relativeRoughness / 3.7 + 2.51 * x / reynoldsNumber);
-			double relativeChange = Math.abs(xNext - x) / Math.abs(x);
-			x = xNext;
-			if (relativeChange < CONVERGENCE_RELATIVE_TOLERANCE) {
-				return 1.0 / (x * x);
-			}
-		}
-		throw new CalculationException("Colebrook-White iteration did not converge within " + MAX_COLEBROOK_ITERATIONS
-				+ " iterations (relative tolerance " + CONVERGENCE_RELATIVE_TOLERANCE + ")");
 	}
 
 }

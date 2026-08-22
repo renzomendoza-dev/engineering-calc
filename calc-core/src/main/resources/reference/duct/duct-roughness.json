@@ -1,0 +1,20 @@
+{
+  "standard": "ASHRAE Fundamentals 2017 (SI Edition), Chapter 21 Duct Design, Table 1 \"Duct Roughness Factors\"",
+  "confidence": "verified",
+  "source": "Transcribed directly from Table 1, p.21.7. Where Table 1 gives a range without a single stated design value, a representative point value was chosen (flagged per-entry below) - the range itself is directly from ASHRAE, only the point-selection within range required engineering judgment. Two entries cross-validated exactly against this same chapter's worked Example 6 (p.21.6): galvanized steel spiral duct (0.12 mm) and flexible duct fully extended (0.9 mm).",
+  "unit": "mm",
+  "materials": [
+    { "material": "DRAWN_TUBING", "label": "Drawn tubing", "absoluteRoughnessMm": 0.00046, "sourceNote": "Single value stated directly (Madison and Elliot 1946)" },
+    { "material": "PVC_DUCT", "label": "PVC plastic duct", "absoluteRoughnessMm": 0.046, "sourceNote": "Table 1 category value 'Medium smooth' (range 0.009-0.046, Swim 1982)" },
+    { "material": "COMMERCIAL_STEEL_OR_WROUGHT_IRON", "label": "Commercial steel or wrought iron", "absoluteRoughnessMm": 0.046, "sourceNote": "Single value stated directly (Moody 1944)" },
+    { "material": "ALUMINUM", "label": "Aluminum, round, longitudinal seams", "absoluteRoughnessMm": 0.049, "sourceNote": "Midpoint of stated range 0.037-0.061 mm (Hutchinson 1953); no single design value given in Table 1" },
+    { "material": "GALVANIZED_STEEL_LONGITUDINAL_SEAM", "label": "Galvanized steel, round, longitudinal seams (general duct)", "absoluteRoughnessMm": 0.09, "sourceNote": "Table 1 category value 'Average' (range 0.049-0.098 mm, Griggs et al. 1987)" },
+    { "material": "GALVANIZED_STEEL_SPIRAL", "label": "Galvanized steel, spiral seam", "absoluteRoughnessMm": 0.12, "sourceNote": "Upper end of stated range 0.061-0.12 mm (Jones 1979); cross-validated exactly against this chapter's Example 6 worked calculation" },
+    { "material": "FLEXIBLE_DUCT_STRETCHED", "label": "Flexible duct, fully extended", "absoluteRoughnessMm": 0.9, "sourceNote": "Table 1 category value 'Medium rough' (range 0.09-0.9 mm, Abushakra et al. 2004; Culp 2011); cross-validated exactly against this chapter's Example 6 worked calculation" },
+    { "material": "FLEXIBLE_DUCT_METALLIC_CORRUGATED", "label": "Flexible duct, metallic corrugated, fully extended", "absoluteRoughnessMm": 1.65, "sourceNote": "Midpoint of stated range 1.2-2.1 mm; no single design value given in Table 1" },
+    { "material": "FIBERGLASS_DUCT_RIGID", "label": "Fibrous glass duct, rigid", "absoluteRoughnessMm": 0.9, "sourceNote": "ASHRAE's own footnote classifies this 'tentatively medium rough' with no numeric data available - 0.9 mm assumed to match the 'Medium rough' category used elsewhere in the table. Treat with extra caution relative to other entries in this file." },
+    { "material": "FIBERGLASS_DUCT_LINER_FACED", "label": "Fibrous glass duct liner, air side with facing material", "absoluteRoughnessMm": 1.52, "sourceNote": "Single value stated directly (Swim 1978)" },
+    { "material": "FIBERGLASS_DUCT_LINER_SPRAY_COATED", "label": "Fibrous glass duct liner, air side spray coated", "absoluteRoughnessMm": 4.57, "sourceNote": "Table 1 category value 'Rough' (Swim 1978)" },
+    { "material": "CONCRETE_DUCT", "label": "Concrete / masonry duct or shaft", "absoluteRoughnessMm": 1.0, "sourceNote": "No single design value given in Table 1 (stated range 0.30-3.0 mm is unusually wide, Moody 1944); 1.0 mm is an engineering-judgment representative pick within this range, not an ASHRAE-stated recommendation - consider exposing the full range in the UI rather than defaulting silently to this value" }
+  ]
+}

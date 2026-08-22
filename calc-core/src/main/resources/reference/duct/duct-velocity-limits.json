@@ -1,0 +1,18 @@
+{
+  "standard": "ASHRAE Fundamentals 2017 (SI Edition), Chapter 21 Duct Design, Table 12 \"Recommended Maximum Airflow Velocities to Achieve Specified Acoustic Design Criteria\"",
+  "confidence": "verified",
+  "source": "Transcribed directly from Table 12, p.21.22. Adapted by ASHRAE from Table 9 in Chapter 48 of the 2015 ASHRAE Handbook-HVAC Applications and Schaffer (2011).",
+  "unit": "m/s",
+  "note": "Purpose is noise control, not code compliance - these are acoustic design targets (NC/RC = Noise Criteria / Room Criteria rating), not structural or energy-code velocity limits. A design exceeding these values is not necessarily non-compliant with any code, but risks objectionable duct noise in the adjoining occupied space.",
+  "limits": [
+    { "ductLocation": "IN_SHAFT_OR_ABOVE_SOLID_DRYWALL_CEILING", "label": "In shaft or above solid drywall ceiling", "ncRcRating": 45, "maxVelocityRectangular": 17.8, "maxVelocityRound": 25.4 },
+    { "ductLocation": "IN_SHAFT_OR_ABOVE_SOLID_DRYWALL_CEILING", "label": "In shaft or above solid drywall ceiling", "ncRcRating": 35, "maxVelocityRectangular": 12.7, "maxVelocityRound": 17.8 },
+    { "ductLocation": "IN_SHAFT_OR_ABOVE_SOLID_DRYWALL_CEILING", "label": "In shaft or above solid drywall ceiling", "ncRcRating": 25, "maxVelocityRectangular": 7.6, "maxVelocityRound": 12.7 },
+    { "ductLocation": "ABOVE_SUSPENDED_ACOUSTICAL_CEILING", "label": "Above suspended acoustical ceiling", "ncRcRating": 45, "maxVelocityRectangular": 12.7, "maxVelocityRound": 22.9 },
+    { "ductLocation": "ABOVE_SUSPENDED_ACOUSTICAL_CEILING", "label": "Above suspended acoustical ceiling", "ncRcRating": 35, "maxVelocityRectangular": 8.9, "maxVelocityRound": 15.2 },
+    { "ductLocation": "ABOVE_SUSPENDED_ACOUSTICAL_CEILING", "label": "Above suspended acoustical ceiling", "ncRcRating": 25, "maxVelocityRectangular": 5.1, "maxVelocityRound": 10.2 },
+    { "ductLocation": "WITHIN_OCCUPIED_SPACE", "label": "Duct within occupied space", "ncRcRating": 45, "maxVelocityRectangular": 10.2, "maxVelocityRound": 19.8 },
+    { "ductLocation": "WITHIN_OCCUPIED_SPACE", "label": "Duct within occupied space", "ncRcRating": 35, "maxVelocityRectangular": 7.4, "maxVelocityRound": 13.2 },
+    { "ductLocation": "WITHIN_OCCUPIED_SPACE", "label": "Duct within occupied space", "ncRcRating": 25, "maxVelocityRectangular": 4.8, "maxVelocityRound": 8.6 }
+  ]
+}
