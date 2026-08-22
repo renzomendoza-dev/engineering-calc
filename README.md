@@ -28,7 +28,7 @@ calc-core/
   com.renzoproject.calc.core/
     Calculator.java              interface Calculator<Input, Result> { Result calculate(Input input); }
     electrical/                  voltage drop, conduit fill, wire sizing, motor FLC/locked-rotor/conductor sizing
-    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite
+    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire)
     acoustics/                   distance attenuation, fire alarm audibility (NFPA 72)
     smokecontrol/                smoke production (plume), t-squared growth variant, natural vent area (NFPA 92)
     common/                      shared reference data (air properties) reusable across domains
@@ -64,7 +64,7 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/motor-flc` | Motor full-load current + minimum conductor ampacity (PEC Art. 4.30) |
 | POST | `/locked-rotor` | Locked-rotor current for disconnect/controller sizing |
 | POST | `/motor-conductor-sizing` | One-step branch-circuit sizing from HP/voltage (chains FLC → wire sizing) |
-| GET | `/reference/*` | 15 lookup endpoints backing the above (conductor sizes/materials, ampacity/impedance tables, insulation types, motor HP/voltage tables, ...) |
+| GET | `/reference/*` | 22 lookup endpoints backing the above (conductor sizes/materials, ampacity/impedance/adjustment tables, insulation types, motor HP/voltage tables, ...) |
 
 ### Mechanical — `/api/mechanical`
 
@@ -78,7 +78,12 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/firepump/capacity` | Standard fire pump capacity rounding |
 | POST | `/firepump/curve-validation` | NFPA 20 pump curve shape validation (rated/churn/overload) |
 | POST | `/firepump/power` | Fire pump brake horsepower + recommended motor size |
+| POST | `/storage/domestic` | Domestic water storage volume from occupant count (LPCD) or fixture units (WSFU) |
+| POST | `/storage/fire` | Fire water storage volume from rated pump flow + NFPA 13 hazard classification duration |
 | GET | `/reference/pipe-materials` | Supported pipe materials |
+| GET | `/reference/lpcd-consumption-table` | Per-capita consumption by occupancy type (domestic storage) |
+| GET | `/reference/wsfu-demand-table` | WSFU → peak demand, NSPC 2009 Table B.5.4 (domestic storage) |
+| GET | `/reference/fire-water-duration-table` | Hazard classification → duration range, NFPA 13 Table 11.2.3.1.2 (fire storage) |
 
 ### Acoustics — `/api/acoustics`
 

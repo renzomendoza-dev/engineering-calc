@@ -1,0 +1,22 @@
+{
+  "source": "Generic international rule-of-thumb per-capita consumption figures, commonly cited across plumbing/water-supply design references. NOT sourced from a specific Philippine code or standard - no PH-specific per-capita consumption table was located during this project's reference-gathering (NSPC Chapters 10 and Appendix B were checked and do not contain this data; NSPC assumes continuous municipal supply and has no storage-by-population methodology).",
+  "confidence": "placeholder",
+  "verifyAgainst": [
+    "National Building Code of the Philippines (PD 1096) IRR",
+    "LWUA (Local Water Utilities Administration) design standards",
+    "DPWH design guidelines",
+    "Revised National Plumbing Code of the Philippines, if a per-capita consumption section exists elsewhere in the document beyond what has been reviewed so far"
+  ],
+  "unit": "LPCD (liters per capita per day)",
+  "occupancyTypes": [
+    { "type": "RESIDENTIAL_DWELLING", "label": "Residential (dwelling unit)", "lpcd": 150 },
+    { "type": "RESIDENTIAL_LOW_INCOME", "label": "Residential (low-income / minimal fixture provision)", "lpcd": 100 },
+    { "type": "OFFICE_COMMERCIAL", "label": "Office / commercial (employee use)", "lpcd": 65 },
+    { "type": "SCHOOL_DAY", "label": "School (day students, no boarding/showering)", "lpcd": 50 },
+    { "type": "SCHOOL_BOARDING", "label": "School (boarding/dormitory)", "lpcd": 150 },
+    { "type": "HOSPITAL", "label": "Hospital (per bed)", "lpcd": 300 },
+    { "type": "HOTEL", "label": "Hotel (per guest)", "lpcd": 250 },
+    { "type": "INDUSTRIAL_FACTORY", "label": "Industrial / factory (per worker, no process water)", "lpcd": 70 },
+    { "type": "RESTAURANT_ASSEMBLY", "label": "Restaurant / assembly (per person, transient use)", "lpcd": 25 }
+  ]
+}
