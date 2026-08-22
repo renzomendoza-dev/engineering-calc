@@ -28,7 +28,7 @@ calc-core/
   com.renzoproject.calc.core/
     Calculator.java              interface Calculator<Input, Result> { Result calculate(Input input); }
     electrical/                  voltage drop, conduit fill, wire sizing, motor FLC/locked-rotor/conductor sizing
-    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire), duct sizing
+    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire), duct sizing, expansion/pressure tank sizing
     acoustics/                   distance attenuation, fire alarm audibility (NFPA 72)
     smokecontrol/                smoke production (plume), t-squared growth variant, natural vent area (NFPA 92)
     common/                      shared reference data (air properties) reusable across domains
@@ -81,6 +81,8 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/storage/domestic` | Domestic water storage volume from occupant count (LPCD) or fixture units (WSFU) |
 | POST | `/storage/fire` | Fire water storage volume from rated pump flow + NFPA 13 hazard classification duration |
 | POST | `/duct/sizing` | Round/rectangular duct sizing by Equal Friction or Velocity method (ASHRAE Ch.21) |
+| POST | `/tank/expansion` | Thermal expansion tank sizing for a domestic water heater or hydronic heating system |
+| POST | `/tank/pressure` | Hydropneumatic pressure tank drawdown sizing for conventional or VFD pump control |
 | GET | `/reference/pipe-materials` | Supported pipe materials |
 | GET | `/reference/lpcd-consumption-table` | Per-capita consumption by occupancy type (domestic storage) |
 | GET | `/reference/wsfu-demand-table` | WSFU → peak demand, NSPC 2009 Table B.5.4 (domestic storage) |
