@@ -10,6 +10,7 @@ import com.renzoproject.calc.core.mechanical.pump.PumpTDHInput;
 import com.renzoproject.calc.core.mechanical.pump.PumpTDHResult;
 import com.renzoproject.calc.core.mechanical.pump.SegmentLossDetail;
 import com.renzoproject.calc.core.mechanical.pump.SuctionCondition;
+import com.renzoproject.calc_api.common.DtoUnits;
 import com.renzoproject.calc_api.mechanical.pipe.DiameterSpecTypeDto;
 import com.renzoproject.calc_api.mechanical.pipe.FrictionFactorMethodDto;
 import com.renzoproject.calc_api.mechanical.pipe.PipePressureLossMapper;
@@ -17,7 +18,6 @@ import com.renzoproject.calc_api.mechanical.pipe.PipeUnitParsing;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
@@ -48,7 +48,7 @@ public final class PumpTDHMapper {
 				? null : Quantities.getQuantity(request.staticSuctionHeadFloodedMeters(), Units.METRE);
 
 		Quantity<Length> staticDischargeElevation = Quantities.getQuantity(request.staticDischargeElevationMeters(), Units.METRE);
-		Quantity<Pressure> requiredResidualPressure = Quantities.getQuantity(request.requiredResidualPressureKpa(), MetricPrefix.KILO(Units.PASCAL));
+		Quantity<Pressure> requiredResidualPressure = Quantities.getQuantity(request.requiredResidualPressureKpa(), DtoUnits.KILOPASCAL);
 
 		return new PumpTDHInput(
 				request.fluidKey(), fluidTemperature, flowRate,

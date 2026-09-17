@@ -1,6 +1,6 @@
 # engineering-calc
 
-A Java multi-module Maven project providing stateless engineering calculators — electrical (PEC/NEC-aligned), mechanical (pipe hydraulics, fire pumps), acoustics (NFPA 72), and smoke control (NFPA 92) — behind a REST API. No persistence, no authentication: every endpoint takes an input, returns a calculated result.
+A Java multi-module Maven project providing stateless engineering calculators — electrical (PEC/NEC-aligned conductor, conduit, and motor sizing, plus energy consumption), mechanical (pipe hydraulics, pumps and fire pumps, water storage, duct sizing, tank sizing), acoustics (NFPA 72), and smoke control (NFPA 92) — behind a REST API. No persistence, no authentication: every endpoint takes an input, returns a calculated result.
 
 ## Modules
 
@@ -27,7 +27,7 @@ A Java multi-module Maven project providing stateless engineering calculators �
 calc-core/
   com.renzoproject.calc.core/
     Calculator.java              interface Calculator<Input, Result> { Result calculate(Input input); }
-    electrical/                  voltage drop, conduit fill, wire sizing, motor FLC/locked-rotor/conductor sizing
+    electrical/                  voltage drop, conduit fill, wire sizing, motor FLC/locked-rotor/conductor sizing, power consumption
     mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire), duct sizing, expansion/pressure tank sizing
     acoustics/                   distance attenuation, fire alarm audibility (NFPA 72)
     smokecontrol/                smoke production (plume), t-squared growth variant, natural vent area (NFPA 92)
@@ -40,15 +40,16 @@ calc-api/
     electrical/, mechanical/, acoustics/, smokecontrol/
       {feature}/
         {Feature}Controller.java   @RestController — one thin method per endpoint, @Valid request body
-        {Feature}Service.java      instantiates the calc-core Calculator, no business logic
+        {Feature}Service.java      builds the calc-core Calculator from injected resolvers, no business logic
         {Feature}Mapper.java       pure Request→Input / Result→Response mapping, no logic
         {Feature}Request.java      inbound DTO — Bean Validation covers structural bounds only
         {Feature}Response.java     outbound DTO — mirrors the calc-core Result record
-    config/                       CORS policy, OpenAPI metadata
-    exception/                    GlobalExceptionHandler — the one @RestControllerAdvice for the whole API
+    common/                       EnumParsing (string → enum with a clear 400), DtoUnits (mm, kPa)
+    config/                       CORS policy, OpenAPI metadata, ResolverConfig (shared reference-data beans)
+    exception/                    GlobalExceptionHandler + ApiErrorResponse — the one error contract for the whole API
 ```
 
-**Validation is layered on purpose**: Bean Validation (`@NotNull`, `@Positive`, ...) at the DTO boundary catches structural problems fast with field-level 400s. Domain rules that calc-core itself must enforce regardless of caller (e.g. "fire base height must be below ceiling height") live exclusively in the record's compact constructor and throw `CalculationException`, which `GlobalExceptionHandler` turns into a 400. Neither layer duplicates the other.
+**Validation is layered on purpose**: Bean Validation (`@NotNull`, `@Positive`, ...) at the DTO boundary catches structural problems fast with field-level 400s. Domain rules that calc-core itself must enforce regardless of caller (e.g. "fire base height must be below ceiling height") live exclusively in the record's compact constructor and throw `CalculationException`, which `GlobalExceptionHandler` turns into a 400. Neither layer duplicates the other. Both produce the same response body — see [Error responses](#error-responses).
 
 ## API reference
 
@@ -64,6 +65,7 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/motor-flc` | Motor full-load current + minimum conductor ampacity (PEC Art. 4.30) |
 | POST | `/locked-rotor` | Locked-rotor current for disconnect/controller sizing |
 | POST | `/motor-conductor-sizing` | One-step branch-circuit sizing from HP/voltage (chains FLC → wire sizing) |
+| POST | `/power-consumption` | Energy use (kWh) and optional cost from wattage, voltage/current, or horsepower |
 | GET | `/reference/*` | 22 lookup endpoints backing the above (conductor sizes/materials, ampacity/impedance/adjustment tables, insulation types, motor HP/voltage tables, ...) |
 
 ### Mechanical — `/api/mechanical`
@@ -105,6 +107,29 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/plume-tsquared` | Same plume correlation, driven by a t-squared growth fire capped at a peak HRR |
 | POST | `/vent-area` | Required natural smoke vent area (buoyancy-driven vent sizing) |
 
+### Error responses
+
+Every `400 Bad Request` returns the same body, whatever caused it:
+
+```json
+{ "message": "No duct size satisfies these inputs...", "fieldErrors": {} }
+```
+
+```json
+{
+  "message": "Request validation failed",
+  "fieldErrors": { "totalOperatingHours": "must be greater than 0" }
+}
+```
+
+| Cause | `message` | `fieldErrors` |
+|---|---|---|
+| A calc-core domain rule rejects the input (`CalculationException`) | calc-core's own message, written to be shown to a user | `{}` |
+| Bean Validation fails on the request DTO | `Request validation failed` | one entry per invalid field |
+| Body isn't valid JSON, or a value can't convert to its field's type | a fixed "malformed request body" message | `{}` |
+
+`fieldErrors` is always present, never `null`, so clients can branch on whether it's empty rather than probing for keys. The contract is pinned by `GlobalExceptionHandlerTest`.
+
 ## Running locally
 
 ### Maven
@@ -127,7 +152,19 @@ The included `Dockerfile` is a multi-stage build: a Maven/Temurin builder stage 
 
 ### CORS
 
-`calc-api` allows `GET`/`POST` from `http://localhost:3000` only (`config/CorsConfig.java`) — intended for a local frontend during development. No credentials/cookies are enabled (v1 has no auth).
+`calc-api` allows `GET`/`POST` on `/api/**` from the origins in the `cors.allowed-origins` property (`config/CorsConfig.java`), a comma-separated list. When unset it defaults to the local frontend and the deployed one:
+
+```
+http://localhost:3000,https://eng-tools.renzomendoza.com
+```
+
+Override it per environment with the `CORS_ALLOWED_ORIGINS` environment variable (Spring Boot maps it onto the property), no rebuild needed:
+
+```bash
+docker run -p 8080:8080 -e CORS_ALLOWED_ORIGINS=http://localhost:3010 engineering-calc
+```
+
+Setting it replaces the defaults rather than adding to them. No credentials/cookies are enabled (v1 has no auth).
 
 ## Testing
 
@@ -139,7 +176,9 @@ Every calculator has a corresponding `*CalculatorTest` in `calc-core` (unit test
 
 ## Conventions
 
-- **One exception type**: `CalculationException` (calc-core) is the only way a calculation fails; `GlobalExceptionHandler` (calc-api) is the only place that translates it to an HTTP response. No feature introduces its own exception type or advice class.
-- **Reference data lives in JSON**, loaded once per resolver instance and cached (`calc-core/src/main/resources/reference/**`), not hardcoded in calculators.
+- **One exception type**: `CalculationException` (calc-core) is the only way a calculation fails; `GlobalExceptionHandler` (calc-api) is the only place that translates it to an HTTP response, always as an `ApiErrorResponse`. No feature introduces its own exception type or advice class.
+- **Reference data lives in JSON** (`calc-core/src/main/resources/reference/**`), not hardcoded in calculators. calc-api registers each resolver once as a bean in `ResolverConfig` and injects it into every service that needs it, so each dataset is parsed once per application. Services never `new` a resolver. The one exception is the electrical PEC tables, which the electrical calculators still construct internally.
+- **Shared resolvers must be thread-safe**: one instance serves every concurrent request. Load eagerly in the constructor and never mutate afterwards, or, if a resolver must cache lazily, use a concurrent map (see `JsonFluidPropertiesResolver`).
+- **Enum-ish request fields are strings**, mapped with `EnumParsing.parse`, so a bad value gets a specific "Unknown circuit type: FOO" message instead of the generic malformed-body error. Boundary unit conversions use the shared `DtoUnits` constants rather than local copies.
 - **Sealed interfaces over nullable flat fields** wherever a calculator's input or result genuinely branches into shapes with different data (e.g. pipe sizing mode, plume regime) — see `DiameterSpec`, `PlumeRegime`.
 - **calc-api DTOs never reuse calc-core's domain types directly** in a response — each response DTO mirrors the corresponding `Result` record field-for-field, keeping the HTTP contract decoupled from internal refactors.

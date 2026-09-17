@@ -11,12 +11,12 @@ import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 import java.util.Map;
+
+import static com.renzoproject.calc_api.common.DtoUnits.MILLIMETRE;
 
 /**
  * Maps between calc-api's pipe velocity DTOs and calc-core's calculator types, including
@@ -27,11 +27,9 @@ import java.util.Map;
  *
  * <p>Unrecognized unit strings throw {@link CalculationException} with a clear message listing
  * what's supported, same "controlled 400 instead of a raw deserialization failure" rationale as
- * {@code WireSizingMapper}'s {@code parseEnum} helper.
+ * {@code EnumParsing}.
  */
 public final class PipeVelocityMapper {
-
-	private static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(Units.METRE);
 
 	private static final Map<String, Unit<Speed>> SPEED_UNITS = Map.of(
 			"m/s", Units.METRE_PER_SECOND,

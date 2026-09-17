@@ -7,21 +7,15 @@ import com.renzoproject.calc.core.electrical.voltagedrop.CircuitType;
 import com.renzoproject.calc.core.electrical.wiresizing.VoltageDropCheckRequest;
 import com.renzoproject.calc.core.electrical.wiresizing.WireSizingInput;
 import com.renzoproject.calc.core.electrical.wiresizing.WireSizingResult;
-import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc_api.common.EnumParsing;
 
 /**
  * Maps between calc-api's wire sizing DTOs and calc-core's calculator types.
  *
  * <p>All enum-ish fields ({@code circuitType}, {@code conductorMaterial},
  * {@code conduitMaterial}, {@code insulationType}) are accepted as plain strings and mapped
- * explicitly here rather than binding Jackson directly to the enum types — the same
- * rationale already documented on conduit fill's {@code ConductorFillEntryDto}: a bad value
- * should surface as a clear "Unknown X: value" {@code CalculationException} → 400 via the
- * existing {@code GlobalExceptionHandler}, not a generic Jackson deserialization failure.
- * {@code InsulationType} already has {@code fromLabel} for this; {@code CircuitType} /
- * {@code ConductorMaterial} / {@code ConduitMaterial} don't need one in calc-core (their
- * labels are already plain, hyphen-free enum-identifier-safe names), so {@link #parseEnum}
- * does the same "clear error" job generically for those three here.
+ * explicitly -- see {@link EnumParsing} for why. {@code InsulationType} uses its own
+ * {@code fromLabel}, since its labels contain hyphens that aren't valid enum constant names.
  */
 public final class WireSizingMapper {
 
@@ -30,7 +24,7 @@ public final class WireSizingMapper {
 
 	public static WireSizingInput toInput(WireSizingRequest request) {
 		InsulationType insulationType = InsulationType.fromLabel(request.insulationType());
-		ConductorMaterial conductorMaterial = parseEnum(ConductorMaterial.class, request.conductorMaterial(), "conductor material");
+		ConductorMaterial conductorMaterial = EnumParsing.parse(ConductorMaterial.class, request.conductorMaterial(), "conductor material");
 		VoltageDropCheckRequest voltageDropCheck = request.voltageDropCheck() == null
 				? null
 				: toVoltageDropCheckRequest(request.voltageDropCheck());
@@ -47,9 +41,13 @@ public final class WireSizingMapper {
 				voltageDropCheck);
 	}
 
-	private static VoltageDropCheckRequest toVoltageDropCheckRequest(VoltageDropCheckRequestDto dto) {
-		CircuitType circuitType = parseEnum(CircuitType.class, dto.circuitType(), "circuit type");
-		ConduitMaterial conduitMaterial = parseEnum(ConduitMaterial.class, dto.conduitMaterial(), "conduit material");
+	/**
+	 * Public because {@code MotorConductorSizingMapper} embeds the same optional voltage drop check
+	 * and reuses this conversion rather than keeping its own copy.
+	 */
+	public static VoltageDropCheckRequest toVoltageDropCheckRequest(VoltageDropCheckRequestDto dto) {
+		CircuitType circuitType = EnumParsing.parse(CircuitType.class, dto.circuitType(), "circuit type");
+		ConduitMaterial conduitMaterial = EnumParsing.parse(ConduitMaterial.class, dto.conduitMaterial(), "conduit material");
 		return new VoltageDropCheckRequest(
 				circuitType,
 				dto.oneWayLengthMeters(),
@@ -61,14 +59,6 @@ public final class WireSizingMapper {
 
 	public static WireSizingResponse toResponse(WireSizingResult result) {
 		return WireSizingResponse.from(result);
-	}
-
-	private static <E extends Enum<E>> E parseEnum(Class<E> enumType, String rawValue, String fieldLabel) {
-		try {
-			return Enum.valueOf(enumType, rawValue);
-		} catch (IllegalArgumentException e) {
-			throw new CalculationException("Unknown " + fieldLabel + ": " + rawValue);
-		}
 	}
 
 }

@@ -4,7 +4,7 @@ import com.renzoproject.calc.core.electrical.powerconsumption.PowerConsumptionIn
 import com.renzoproject.calc.core.electrical.powerconsumption.PowerConsumptionResult;
 import com.renzoproject.calc.core.electrical.powerconsumption.PowerInputMode;
 import com.renzoproject.calc.core.electrical.voltagedrop.CircuitType;
-import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc_api.common.EnumParsing;
 
 /**
  * Maps between calc-api's power consumption DTOs and calc-core's calculator types.
@@ -21,10 +21,10 @@ public final class PowerConsumptionMapper {
 	}
 
 	public static PowerConsumptionInput toInput(PowerConsumptionRequest request) {
-		PowerInputMode mode = parseEnum(PowerInputMode.class, request.mode(), "power input mode");
+		PowerInputMode mode = EnumParsing.parse(PowerInputMode.class, request.mode(), "power input mode");
 		CircuitType circuitType = request.circuitType() == null
 				? null
-				: parseEnum(CircuitType.class, request.circuitType(), "circuit type");
+				: EnumParsing.parse(CircuitType.class, request.circuitType(), "circuit type");
 
 		return new PowerConsumptionInput(
 				mode,
@@ -41,14 +41,6 @@ public final class PowerConsumptionMapper {
 
 	public static PowerConsumptionResponse toResponse(PowerConsumptionResult result) {
 		return PowerConsumptionResponse.from(result);
-	}
-
-	private static <E extends Enum<E>> E parseEnum(Class<E> enumType, String rawValue, String fieldLabel) {
-		try {
-			return Enum.valueOf(enumType, rawValue);
-		} catch (IllegalArgumentException e) {
-			throw new CalculationException("Unknown " + fieldLabel + ": " + rawValue);
-		}
 	}
 
 }

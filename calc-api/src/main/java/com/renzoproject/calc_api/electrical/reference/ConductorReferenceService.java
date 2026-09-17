@@ -17,6 +17,7 @@ import com.renzoproject.calc.core.electrical.reference.MotorClass;
 import com.renzoproject.calc.core.electrical.reference.MotorFlcTable;
 import com.renzoproject.calc.core.electrical.reference.MotorPhaseType;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc_api.common.EnumParsing;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -148,13 +149,13 @@ public class ConductorReferenceService {
 	 *                              {@code MotorClass} when phaseType is THREE_PHASE
 	 */
 	public List<String> listMotorHorsepowerRatings(String phaseTypeLabel, String motorClassLabel) {
-		MotorPhaseType phaseType = parseEnum(MotorPhaseType.class, phaseTypeLabel, "motor phase type");
+		MotorPhaseType phaseType = EnumParsing.parse(MotorPhaseType.class, phaseTypeLabel, "motor phase type");
 		MotorClass motorClass = null;
 		if (phaseType == MotorPhaseType.THREE_PHASE) {
 			if (motorClassLabel == null) {
 				throw new CalculationException("motorClass is required when phaseType is THREE_PHASE");
 			}
-			motorClass = parseEnum(MotorClass.class, motorClassLabel, "motor class");
+			motorClass = EnumParsing.parse(MotorClass.class, motorClassLabel, "motor class");
 		}
 		return motorFlcTable.sizeLabelsFor(phaseType, motorClass);
 	}
@@ -164,13 +165,13 @@ public class ConductorReferenceService {
 	 * dropdowns. Same phaseType/motorClass validation as {@link #listMotorHorsepowerRatings}.
 	 */
 	public List<Integer> listMotorVoltages(String phaseTypeLabel, String motorClassLabel, String horsepowerLabel) {
-		MotorPhaseType phaseType = parseEnum(MotorPhaseType.class, phaseTypeLabel, "motor phase type");
+		MotorPhaseType phaseType = EnumParsing.parse(MotorPhaseType.class, phaseTypeLabel, "motor phase type");
 		MotorClass motorClass = null;
 		if (phaseType == MotorPhaseType.THREE_PHASE) {
 			if (motorClassLabel == null) {
 				throw new CalculationException("motorClass is required when phaseType is THREE_PHASE");
 			}
-			motorClass = parseEnum(MotorClass.class, motorClassLabel, "motor class");
+			motorClass = EnumParsing.parse(MotorClass.class, motorClassLabel, "motor class");
 		}
 		return motorFlcTable.voltagesFor(phaseType, motorClass, horsepowerLabel);
 	}
@@ -235,14 +236,6 @@ public class ConductorReferenceService {
 		return conductorCountAdjustmentTable.allEntries().stream()
 				.map(ConductorCountAdjustmentEntryDto::from)
 				.toList();
-	}
-
-	private static <E extends Enum<E>> E parseEnum(Class<E> enumType, String rawValue, String fieldLabel) {
-		try {
-			return Enum.valueOf(enumType, rawValue);
-		} catch (IllegalArgumentException e) {
-			throw new CalculationException("Unknown " + fieldLabel + ": " + rawValue);
-		}
 	}
 
 }

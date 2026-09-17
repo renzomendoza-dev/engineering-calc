@@ -6,26 +6,20 @@ import com.renzoproject.calc.core.mechanical.tank.SystemType;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
-import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
+import static com.renzoproject.calc_api.common.DtoUnits.KILOPASCAL;
+
 /**
  * Pure mapping, no logic -- matches every other mapper in this codebase. Liters&lt;-&gt;m3
- * (volume), mm&lt;-&gt;m (pipe diameter), and kPa&lt;-&gt;Pa (pressure) boundary conversions
- * happen here: calc-core stays SI-pure internally, this mapper is the one place that knows this
- * endpoint's DTOs use liters/mm/kPa.
- *
- * <p>No dedicated liters&lt;-&gt;m3 helper exists elsewhere in the codebase to reuse -- neither
- * water storage mapper needs one ({@code DomesticWaterStorageMapper} reports its result directly
- * in m3, {@code FireWaterStorageMapper} reports in US gallons via {@code StorageUnits.GALLON_US})
- * -- so this mapper uses Indriya's {@code Units.LITRE} directly, same as {@code Units.CUBIC_METRE}
- * is used directly elsewhere: {@code Volume} is a standard JSR-385 quantity, no custom unit
- * definition needed.
+ * (volume) and kPa&lt;-&gt;Pa (pressure) boundary conversions happen here: calc-core stays
+ * SI-pure internally, this mapper is the one place that knows this endpoint's DTOs use liters/kPa.
+ * Liters need no shared constant: {@code Volume} is a standard JSR-385 quantity, so Indriya's
+ * {@code Units.LITRE} is used directly.
  *
  * <p>{@code averagePipeDiameterMm} maps straight through as a plain double, not a
  * {@code Quantity<Length>} -- calc-core's {@code ExpansionTankInput} itself models this field as
@@ -35,7 +29,6 @@ import javax.measure.quantity.Volume;
 public final class ExpansionTankMapper {
 
 	private static final double DEFAULT_ADDITIONAL_VOLUME_FACTOR = 1.0;
-	private static final Unit<Pressure> KILOPASCAL = MetricPrefix.KILO(Units.PASCAL);
 
 	private ExpansionTankMapper() {
 	}

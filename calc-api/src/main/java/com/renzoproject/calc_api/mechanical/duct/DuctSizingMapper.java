@@ -12,13 +12,13 @@ import com.renzoproject.calc_api.mechanical.pipe.FrictionFactorMethodDto;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
-import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
+
+import static com.renzoproject.calc_api.common.DtoUnits.MILLIMETRE;
 
 /**
  * Pure mapping, no logic -- matches every other mapper in this codebase. All mm/L-s/m-s
@@ -33,8 +33,6 @@ import javax.measure.quantity.Temperature;
  * introducing a mismatched conversion of its own.
  */
 public final class DuctSizingMapper {
-
-	private static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(Units.METRE);
 
 	private DuctSizingMapper() {
 	}

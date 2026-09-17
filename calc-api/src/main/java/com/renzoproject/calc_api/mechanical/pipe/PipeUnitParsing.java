@@ -14,6 +14,8 @@ import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import java.util.Map;
 
+import static com.renzoproject.calc_api.common.DtoUnits.MILLIMETRE;
+
 /**
  * Shared unit-string parsing and {@link DiameterSpec} construction, used by
  * {@link PipeVelocityMapper}, {@link PipePressureLossMapper}, and (across the package boundary)
@@ -24,8 +26,6 @@ import java.util.Map;
  * copied a fourth time.
  */
 public final class PipeUnitParsing {
-
-	private static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(Units.METRE);
 
 	private static final Map<String, Unit<VolumetricFlowRate>> FLOW_RATE_UNITS = Map.of(
 			"m3/s", PipeUnits.CUBIC_METRE_PER_SECOND,

@@ -8,23 +8,17 @@ import com.renzoproject.calc.core.mechanical.tank.PumpControlType;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
-import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 
+import static com.renzoproject.calc_api.common.DtoUnits.KILOPASCAL;
+
 /**
  * Pure mapping, no logic -- same conversion approach as {@link ExpansionTankMapper} (liters&lt;-&gt;m3,
- * kPa&lt;-&gt;Pa), since both endpoints share the same Boyle's Law output shape. No shared helper
- * for these conversions was extracted anywhere in the codebase during the expansion tank task (see
- * {@link ExpansionTankMapper}'s Javadoc), so this mapper mirrors that same local-constant approach
- * (its own {@code KILOPASCAL}) rather than introducing a third, slightly different conversion
- * style.
+ * kPa&lt;-&gt;Pa), since both endpoints share the same Boyle's Law output shape.
  */
 public final class PressureTankMapper {
-
-	private static final Unit<Pressure> KILOPASCAL = MetricPrefix.KILO(Units.PASCAL);
 
 	private PressureTankMapper() {
 	}
