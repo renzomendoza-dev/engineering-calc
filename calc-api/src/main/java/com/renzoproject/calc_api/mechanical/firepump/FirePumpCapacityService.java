@@ -1,7 +1,6 @@
 package com.renzoproject.calc_api.mechanical.firepump;
 
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpCapacityResolver;
-import com.renzoproject.calc.core.mechanical.firepump.JsonFirePumpCapacityResolver;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,7 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class FirePumpCapacityService {
 
-	private final FirePumpCapacityResolver resolver = new JsonFirePumpCapacityResolver();
+	private final FirePumpCapacityResolver resolver;
+
+	public FirePumpCapacityService(FirePumpCapacityResolver resolver) {
+		this.resolver = resolver;
+	}
 
 	public FirePumpCapacityResponse resolve(FirePumpCapacityRequest request) {
 		var ratedFlow = FirePumpCapacityMapper.toCoreRatedFlow(request);

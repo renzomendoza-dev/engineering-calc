@@ -1,20 +1,21 @@
 package com.renzoproject.calc_api.mechanical.pipe;
 
-import com.renzoproject.calc.core.mechanical.pipe.JsonPipeDimensionResolver;
+import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.pipe.PipeVelocityCalculator;
 import org.springframework.stereotype.Service;
 
 /**
- * Thin orchestration between the web layer and calc-core, same pattern as
- * {@code VoltageDropService}/{@code WireSizingService}: {@link PipeVelocityCalculator} and its
- * {@link JsonPipeDimensionResolver} dependency are plainly instantiated rather than Spring
- * beans, since both are stateless POJOs from calc-core (which has no Spring dependency by
- * design).
+ * Thin orchestration between the web layer and calc-core. The dimension resolver is a shared
+ * singleton injected from {@code ResolverConfig}; the calculator is plainly constructed.
  */
 @Service
 public class PipeVelocityService {
 
-	private final PipeVelocityCalculator calculator = new PipeVelocityCalculator(new JsonPipeDimensionResolver());
+	private final PipeVelocityCalculator calculator;
+
+	public PipeVelocityService(PipeDimensionResolver dimensionResolver) {
+		this.calculator = new PipeVelocityCalculator(dimensionResolver);
+	}
 
 	public PipeVelocityResponse calculate(PipeVelocityRequest request) {
 		var input = PipeVelocityMapper.toCoreInput(request);

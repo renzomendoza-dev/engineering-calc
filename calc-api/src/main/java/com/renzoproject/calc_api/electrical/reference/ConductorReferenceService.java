@@ -26,13 +26,17 @@ import java.util.List;
  * Exposes calc-core's PEC reference data (conductor sizes, materials) for populating
  * frontend dropdowns.
  *
- * <p>{@link ConductorPropertiesResolver} is plainly instantiated, same pattern as
- * {@code VoltageDropService} — see that class's Javadoc for why.
+ * <p>{@link ConductorPropertiesResolver} is the shared singleton from {@code ResolverConfig}
+ * (the same instance {@code VoltageDropService} uses). The individual PEC tables below are still
+ * constructed here: each is built only once within calc-api, and the calc-core calculators that
+ * also need them ({@code WireSizingCalculator}, {@code MotorFlcCalculator}, ...) construct their
+ * own private copies internally rather than accepting them as constructor arguments -- sharing
+ * those would need a calc-core change first.
  */
 @Service
 public class ConductorReferenceService {
 
-	private final ConductorPropertiesResolver resolver = new ConductorPropertiesResolver();
+	private final ConductorPropertiesResolver resolver;
 	private final ConductorDimensionTable conductorDimensionTable = new ConductorDimensionTable();
 	private final ConduitDimensionTable conduitDimensionTable = new ConduitDimensionTable();
 	private final MotorFlcTable motorFlcTable = new MotorFlcTable();
@@ -42,6 +46,10 @@ public class ConductorReferenceService {
 	private final InsulationTypeTempRating insulationTypeTempRating = new InsulationTypeTempRating();
 	private final AmbientTempCorrectionTable ambientTempCorrectionTable = new AmbientTempCorrectionTable();
 	private final ConductorCountAdjustmentTable conductorCountAdjustmentTable = new ConductorCountAdjustmentTable();
+
+	public ConductorReferenceService(ConductorPropertiesResolver resolver) {
+		this.resolver = resolver;
+	}
 
 	public List<ConductorSizeDto> listConductorSizes() {
 		return resolver.allSizes().stream()

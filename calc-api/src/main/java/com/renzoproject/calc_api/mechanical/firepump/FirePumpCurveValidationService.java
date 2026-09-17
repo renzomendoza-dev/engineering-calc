@@ -1,14 +1,17 @@
 package com.renzoproject.calc_api.mechanical.firepump;
 
+import com.renzoproject.calc.core.mechanical.firepump.FirePumpCurveRequirementsLoader;
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpCurveValidationCalculator;
-import com.renzoproject.calc.core.mechanical.firepump.JsonFirePumpCurveRequirementsLoader;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FirePumpCurveValidationService {
 
-	private final FirePumpCurveValidationCalculator calculator =
-			new FirePumpCurveValidationCalculator(new JsonFirePumpCurveRequirementsLoader());
+	private final FirePumpCurveValidationCalculator calculator;
+
+	public FirePumpCurveValidationService(FirePumpCurveRequirementsLoader requirementsLoader) {
+		this.calculator = new FirePumpCurveValidationCalculator(requirementsLoader);
+	}
 
 	public FirePumpCurveValidationResponse validate(FirePumpCurveValidationRequest request) {
 		var input = FirePumpCurveValidationMapper.toCoreInput(request);

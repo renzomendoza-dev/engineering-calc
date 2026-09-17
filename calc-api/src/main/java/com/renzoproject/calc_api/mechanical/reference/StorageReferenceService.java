@@ -2,9 +2,6 @@ package com.renzoproject.calc_api.mechanical.reference;
 
 import com.renzoproject.calc.core.mechanical.storage.FireWaterDurationResolver;
 import com.renzoproject.calc.core.mechanical.storage.FixtureUnitDemandResolver;
-import com.renzoproject.calc.core.mechanical.storage.JsonFireWaterDurationResolver;
-import com.renzoproject.calc.core.mechanical.storage.JsonFixtureUnitDemandResolver;
-import com.renzoproject.calc.core.mechanical.storage.JsonPerCapitaConsumptionResolver;
 import com.renzoproject.calc.core.mechanical.storage.PerCapitaConsumptionResolver;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +13,25 @@ import java.util.List;
  * Storage recommendation by hand, same role as ConductorReferenceService's ampacity/derating
  * table endpoints for Wire Sizing.
  *
- * <p>Resolvers are plainly instantiated, same pattern as PipeReferenceService/VoltageDropService
- * -- see those classes' Javadoc for why.
+ * <p>Resolvers are the shared singletons from {@code ResolverConfig} -- the same instances the
+ * storage calculators use, so the tables displayed here are exactly the data the calculations
+ * run against.
  */
 @Service
 public class StorageReferenceService {
 
-	private final PerCapitaConsumptionResolver perCapitaConsumptionResolver = new JsonPerCapitaConsumptionResolver();
-	private final FixtureUnitDemandResolver fixtureUnitDemandResolver = new JsonFixtureUnitDemandResolver();
-	private final FireWaterDurationResolver fireWaterDurationResolver = new JsonFireWaterDurationResolver();
+	private final PerCapitaConsumptionResolver perCapitaConsumptionResolver;
+	private final FixtureUnitDemandResolver fixtureUnitDemandResolver;
+	private final FireWaterDurationResolver fireWaterDurationResolver;
+
+	public StorageReferenceService(
+			PerCapitaConsumptionResolver perCapitaConsumptionResolver,
+			FixtureUnitDemandResolver fixtureUnitDemandResolver,
+			FireWaterDurationResolver fireWaterDurationResolver) {
+		this.perCapitaConsumptionResolver = perCapitaConsumptionResolver;
+		this.fixtureUnitDemandResolver = fixtureUnitDemandResolver;
+		this.fireWaterDurationResolver = fireWaterDurationResolver;
+	}
 
 	/** Raw rows of reference/storage/lpcd-consumption.json, for display purposes. */
 	public List<OccupancyTypeEntryDto> listLpcdConsumptionTable() {

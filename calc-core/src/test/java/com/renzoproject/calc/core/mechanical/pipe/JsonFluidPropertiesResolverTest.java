@@ -7,6 +7,13 @@ import tech.units.indriya.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Temperature;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,6 +75,38 @@ class JsonFluidPropertiesResolverTest {
 	@Test
 	void resolve_unknownFluidKey_throws() {
 		assertThrows(CalculationException.class, () -> resolver.resolve("GLYCOL", celsius(20.0)));
+	}
+
+	@Test
+	void resolve_concurrentFirstCallsOnSharedInstance_allReturnCorrectValues() throws Exception {
+		// calc-api shares one instance across request threads, and the cache fills lazily on first
+		// use -- so the risky moment is many threads racing to populate it at once. All threads
+		// release together on the latch to maximise overlap. This can't deterministically reproduce
+		// a HashMap race, but it exercises the exact access pattern that motivated the
+		// ConcurrentHashMap and would surface corruption or exceptions if one regressed.
+		JsonFluidPropertiesResolver shared = new JsonFluidPropertiesResolver();
+		int threads = 32;
+		ExecutorService pool = Executors.newFixedThreadPool(threads);
+		CountDownLatch start = new CountDownLatch(1);
+		try {
+			List<Future<FluidProperties>> futures = new ArrayList<>();
+			for (int i = 0; i < threads; i++) {
+				String key = i % 2 == 0 ? "WATER" : "water";
+				futures.add(pool.submit(() -> {
+					start.await();
+					return shared.resolve(key, celsius(20.0));
+				}));
+			}
+			start.countDown();
+
+			for (Future<FluidProperties> future : futures) {
+				FluidProperties properties = future.get(10, TimeUnit.SECONDS);
+				assertEquals(998.2, properties.densityKgM3(), DELTA);
+				assertEquals(0.001002, properties.dynamicViscosityPaS(), DELTA);
+			}
+		} finally {
+			pool.shutdownNow();
+		}
 	}
 
 }

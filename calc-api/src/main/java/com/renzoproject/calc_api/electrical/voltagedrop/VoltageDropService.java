@@ -12,17 +12,19 @@ import org.springframework.stereotype.Service;
  * PEC reference tables or the request's custom values), maps the request DTO to
  * {@code VoltageDropInput}, runs the calculator, maps the result back to a response DTO.
  *
- * <p>{@link VoltageDropCalculator} and {@link ConductorPropertiesResolver} are plainly
- * instantiated rather than registered as Spring beans — both are stateless, dependency-free
- * POJOs from calc-core (which has zero Spring dependencies by design), so there's nothing DI
- * adds here. Later calculators wired into calc-api should follow the same pattern for
- * consistency.
+ * <p>{@link ConductorPropertiesResolver} is the shared singleton from {@code ResolverConfig}
+ * (the same instance {@code ConductorReferenceService} uses), since it holds parsed PEC tables.
+ * {@link VoltageDropCalculator} has no dependencies and no state, so it's plainly constructed.
  */
 @Service
 public class VoltageDropService {
 
 	private final VoltageDropCalculator calculator = new VoltageDropCalculator();
-	private final ConductorPropertiesResolver resolver = new ConductorPropertiesResolver();
+	private final ConductorPropertiesResolver resolver;
+
+	public VoltageDropService(ConductorPropertiesResolver resolver) {
+		this.resolver = resolver;
+	}
 
 	public VoltageDropResponse calculate(VoltageDropRequest request) {
 		double resistanceOhmsPerMeter;

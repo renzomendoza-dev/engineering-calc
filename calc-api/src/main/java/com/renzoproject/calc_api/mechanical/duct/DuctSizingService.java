@@ -1,15 +1,14 @@
 package com.renzoproject.calc_api.mechanical.duct;
 
-import com.renzoproject.calc.core.mechanical.duct.AnalyticalAirPropertiesResolver;
+import com.renzoproject.calc.core.mechanical.duct.AirPropertiesResolver;
+import com.renzoproject.calc.core.mechanical.duct.DuctRoughnessResolver;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingCalculator;
-import com.renzoproject.calc.core.mechanical.duct.JsonDuctRoughnessResolver;
 import org.springframework.stereotype.Service;
 
 /**
- * Thin orchestration between the web layer and calc-core, same pattern as
- * {@code PipePressureLossService}: {@link DuctSizingCalculator} and its two dependencies are
- * plainly instantiated rather than Spring beans, since all three are stateless, dependency-free
- * POJOs from calc-core.
+ * Thin orchestration between the web layer and calc-core. Resolvers are shared singletons
+ * injected from {@code ResolverConfig} (the roughness resolver is the same instance
+ * {@code DuctReferenceService} displays); the calculator is plainly constructed.
  *
  * <p>No exception handling here -- {@code CalculationException} (unknown material, bisection
  * non-convergence, non-physical rectangular dimension) propagates straight through to the
@@ -21,8 +20,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class DuctSizingService {
 
-	private final DuctSizingCalculator calculator =
-			new DuctSizingCalculator(new AnalyticalAirPropertiesResolver(), new JsonDuctRoughnessResolver());
+	private final DuctSizingCalculator calculator;
+
+	public DuctSizingService(AirPropertiesResolver airPropertiesResolver, DuctRoughnessResolver roughnessResolver) {
+		this.calculator = new DuctSizingCalculator(airPropertiesResolver, roughnessResolver);
+	}
 
 	public DuctSizingResponse calculate(DuctSizingRequest request) {
 		var input = DuctSizingMapper.toCoreInput(request);

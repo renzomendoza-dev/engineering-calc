@@ -9,9 +9,9 @@ import javax.measure.quantity.Temperature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Loads fluid property reference data from {@code reference/fluids/{fluidKey-lowercase}.json}
@@ -22,10 +22,18 @@ import java.util.Map;
  * JSON files can be added later without a code change (see {@code fluids-README.md}) — so files
  * are loaded lazily per requested {@code fluidKey} rather than all eagerly at construction, and
  * cached afterward to avoid re-parsing on repeated calls for the same fluid.
+ *
+ * <p><b>Thread-safe.</b> This is the only resolver in calc-core that mutates state after
+ * construction, and a single instance is shared across concurrent requests in calc-api, so the
+ * cache is a {@link ConcurrentHashMap}: {@code computeIfAbsent} there is atomic per key, so each
+ * fluid file is parsed at most once. A plain {@code HashMap} here can corrupt its internal table
+ * under concurrent {@code computeIfAbsent} calls. A load failure throws out of
+ * {@code computeIfAbsent} without recording a mapping, so a missing fluid is retried (and fails
+ * again) on the next call rather than being cached as a poisoned entry.
  */
 public class JsonFluidPropertiesResolver implements FluidPropertiesResolver {
 
-	private final Map<String, FluidPropertiesFile> cache = new HashMap<>();
+	private final Map<String, FluidPropertiesFile> cache = new ConcurrentHashMap<>();
 
 	@Override
 	public FluidProperties resolve(String fluidKey, Quantity<Temperature> temperature) {

@@ -1,14 +1,13 @@
 package com.renzoproject.calc_api.mechanical.tank;
 
-import com.renzoproject.calc.core.mechanical.pipe.JsonFluidPropertiesResolver;
+import com.renzoproject.calc.core.mechanical.pipe.FluidPropertiesResolver;
 import com.renzoproject.calc.core.mechanical.tank.ExpansionTankCalculator;
 import org.springframework.stereotype.Service;
 
 /**
- * Thin orchestration between the web layer and calc-core, same pattern as
- * {@code DuctSizingService}: {@link ExpansionTankCalculator} and its
- * {@code JsonFluidPropertiesResolver} dependency are plainly instantiated rather than Spring
- * beans, since both are stateless, dependency-free POJOs from calc-core.
+ * Thin orchestration between the web layer and calc-core. The fluid properties resolver is a
+ * shared singleton injected from {@code ResolverConfig} (the same instance pipe pressure loss and
+ * pump TDH use); the calculator is plainly constructed.
  *
  * <p>No exception handling here -- {@code CalculationException} (hot temp &lt;= cold temp, max
  * operating pressure &lt;= fill pressure, water temperature outside the fluid resolver's 0-100
@@ -23,7 +22,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExpansionTankService {
 
-	private final ExpansionTankCalculator calculator = new ExpansionTankCalculator(new JsonFluidPropertiesResolver());
+	private final ExpansionTankCalculator calculator;
+
+	public ExpansionTankService(FluidPropertiesResolver fluidPropertiesResolver) {
+		this.calculator = new ExpansionTankCalculator(fluidPropertiesResolver);
+	}
 
 	public ExpansionTankResponse calculate(ExpansionTankRequest request) {
 		var input = ExpansionTankMapper.toCoreInput(request);
