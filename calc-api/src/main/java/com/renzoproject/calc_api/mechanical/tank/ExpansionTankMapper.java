@@ -2,7 +2,7 @@ package com.renzoproject.calc_api.mechanical.tank;
 
 import com.renzoproject.calc.core.mechanical.tank.ExpansionTankInput;
 import com.renzoproject.calc.core.mechanical.tank.ExpansionTankResult;
-import com.renzoproject.calc.core.mechanical.tank.SystemType;
+import com.renzoproject.calc.core.mechanical.tank.HeatingSystemType;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -69,10 +69,10 @@ public final class ExpansionTankMapper {
 				result.maxOperatingPressureAbsolute().to(KILOPASCAL).getValue().doubleValue());
 	}
 
-	private static SystemType toCoreSystemType(SystemTypeDto dto) {
+	private static HeatingSystemType toCoreSystemType(HeatingSystemTypeDto dto) {
 		return switch (dto) {
-			case DOMESTIC_WATER_HEATER -> SystemType.DOMESTIC_WATER_HEATER;
-			case HYDRONIC_HEATING -> SystemType.HYDRONIC_HEATING;
+			case DOMESTIC_WATER_HEATER -> HeatingSystemType.DOMESTIC_WATER_HEATER;
+			case HYDRONIC_HEATING -> HeatingSystemType.HYDRONIC_HEATING;
 		};
 	}
 

@@ -17,7 +17,7 @@ class DomesticWaterStorageCalculatorTest {
 	private final PerCapitaConsumptionResolver perCapitaConsumptionResolver =
 			new FakePerCapitaConsumptionResolver(Map.of("RESIDENTIAL_DWELLING", 150.0));
 	private final FixtureUnitDemandResolver fixtureUnitDemandResolver =
-			new FakeFixtureUnitDemandResolver(Map.of(SystemType.FLUSH_TANK, 100.0, SystemType.FLUSH_VALVE, 200.0));
+			new FakeFixtureUnitDemandResolver(Map.of(FlushSystemType.FLUSH_TANK, 100.0, FlushSystemType.FLUSH_VALVE, 200.0));
 
 	private final DomesticWaterStorageCalculator calculator =
 			new DomesticWaterStorageCalculator(perCapitaConsumptionResolver, fixtureUnitDemandResolver);
@@ -50,9 +50,9 @@ class DomesticWaterStorageCalculatorTest {
 	void fixtureUnit_flushTank_usesResolverGpmAndConvertsToSi() {
 		// 60 GPM (round number) = 3.785411784 L/s exactly (1 gallon = 3.785411784 L).
 		DomesticWaterStorageInput input = new DomesticWaterStorageInput(
-				DemandBasis.FIXTURE_UNIT, null, null, 100.0, SystemType.FLUSH_TANK, 1.0, 0.0);
+				DemandBasis.FIXTURE_UNIT, null, null, 100.0, FlushSystemType.FLUSH_TANK, 1.0, 0.0);
 		FixtureUnitDemandResolver sixtyGpmResolver = new FakeFixtureUnitDemandResolver(
-				Map.of(SystemType.FLUSH_TANK, 60.0, SystemType.FLUSH_VALVE, 60.0));
+				Map.of(FlushSystemType.FLUSH_TANK, 60.0, FlushSystemType.FLUSH_VALVE, 60.0));
 		DomesticWaterStorageCalculator sixtyGpmCalculator =
 				new DomesticWaterStorageCalculator(perCapitaConsumptionResolver, sixtyGpmResolver);
 
@@ -65,10 +65,10 @@ class DomesticWaterStorageCalculatorTest {
 	@Test
 	void fixtureUnit_flushValve_forwardsSystemTypeToResolver() {
 		DomesticWaterStorageInput input = new DomesticWaterStorageInput(
-				DemandBasis.FIXTURE_UNIT, null, null, 50.0, SystemType.FLUSH_VALVE, 1.0, 0.0);
+				DemandBasis.FIXTURE_UNIT, null, null, 50.0, FlushSystemType.FLUSH_VALVE, 1.0, 0.0);
 
 		DomesticWaterStorageResult flushTankResult = calculator.calculate(
-				new DomesticWaterStorageInput(DemandBasis.FIXTURE_UNIT, null, null, 50.0, SystemType.FLUSH_TANK, 1.0, 0.0));
+				new DomesticWaterStorageInput(DemandBasis.FIXTURE_UNIT, null, null, 50.0, FlushSystemType.FLUSH_TANK, 1.0, 0.0));
 		DomesticWaterStorageResult flushValveResult = calculator.calculate(input);
 
 		// FLUSH_TANK -> 100 GPM, FLUSH_VALVE -> 200 GPM per the fake resolver -- results must differ.
@@ -97,7 +97,7 @@ class DomesticWaterStorageCalculatorTest {
 	@Test
 	void fixtureUnit_missingTotalFixtureUnits_throws() {
 		assertThrows(CalculationException.class, () -> new DomesticWaterStorageInput(
-				DemandBasis.FIXTURE_UNIT, null, null, null, SystemType.FLUSH_TANK, 1.0, 0.0));
+				DemandBasis.FIXTURE_UNIT, null, null, null, FlushSystemType.FLUSH_TANK, 1.0, 0.0));
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class DomesticWaterStorageCalculatorTest {
 	void fixtureUnit_resolverException_propagates() {
 		FixtureUnitDemandResolver throwingResolver = new FixtureUnitDemandResolver() {
 			@Override
-			public double resolveGpm(double totalWsfu, SystemType systemType) {
+			public double resolveGpm(double totalWsfu, FlushSystemType systemType) {
 				throw new CalculationException("out of range");
 			}
 
@@ -130,7 +130,7 @@ class DomesticWaterStorageCalculatorTest {
 		DomesticWaterStorageCalculator throwingCalculator =
 				new DomesticWaterStorageCalculator(perCapitaConsumptionResolver, throwingResolver);
 		DomesticWaterStorageInput input = new DomesticWaterStorageInput(
-				DemandBasis.FIXTURE_UNIT, null, null, 50.0, SystemType.FLUSH_TANK, 1.0, 0.0);
+				DemandBasis.FIXTURE_UNIT, null, null, 50.0, FlushSystemType.FLUSH_TANK, 1.0, 0.0);
 
 		assertThrows(CalculationException.class, () -> throwingCalculator.calculate(input));
 	}

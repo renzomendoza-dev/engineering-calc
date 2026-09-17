@@ -2,7 +2,6 @@ package com.renzoproject.calc.core.mechanical.duct;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Speed;
 
 /**
@@ -24,9 +23,10 @@ import javax.measure.quantity.Speed;
  * @param reynoldsNumber             computed at {@code equivalentDiameter}, dimensionless
  * @param frictionFactor             computed at {@code equivalentDiameter}, dimensionless Darcy
  *                                   friction factor
- * @param actualFrictionRatePerMeter the actual achieved friction rate for the resulting duct
- *                                   size/shape -- for EQUAL_FRICTION this should be close to, but
- *                                   not necessarily bit-identical to, the requested target
+ * @param actualFrictionRate         the actual achieved friction loss per unit length for the
+ *                                   resulting duct size/shape -- for EQUAL_FRICTION this should be
+ *                                   close to, but not necessarily bit-identical to, the requested
+ *                                   target
  */
 public record DuctSizingResult(
 		Quantity<Length> equivalentDiameter,
@@ -35,6 +35,6 @@ public record DuctSizingResult(
 		Quantity<Speed> actualVelocity,
 		double reynoldsNumber,
 		double frictionFactor,
-		Quantity<Pressure> actualFrictionRatePerMeter) {
+		Quantity<PressureGradient> actualFrictionRate) {
 
 }

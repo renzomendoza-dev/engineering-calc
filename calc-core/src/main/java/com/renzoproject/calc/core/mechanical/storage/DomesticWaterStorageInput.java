@@ -24,7 +24,7 @@ public record DomesticWaterStorageInput(
 		Integer occupantCount,
 		String occupancyType,
 		Double totalFixtureUnits,
-		SystemType systemType,
+		FlushSystemType systemType,
 		double storageDurationHours,
 		double safetyMarginPercent) {
 

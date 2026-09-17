@@ -16,7 +16,7 @@ import jakarta.validation.constraints.PositiveOrZero;
  * that shouldn't be pushed down into calc-core itself.
  */
 public record ExpansionTankRequest(
-		@NotNull SystemTypeDto systemType,
+		@NotNull HeatingSystemTypeDto systemType,
 		@NotNull @Positive Double primaryVesselVolumeLiters,
 		@NotNull @PositiveOrZero Double estimatedPipingLengthMeters,
 		@NotNull @Positive Double averagePipeDiameterMm,

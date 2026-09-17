@@ -35,7 +35,7 @@ for that material specifically.
 
 ## Air properties: cross-validated, still no reference file needed
 
-`AirPropertiesResolver` (analytical: ideal gas law + International Standard
+`AnalyticalAirDensityViscosityResolver` (ideal gas law + International Standard
 Atmosphere + Sutherland's Law, no JSON) was cross-checked against ASHRAE
 Fundamentals Chapter 3's stated standard air properties (20°C, 101.325 kPa:
 density 1.21 kg/m3, viscosity 18.1 uN*s/m2). The analytical formulas

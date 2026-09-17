@@ -4,7 +4,7 @@ import com.renzoproject.calc.core.mechanical.pipe.PipeUnits;
 import com.renzoproject.calc.core.mechanical.storage.DemandBasis;
 import com.renzoproject.calc.core.mechanical.storage.DomesticWaterStorageInput;
 import com.renzoproject.calc.core.mechanical.storage.DomesticWaterStorageResult;
-import com.renzoproject.calc.core.mechanical.storage.SystemType;
+import com.renzoproject.calc.core.mechanical.storage.FlushSystemType;
 import tech.units.indriya.unit.Units;
 
 /**
@@ -42,13 +42,13 @@ public final class DomesticWaterStorageMapper {
 		};
 	}
 
-	private static SystemType toCoreSystemType(SystemTypeDto dto) {
+	private static FlushSystemType toCoreSystemType(FlushSystemTypeDto dto) {
 		if (dto == null) {
 			return null;
 		}
 		return switch (dto) {
-			case FLUSH_TANK -> SystemType.FLUSH_TANK;
-			case FLUSH_VALVE -> SystemType.FLUSH_VALVE;
+			case FLUSH_TANK -> FlushSystemType.FLUSH_TANK;
+			case FLUSH_VALVE -> FlushSystemType.FLUSH_VALVE;
 		};
 	}
 

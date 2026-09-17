@@ -4,7 +4,9 @@ import com.renzoproject.calc.core.mechanical.duct.DuctShape;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingInput;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingMethod;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingResult;
+import com.renzoproject.calc.core.mechanical.duct.DuctUnits;
 import com.renzoproject.calc.core.mechanical.duct.FixedDimensionType;
+import com.renzoproject.calc.core.mechanical.duct.PressureGradient;
 import com.renzoproject.calc.core.mechanical.pipe.FrictionFactorMethod;
 import com.renzoproject.calc.core.mechanical.pipe.PipeUnits;
 import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
@@ -14,7 +16,7 @@ import tech.units.indriya.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
+
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
@@ -27,10 +29,7 @@ import static com.renzoproject.calc_api.common.DtoUnits.MILLIMETRE;
  * units.
  *
  * <p>{@code targetFrictionRatePaPerM}/{@code actualFrictionRatePaPerM} map to/from calc-core's
- * {@code Quantity<Pressure>} fields as plain Pascals (not a distinct "pressure per length"
- * quantity type) -- that's the type calc-core's {@code DuctSizingInput}/{@code DuctSizingResult}
- * already use for this value, so this mapper matches that existing contract rather than
- * introducing a mismatched conversion of its own.
+ * {@code Quantity<PressureGradient>} fields in {@link DuctUnits#PASCAL_PER_METRE}.
  */
 public final class DuctSizingMapper {
 
@@ -49,16 +48,16 @@ public final class DuctSizingMapper {
 		Quantity<Length> fixedDimensionValue = request.fixedDimensionValueMm() == null
 				? null
 				: Quantities.getQuantity(request.fixedDimensionValueMm(), MILLIMETRE);
-		Quantity<Pressure> targetFrictionRatePerMeter = request.targetFrictionRatePaPerM() == null
+		Quantity<PressureGradient> targetFrictionRate = request.targetFrictionRatePaPerM() == null
 				? null
-				: Quantities.getQuantity(request.targetFrictionRatePaPerM(), Units.PASCAL);
+				: Quantities.getQuantity(request.targetFrictionRatePaPerM(), DuctUnits.PASCAL_PER_METRE);
 		Quantity<Speed> maxVelocity = request.maxVelocityMps() == null
 				? null
 				: Quantities.getQuantity(request.maxVelocityMps(), Units.METRE_PER_SECOND);
 
 		return new DuctSizingInput(
 				method, airFlow, airTemperature, altitude, request.ductMaterial(), frictionMethod,
-				shape, fixedDimensionType, fixedDimensionValue, targetFrictionRatePerMeter, maxVelocity);
+				shape, fixedDimensionType, fixedDimensionValue, targetFrictionRate, maxVelocity);
 	}
 
 	public static DuctSizingResponse toResponse(DuctSizingResult result) {
@@ -72,7 +71,7 @@ public final class DuctSizingMapper {
 				result.actualVelocity().to(Units.METRE_PER_SECOND).getValue().doubleValue(),
 				result.reynoldsNumber(),
 				result.frictionFactor(),
-				result.actualFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue());
+				result.actualFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue());
 	}
 
 	private static DuctSizingMethod toCoreMethod(DuctSizingMethodDto dto) {

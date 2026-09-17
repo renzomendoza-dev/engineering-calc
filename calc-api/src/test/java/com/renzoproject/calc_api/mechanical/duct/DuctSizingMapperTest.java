@@ -4,6 +4,7 @@ import com.renzoproject.calc.core.mechanical.duct.DuctShape;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingInput;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingMethod;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingResult;
+import com.renzoproject.calc.core.mechanical.duct.DuctUnits;
 import com.renzoproject.calc.core.mechanical.duct.FixedDimensionType;
 import com.renzoproject.calc.core.mechanical.pipe.PipeUnits;
 import com.renzoproject.calc_api.mechanical.pipe.FrictionFactorMethodDto;
@@ -35,7 +36,7 @@ class DuctSizingMapperTest {
 		assertEquals(5.0, input.maxVelocity().to(Units.METRE_PER_SECOND).getValue().doubleValue(), DELTA);
 		assertNull(input.fixedDimensionType());
 		assertNull(input.fixedDimensionValue());
-		assertNull(input.targetFrictionRatePerMeter());
+		assertNull(input.targetFrictionRate());
 	}
 
 	@Test
@@ -51,8 +52,8 @@ class DuctSizingMapperTest {
 		assertEquals(FixedDimensionType.HEIGHT, input.fixedDimensionType());
 		// 300mm -> 0.3m round trip.
 		assertEquals(0.3, input.fixedDimensionValue().to(Units.METRE).getValue().doubleValue(), DELTA);
-		// 1.0 Pa/m maps to a Quantity<Pressure> of 1.0 Pa, matching calc-core's own contract.
-		assertEquals(1.0, input.targetFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue(), DELTA);
+		// 1.0 Pa/m maps to a PressureGradient of 1.0 Pa/m.
+		assertEquals(1.0, input.targetFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue(), DELTA);
 		assertNull(input.maxVelocity());
 	}
 
@@ -65,7 +66,7 @@ class DuctSizingMapperTest {
 				Quantities.getQuantity(5.0, Units.METRE_PER_SECOND),
 				250000.0,
 				0.02,
-				Quantities.getQuantity(1.0, Units.PASCAL));
+				Quantities.getQuantity(1.0, DuctUnits.PASCAL_PER_METRE));
 
 		DuctSizingResponse response = DuctSizingMapper.toResponse(result);
 
@@ -87,7 +88,7 @@ class DuctSizingMapperTest {
 				Quantities.getQuantity(4.5, Units.METRE_PER_SECOND),
 				200000.0,
 				0.021,
-				Quantities.getQuantity(0.95, Units.PASCAL));
+				Quantities.getQuantity(0.95, DuctUnits.PASCAL_PER_METRE));
 
 		DuctSizingResponse response = DuctSizingMapper.toResponse(result);
 

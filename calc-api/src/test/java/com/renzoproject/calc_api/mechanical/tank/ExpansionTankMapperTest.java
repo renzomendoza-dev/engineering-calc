@@ -2,7 +2,7 @@ package com.renzoproject.calc_api.mechanical.tank;
 
 import com.renzoproject.calc.core.mechanical.tank.ExpansionTankInput;
 import com.renzoproject.calc.core.mechanical.tank.ExpansionTankResult;
-import com.renzoproject.calc.core.mechanical.tank.SystemType;
+import com.renzoproject.calc.core.mechanical.tank.HeatingSystemType;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
@@ -15,7 +15,7 @@ class ExpansionTankMapperTest {
 
 	private static ExpansionTankRequest baseRequest(Double additionalVolumeFactor) {
 		return new ExpansionTankRequest(
-				SystemTypeDto.DOMESTIC_WATER_HEATER,
+				HeatingSystemTypeDto.DOMESTIC_WATER_HEATER,
 				190.0,
 				10.0,
 				20.0,
@@ -31,7 +31,7 @@ class ExpansionTankMapperTest {
 	void toCoreInput_mapsUnitConversionsCorrectly() {
 		ExpansionTankInput input = ExpansionTankMapper.toCoreInput(baseRequest(1.1));
 
-		assertEquals(SystemType.DOMESTIC_WATER_HEATER, input.systemType());
+		assertEquals(HeatingSystemType.DOMESTIC_WATER_HEATER, input.systemType());
 		// 190 L -> 0.19 m3 round trip.
 		assertEquals(0.19, input.primaryVesselVolume().to(Units.CUBIC_METRE).getValue().doubleValue(), DELTA);
 		assertEquals(10.0, input.estimatedPipingLength().to(Units.METRE).getValue().doubleValue(), DELTA);

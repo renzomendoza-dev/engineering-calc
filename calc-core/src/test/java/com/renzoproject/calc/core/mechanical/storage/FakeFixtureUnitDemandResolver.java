@@ -5,14 +5,14 @@ import java.util.Map;
 
 class FakeFixtureUnitDemandResolver implements FixtureUnitDemandResolver {
 
-	private final Map<SystemType, Double> gpmBySystemType;
+	private final Map<FlushSystemType, Double> gpmBySystemType;
 
-	FakeFixtureUnitDemandResolver(Map<SystemType, Double> gpmBySystemType) {
+	FakeFixtureUnitDemandResolver(Map<FlushSystemType, Double> gpmBySystemType) {
 		this.gpmBySystemType = gpmBySystemType;
 	}
 
 	@Override
-	public double resolveGpm(double totalWsfu, SystemType systemType) {
+	public double resolveGpm(double totalWsfu, FlushSystemType systemType) {
 		return gpmBySystemType.get(systemType);
 	}
 

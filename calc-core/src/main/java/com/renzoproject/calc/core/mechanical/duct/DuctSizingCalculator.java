@@ -43,24 +43,24 @@ public class DuctSizingCalculator implements Calculator<DuctSizingInput, DuctSiz
 	private static final String NO_DUCT_SIZE_MESSAGE =
 			"No duct size satisfies these inputs -- try adjusting the target friction rate or fixed dimension.";
 
-	private final AirPropertiesResolver airPropertiesResolver;
+	private final AirDensityViscosityResolver airResolver;
 	private final DuctRoughnessResolver roughnessResolver;
 
-	public DuctSizingCalculator(AirPropertiesResolver airPropertiesResolver, DuctRoughnessResolver roughnessResolver) {
-		this.airPropertiesResolver = airPropertiesResolver;
+	public DuctSizingCalculator(AirDensityViscosityResolver airResolver, DuctRoughnessResolver roughnessResolver) {
+		this.airResolver = airResolver;
 		this.roughnessResolver = roughnessResolver;
 	}
 
 	@Override
 	public DuctSizingResult calculate(DuctSizingInput input) {
-		FluidProperties air = airPropertiesResolver.resolve(input.airTemperature(), input.altitude());
+		FluidProperties air = airResolver.resolve(input.airTemperature(), input.altitude());
 		double roughnessM = roughnessResolver.resolveAbsoluteRoughnessMm(input.ductMaterial()) / 1000.0;
 		double flowRateM3s = input.airFlow().to(PipeUnits.CUBIC_METRE_PER_SECOND).getValue().doubleValue();
 
 		double targetEquivalentDiameterM = switch (input.method()) {
 			case VELOCITY -> diameterFromVelocity(flowRateM3s, input.maxVelocity().to(Units.METRE_PER_SECOND).getValue().doubleValue());
 			case EQUAL_FRICTION -> solveEqualFrictionDiameter(
-					flowRateM3s, input.targetFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue(), air, roughnessM, input.frictionMethod());
+					flowRateM3s, input.targetFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue(), air, roughnessM, input.frictionMethod());
 		};
 
 		return switch (input.shape()) {
@@ -100,7 +100,7 @@ public class DuctSizingCalculator implements Calculator<DuctSizingInput, DuctSiz
 				Quantities.getQuantity(fr.velocityMs(), Units.METRE_PER_SECOND),
 				fr.reynoldsNumber(),
 				fr.frictionFactor(),
-				Quantities.getQuantity(fr.frictionRatePaPerM(), Units.PASCAL));
+				Quantities.getQuantity(fr.frictionRatePaPerM(), DuctUnits.PASCAL_PER_METRE));
 	}
 
 	private DuctSizingResult rectangularResult(
@@ -129,7 +129,7 @@ public class DuctSizingCalculator implements Calculator<DuctSizingInput, DuctSiz
 				Quantities.getQuantity(actualVelocityMs, Units.METRE_PER_SECOND),
 				fr.reynoldsNumber(),
 				fr.frictionFactor(),
-				Quantities.getQuantity(fr.frictionRatePaPerM(), Units.PASCAL));
+				Quantities.getQuantity(fr.frictionRatePaPerM(), DuctUnits.PASCAL_PER_METRE));
 	}
 
 	private double solveFreeDimension(double targetEquivalentDiameterM, double fixedDimensionM) {

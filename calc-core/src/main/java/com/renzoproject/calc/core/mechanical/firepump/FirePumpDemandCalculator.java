@@ -3,6 +3,7 @@ package com.renzoproject.calc.core.mechanical.firepump;
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
+import com.renzoproject.calc.core.mechanical.pump.SuctionCondition;
 import tech.units.indriya.quantity.Quantities;
 
 /**

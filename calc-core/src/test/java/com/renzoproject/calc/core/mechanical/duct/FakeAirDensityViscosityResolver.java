@@ -6,11 +6,11 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 
-class FakeAirPropertiesResolver implements AirPropertiesResolver {
+class FakeAirDensityViscosityResolver implements AirDensityViscosityResolver {
 
 	private final FluidProperties properties;
 
-	FakeAirPropertiesResolver(FluidProperties properties) {
+	FakeAirDensityViscosityResolver(FluidProperties properties) {
 		this.properties = properties;
 	}
 

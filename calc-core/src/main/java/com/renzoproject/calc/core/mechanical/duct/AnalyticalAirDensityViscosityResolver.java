@@ -23,9 +23,9 @@ import javax.measure.quantity.Temperature;
  * Chapter 3's stated standard air properties (20 degC, 101.325 kPa: density 1.21 kg/m3, viscosity
  * 18.1 uN*s/m2): this resolver reproduces viscosity almost exactly (18.13 vs. 18.1 uN*s/m2) and
  * density within normal rounding (1.204 vs. 1.21 kg/m3) -- see
- * {@link AnalyticalAirPropertiesResolverTest} and {@code reference/duct/README.md}.
+ * {@link AnalyticalAirDensityViscosityResolverTest} and {@code reference/duct/README.md}.
  */
-public class AnalyticalAirPropertiesResolver implements AirPropertiesResolver {
+public class AnalyticalAirDensityViscosityResolver implements AirDensityViscosityResolver {
 
 	private static final double SPECIFIC_GAS_CONSTANT_DRY_AIR_J_PER_KG_K = 287.05;
 

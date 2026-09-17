@@ -6,19 +6,18 @@ import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
 /**
  * Input for {@link DuctSizingCalculator}. Which of {@code fixedDimensionType}/
- * {@code fixedDimensionValue}/{@code targetFrictionRatePerMeter}/{@code maxVelocity} are required
+ * {@code fixedDimensionValue}/{@code targetFrictionRate}/{@code maxVelocity} are required
  * depends on {@link #shape()}/{@link #method()} -- see the per-field notes below.
  *
  * @param method                      which sizing method to use
  * @param airFlow                     must be positive
- * @param airTemperature              fed to {@link AirPropertiesResolver}
- * @param altitude                    fed to {@link AirPropertiesResolver}
+ * @param airTemperature              fed to {@link AirDensityViscosityResolver}
+ * @param altitude                    fed to {@link AirDensityViscosityResolver}
  * @param ductMaterial                resolved via {@link DuctRoughnessResolver}
  * @param frictionMethod              reused from {@code mechanical.pipe} -- needed regardless of
  *                                    {@code method}, since the result always reports Reynolds
@@ -28,8 +27,9 @@ import javax.measure.quantity.Temperature;
  *                                    otherwise
  * @param fixedDimensionValue         required (and must be positive) for
  *                                    {@link DuctShape#RECTANGULAR}; ignored otherwise
- * @param targetFrictionRatePerMeter  required (and must be positive) for
- *                                    {@link DuctSizingMethod#EQUAL_FRICTION}; ignored otherwise
+ * @param targetFrictionRate          friction loss per unit duct length, e.g. Pa/m; required (and
+ *                                    must be positive) for {@link DuctSizingMethod#EQUAL_FRICTION};
+ *                                    ignored otherwise
  * @param maxVelocity                 required (and must be positive) for
  *                                    {@link DuctSizingMethod#VELOCITY}; ignored otherwise
  * @throws CalculationException if any of the above rules is violated
@@ -44,7 +44,7 @@ public record DuctSizingInput(
 		DuctShape shape,
 		FixedDimensionType fixedDimensionType,
 		Quantity<Length> fixedDimensionValue,
-		Quantity<Pressure> targetFrictionRatePerMeter,
+		Quantity<PressureGradient> targetFrictionRate,
 		Quantity<Speed> maxVelocity) {
 
 	public DuctSizingInput {
@@ -81,8 +81,8 @@ public record DuctSizingInput(
 			}
 		}
 		if (method == DuctSizingMethod.EQUAL_FRICTION) {
-			if (targetFrictionRatePerMeter == null || targetFrictionRatePerMeter.getValue().doubleValue() <= 0) {
-				throw new CalculationException("targetFrictionRatePerMeter must be positive for EQUAL_FRICTION method");
+			if (targetFrictionRate == null || targetFrictionRate.getValue().doubleValue() <= 0) {
+				throw new CalculationException("targetFrictionRate must be positive for EQUAL_FRICTION method");
 			}
 		}
 		if (method == DuctSizingMethod.VELOCITY) {

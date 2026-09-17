@@ -34,7 +34,7 @@ public record DomesticWaterStorageRequest(
 
 		// --- FIXTURE_UNIT ---
 		Double totalFixtureUnits,
-		SystemTypeDto systemType,
+		FlushSystemTypeDto systemType,
 
 		// --- both modes ---
 		@NotNull @Positive Double storageDurationHours,

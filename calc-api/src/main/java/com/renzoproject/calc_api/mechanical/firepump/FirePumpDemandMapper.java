@@ -3,8 +3,9 @@ package com.renzoproject.calc_api.mechanical.firepump;
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpDemandInput;
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpDemandResult;
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpUnits;
-import com.renzoproject.calc.core.mechanical.firepump.SuctionCondition;
+import com.renzoproject.calc.core.mechanical.pump.SuctionCondition;
 import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
+import com.renzoproject.calc_api.mechanical.pump.SuctionConditionDto;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;

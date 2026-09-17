@@ -10,7 +10,7 @@ import javax.measure.quantity.Pressure;
 
 /**
  * International Standard Atmosphere barometric pressure formula, {@code P(h) = P0 * (1 -
- * L*h/T0)^(g*M/(R*L))}. Extracted from {@code mechanical.duct.AnalyticalAirPropertiesResolver}
+ * L*h/T0)^(g*M/(R*L))}. Extracted from {@code mechanical.duct.AnalyticalAirDensityViscosityResolver}
  * (which used it only to derive air density) so {@code mechanical.tank.ExpansionTankCalculator}
  * can reuse it too, for gauge-to-absolute pressure conversion at altitude -- pure extraction, no
  * behavior change.

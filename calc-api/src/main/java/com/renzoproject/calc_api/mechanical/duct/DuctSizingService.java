@@ -1,6 +1,6 @@
 package com.renzoproject.calc_api.mechanical.duct;
 
-import com.renzoproject.calc.core.mechanical.duct.AirPropertiesResolver;
+import com.renzoproject.calc.core.mechanical.duct.AirDensityViscosityResolver;
 import com.renzoproject.calc.core.mechanical.duct.DuctRoughnessResolver;
 import com.renzoproject.calc.core.mechanical.duct.DuctSizingCalculator;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,8 @@ public class DuctSizingService {
 
 	private final DuctSizingCalculator calculator;
 
-	public DuctSizingService(AirPropertiesResolver airPropertiesResolver, DuctRoughnessResolver roughnessResolver) {
-		this.calculator = new DuctSizingCalculator(airPropertiesResolver, roughnessResolver);
+	public DuctSizingService(AirDensityViscosityResolver airResolver, DuctRoughnessResolver roughnessResolver) {
+		this.calculator = new DuctSizingCalculator(airResolver, roughnessResolver);
 	}
 
 	public DuctSizingResponse calculate(DuctSizingRequest request) {

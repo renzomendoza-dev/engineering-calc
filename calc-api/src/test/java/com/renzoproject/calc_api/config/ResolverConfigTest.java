@@ -36,11 +36,4 @@ class ResolverConfigTest {
 		assertSame(context.getBean(PipeDimensionResolver.class), context.getBean(PipeRoughnessResolver.class));
 	}
 
-	@Test
-	void bothAirPropertiesResolvers_areRegisteredWithoutAmbiguity() {
-		// Two distinct interfaces share this simple name; each must resolve to exactly one bean.
-		assertEquals(1, context.getBeansOfType(com.renzoproject.calc.core.common.AirPropertiesResolver.class).size());
-		assertEquals(1, context.getBeansOfType(com.renzoproject.calc.core.mechanical.duct.AirPropertiesResolver.class).size());
-	}
-
 }

@@ -2,6 +2,7 @@ package com.renzoproject.calc.core.mechanical.firepump;
 
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
+import com.renzoproject.calc.core.mechanical.pump.SuctionCondition;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;

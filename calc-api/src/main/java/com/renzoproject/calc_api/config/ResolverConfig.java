@@ -2,9 +2,11 @@ package com.renzoproject.calc_api.config;
 
 import com.renzoproject.calc.core.acoustics.AudibilityThresholdResolver;
 import com.renzoproject.calc.core.acoustics.JsonAudibilityThresholdResolver;
+import com.renzoproject.calc.core.common.AirPropertiesResolver;
 import com.renzoproject.calc.core.common.JsonAirPropertiesResolver;
 import com.renzoproject.calc.core.electrical.reference.ConductorPropertiesResolver;
-import com.renzoproject.calc.core.mechanical.duct.AnalyticalAirPropertiesResolver;
+import com.renzoproject.calc.core.mechanical.duct.AirDensityViscosityResolver;
+import com.renzoproject.calc.core.mechanical.duct.AnalyticalAirDensityViscosityResolver;
 import com.renzoproject.calc.core.mechanical.duct.DuctRoughnessResolver;
 import com.renzoproject.calc.core.mechanical.duct.DuctVelocityLimitResolver;
 import com.renzoproject.calc.core.mechanical.duct.JsonDuctRoughnessResolver;
@@ -50,10 +52,6 @@ import org.springframework.context.annotation.Configuration;
  * current resolvers are either immutable after construction or (for
  * {@code JsonFluidPropertiesResolver}'s lazy cache) explicitly concurrent. A new resolver that
  * caches lazily needs the same treatment.
- *
- * <p>Two different interfaces share the simple name {@code AirPropertiesResolver}
- * ({@code common} for smoke control, {@code mechanical.duct} for duct sizing), so both are
- * fully qualified here and given distinct bean names.
  */
 @Configuration
 public class ResolverConfig {
@@ -102,8 +100,8 @@ public class ResolverConfig {
 	// --- mechanical: duct ---
 
 	@Bean
-	public com.renzoproject.calc.core.mechanical.duct.AirPropertiesResolver ductAirPropertiesResolver() {
-		return new AnalyticalAirPropertiesResolver();
+	public AirDensityViscosityResolver airDensityViscosityResolver() {
+		return new AnalyticalAirDensityViscosityResolver();
 	}
 
 	@Bean
@@ -143,7 +141,7 @@ public class ResolverConfig {
 	// --- smoke control ---
 
 	@Bean
-	public com.renzoproject.calc.core.common.AirPropertiesResolver smokeControlAirPropertiesResolver() {
+	public AirPropertiesResolver airPropertiesResolver() {
 		return new JsonAirPropertiesResolver();
 	}
 

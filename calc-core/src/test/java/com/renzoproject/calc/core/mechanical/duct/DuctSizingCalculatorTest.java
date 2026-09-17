@@ -11,7 +11,7 @@ import tech.units.indriya.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
+
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 import java.util.Map;
@@ -27,7 +27,7 @@ class DuctSizingCalculatorTest {
 	private static final double DELTA = 1e-6;
 	private static final double FORWARD_CHECK_RELATIVE_TOLERANCE = 1e-3;
 
-	private final AirPropertiesResolver airPropertiesResolver = new FakeAirPropertiesResolver(new FluidProperties(1.2, 1.8e-5));
+	private final AirDensityViscosityResolver airPropertiesResolver = new FakeAirDensityViscosityResolver(new FluidProperties(1.2, 1.8e-5));
 	private final DuctRoughnessResolver roughnessResolver = new FakeDuctRoughnessResolver(Map.of("TESTMAT", 0.09));
 
 	private final DuctSizingCalculator calculator = new DuctSizingCalculator(airPropertiesResolver, roughnessResolver);
@@ -48,8 +48,8 @@ class DuctSizingCalculatorTest {
 		return Quantities.getQuantity(value, Units.METRE);
 	}
 
-	private static Quantity<Pressure> paPerMetre(double value) {
-		return Quantities.getQuantity(value, Units.PASCAL);
+	private static Quantity<PressureGradient> paPerMetre(double value) {
+		return Quantities.getQuantity(value, DuctUnits.PASCAL_PER_METRE);
 	}
 
 	private static Quantity<Speed> metresPerSecond(double value) {
@@ -89,10 +89,10 @@ class DuctSizingCalculatorTest {
 		double targetRatePaPerM = 1.0;
 		DuctSizingResult result = calculator.calculate(roundEqualFrictionInput(1.0, targetRatePaPerM, FrictionFactorMethod.SWAMEE_JAIN));
 
-		double actualRate = result.actualFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue();
+		double actualRate = result.actualFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue();
 		double relativeDiff = Math.abs(actualRate - targetRatePaPerM) / targetRatePaPerM;
 		assertTrue(relativeDiff < FORWARD_CHECK_RELATIVE_TOLERANCE,
-				"Expected actualFrictionRatePerMeter close to target " + targetRatePaPerM + ", was " + actualRate);
+				"Expected actualFrictionRate close to target " + targetRatePaPerM + ", was " + actualRate);
 	}
 
 	@Test
@@ -100,10 +100,10 @@ class DuctSizingCalculatorTest {
 		double targetRatePaPerM = 1.0;
 		DuctSizingResult result = calculator.calculate(roundEqualFrictionInput(1.0, targetRatePaPerM, FrictionFactorMethod.COLEBROOK_WHITE));
 
-		double actualRate = result.actualFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue();
+		double actualRate = result.actualFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue();
 		double relativeDiff = Math.abs(actualRate - targetRatePaPerM) / targetRatePaPerM;
 		assertTrue(relativeDiff < FORWARD_CHECK_RELATIVE_TOLERANCE,
-				"Expected actualFrictionRatePerMeter close to target " + targetRatePaPerM + ", was " + actualRate);
+				"Expected actualFrictionRate close to target " + targetRatePaPerM + ", was " + actualRate);
 	}
 
 	@Test
@@ -144,10 +144,10 @@ class DuctSizingCalculatorTest {
 
 		DuctSizingResult result = calculator.calculate(input);
 
-		double actualRate = result.actualFrictionRatePerMeter().to(Units.PASCAL).getValue().doubleValue();
+		double actualRate = result.actualFrictionRate().to(DuctUnits.PASCAL_PER_METRE).getValue().doubleValue();
 		double relativeDiff = Math.abs(actualRate - targetRatePaPerM) / targetRatePaPerM;
 		assertTrue(relativeDiff < FORWARD_CHECK_RELATIVE_TOLERANCE,
-				"Expected actualFrictionRatePerMeter close to target " + targetRatePaPerM + ", was " + actualRate);
+				"Expected actualFrictionRate close to target " + targetRatePaPerM + ", was " + actualRate);
 		assertEquals(0.4, result.ductWidth().to(Units.METRE).getValue().doubleValue(), DELTA);
 	}
 

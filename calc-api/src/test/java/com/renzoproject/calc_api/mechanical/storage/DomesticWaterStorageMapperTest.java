@@ -4,7 +4,7 @@ import com.renzoproject.calc.core.mechanical.pipe.PipeUnits;
 import com.renzoproject.calc.core.mechanical.storage.DemandBasis;
 import com.renzoproject.calc.core.mechanical.storage.DomesticWaterStorageInput;
 import com.renzoproject.calc.core.mechanical.storage.DomesticWaterStorageResult;
-import com.renzoproject.calc.core.mechanical.storage.SystemType;
+import com.renzoproject.calc.core.mechanical.storage.FlushSystemType;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
@@ -35,23 +35,23 @@ class DomesticWaterStorageMapperTest {
 	@Test
 	void toCoreInput_fixtureUnit_flushTank_mapsSystemTypeCorrectly() {
 		DomesticWaterStorageRequest request = new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, SystemTypeDto.FLUSH_TANK, 1.0, 0.0);
+				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, FlushSystemTypeDto.FLUSH_TANK, 1.0, 0.0);
 
 		DomesticWaterStorageInput input = DomesticWaterStorageMapper.toCoreInput(request);
 
 		assertEquals(DemandBasis.FIXTURE_UNIT, input.demandBasis());
 		assertEquals(100.0, input.totalFixtureUnits(), DELTA);
-		assertEquals(SystemType.FLUSH_TANK, input.systemType());
+		assertEquals(FlushSystemType.FLUSH_TANK, input.systemType());
 	}
 
 	@Test
 	void toCoreInput_fixtureUnit_flushValve_mapsSystemTypeCorrectly() {
 		DomesticWaterStorageRequest request = new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, SystemTypeDto.FLUSH_VALVE, 1.0, 0.0);
+				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, FlushSystemTypeDto.FLUSH_VALVE, 1.0, 0.0);
 
 		DomesticWaterStorageInput input = DomesticWaterStorageMapper.toCoreInput(request);
 
-		assertEquals(SystemType.FLUSH_VALVE, input.systemType());
+		assertEquals(FlushSystemType.FLUSH_VALVE, input.systemType());
 	}
 
 	@Test

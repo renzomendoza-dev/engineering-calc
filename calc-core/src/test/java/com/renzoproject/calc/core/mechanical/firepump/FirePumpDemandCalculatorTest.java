@@ -1,6 +1,7 @@
 package com.renzoproject.calc.core.mechanical.firepump;
 
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.mechanical.pump.SuctionCondition;
 import org.junit.jupiter.api.Test;
 import tech.units.indriya.quantity.Quantities;
 

@@ -28,7 +28,7 @@ class ExpansionTankControllerTest {
 
 	private static ExpansionTankRequest domesticWaterHeaterRequest(Double additionalVolumeFactor) {
 		return new ExpansionTankRequest(
-				SystemTypeDto.DOMESTIC_WATER_HEATER,
+				HeatingSystemTypeDto.DOMESTIC_WATER_HEATER,
 				190.0,
 				10.0,
 				20.0,
@@ -42,7 +42,7 @@ class ExpansionTankControllerTest {
 
 	private static ExpansionTankRequest hydronicHeatingRequest() {
 		return new ExpansionTankRequest(
-				SystemTypeDto.HYDRONIC_HEATING,
+				HeatingSystemTypeDto.HYDRONIC_HEATING,
 				500.0,
 				50.0,
 				25.0,
@@ -82,7 +82,7 @@ class ExpansionTankControllerTest {
 	@Test
 	void hotTemperatureAtOrBelowColdTemperature_isCalcCoreValidation_returns400() throws Exception {
 		ExpansionTankRequest request = new ExpansionTankRequest(
-				SystemTypeDto.DOMESTIC_WATER_HEATER,
+				HeatingSystemTypeDto.DOMESTIC_WATER_HEATER,
 				190.0,
 				10.0,
 				20.0,
@@ -102,7 +102,7 @@ class ExpansionTankControllerTest {
 	@Test
 	void maxOperatingPressureAtOrBelowFillPressure_isCalcCoreValidation_returns400() throws Exception {
 		ExpansionTankRequest request = new ExpansionTankRequest(
-				SystemTypeDto.DOMESTIC_WATER_HEATER,
+				HeatingSystemTypeDto.DOMESTIC_WATER_HEATER,
 				190.0,
 				10.0,
 				20.0,
@@ -122,7 +122,7 @@ class ExpansionTankControllerTest {
 	@Test
 	void outOfRangeWaterTemperature_isCalcCoreValidation_returns400() throws Exception {
 		ExpansionTankRequest request = new ExpansionTankRequest(
-				SystemTypeDto.DOMESTIC_WATER_HEATER,
+				HeatingSystemTypeDto.DOMESTIC_WATER_HEATER,
 				190.0,
 				10.0,
 				20.0,

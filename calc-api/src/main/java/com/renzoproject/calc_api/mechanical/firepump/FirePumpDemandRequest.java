@@ -1,5 +1,6 @@
 package com.renzoproject.calc_api.mechanical.firepump;
 
+import com.renzoproject.calc_api.mechanical.pump.SuctionConditionDto;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

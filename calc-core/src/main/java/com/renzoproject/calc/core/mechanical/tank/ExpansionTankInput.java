@@ -33,7 +33,7 @@ import javax.measure.quantity.Volume;
  * @throws CalculationException if any of the above rules is violated
  */
 public record ExpansionTankInput(
-		SystemType systemType,
+		HeatingSystemType systemType,
 		Quantity<Volume> primaryVesselVolume,
 		Quantity<Length> estimatedPipingLength,
 		double averagePipeDiameterMm,

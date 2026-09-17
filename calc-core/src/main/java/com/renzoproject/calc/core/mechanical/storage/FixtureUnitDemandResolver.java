@@ -21,12 +21,12 @@ public interface FixtureUnitDemandResolver {
 	 *
 	 * @throws CalculationException if {@code totalWsfu} exceeds the table's upper bound (10,000
 	 *                               WSFU -- never extrapolate), if {@code systemType} is
-	 *                               {@link SystemType#FLUSH_VALVE} and {@code totalWsfu} is below
+	 *                               {@link FlushSystemType#FLUSH_VALVE} and {@code totalWsfu} is below
 	 *                               5 (no published flush-valve data there), or if
 	 *                               {@code totalWsfu} otherwise falls below the table's lowest
 	 *                               known value for the requested system type
 	 */
-	double resolveGpm(double totalWsfu, SystemType systemType);
+	double resolveGpm(double totalWsfu, FlushSystemType systemType);
 
 	/**
 	 * All raw rows, as published, ascending by WSFU. Intended for displaying the table itself

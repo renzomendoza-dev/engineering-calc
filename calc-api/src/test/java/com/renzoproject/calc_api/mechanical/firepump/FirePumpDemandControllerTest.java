@@ -1,5 +1,6 @@
 package com.renzoproject.calc_api.mechanical.firepump;
 
+import com.renzoproject.calc_api.mechanical.pump.SuctionConditionDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

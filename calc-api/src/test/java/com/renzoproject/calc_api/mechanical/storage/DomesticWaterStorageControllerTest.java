@@ -42,7 +42,7 @@ class DomesticWaterStorageControllerTest {
 	@Test
 	void fixtureUnit_flushTank_returns200() throws Exception {
 		DomesticWaterStorageRequest request = new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, SystemTypeDto.FLUSH_TANK, 1.0, 0.0);
+				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, FlushSystemTypeDto.FLUSH_TANK, 1.0, 0.0);
 
 		DomesticWaterStorageResponse response = postForResponse(request);
 
@@ -54,9 +54,9 @@ class DomesticWaterStorageControllerTest {
 		// At WSFU=100, real wsfu-demand.json gives gpmFlushTanks=44, gpmFlushValves=68 -- the
 		// flush-valve volume must come out higher for the same WSFU/duration.
 		DomesticWaterStorageResponse flushTankResponse = postForResponse(new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, SystemTypeDto.FLUSH_TANK, 1.0, 0.0));
+				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, FlushSystemTypeDto.FLUSH_TANK, 1.0, 0.0));
 		DomesticWaterStorageResponse flushValveResponse = postForResponse(new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, SystemTypeDto.FLUSH_VALVE, 1.0, 0.0));
+				DemandBasisDto.FIXTURE_UNIT, null, null, 100.0, FlushSystemTypeDto.FLUSH_VALVE, 1.0, 0.0));
 
 		assertTrue(flushValveResponse.requiredStorageVolumeM3() > flushTankResponse.requiredStorageVolumeM3());
 	}
@@ -86,7 +86,7 @@ class DomesticWaterStorageControllerTest {
 	@Test
 	void fixtureUnit_missingTotalFixtureUnits_returns400() throws Exception {
 		DomesticWaterStorageRequest request = new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, null, SystemTypeDto.FLUSH_TANK, 1.0, 0.0);
+				DemandBasisDto.FIXTURE_UNIT, null, null, null, FlushSystemTypeDto.FLUSH_TANK, 1.0, 0.0);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +122,7 @@ class DomesticWaterStorageControllerTest {
 	@Test
 	void fixtureUnit_wsfuExceedsUpperBound_isCalcCoreValidation_returns400() throws Exception {
 		DomesticWaterStorageRequest request = new DomesticWaterStorageRequest(
-				DemandBasisDto.FIXTURE_UNIT, null, null, 10001.0, SystemTypeDto.FLUSH_TANK, 1.0, 0.0);
+				DemandBasisDto.FIXTURE_UNIT, null, null, 10001.0, FlushSystemTypeDto.FLUSH_TANK, 1.0, 0.0);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)

@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AnalyticalAirPropertiesResolverTest {
+class AnalyticalAirDensityViscosityResolverTest {
 
-	private final AnalyticalAirPropertiesResolver resolver = new AnalyticalAirPropertiesResolver();
+	private final AnalyticalAirDensityViscosityResolver resolver = new AnalyticalAirDensityViscosityResolver();
 
 	private static Quantity<Temperature> celsius(double value) {
 		return Quantities.getQuantity(value, Units.CELSIUS);

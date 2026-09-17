@@ -42,7 +42,7 @@ public class JsonFixtureUnitDemandResolver implements FixtureUnitDemandResolver 
 	}
 
 	@Override
-	public double resolveGpm(double totalWsfu, SystemType systemType) {
+	public double resolveGpm(double totalWsfu, FlushSystemType systemType) {
 		if (systemType == null) {
 			throw new CalculationException("systemType is required");
 		}
@@ -50,7 +50,7 @@ public class JsonFixtureUnitDemandResolver implements FixtureUnitDemandResolver 
 			throw new CalculationException("totalWsfu " + totalWsfu + " exceeds the table's upper bound of "
 					+ MAX_WSFU + " WSFU -- cannot extrapolate");
 		}
-		if (systemType == SystemType.FLUSH_VALVE && totalWsfu < MIN_FLUSH_VALVE_WSFU) {
+		if (systemType == FlushSystemType.FLUSH_VALVE && totalWsfu < MIN_FLUSH_VALVE_WSFU) {
 			throw new CalculationException("No published flush-valve demand data below WSFU=" + MIN_FLUSH_VALVE_WSFU
 					+ " (gpmFlushValves is null in the source table there) -- got totalWsfu=" + totalWsfu);
 		}
@@ -98,8 +98,8 @@ public class JsonFixtureUnitDemandResolver implements FixtureUnitDemandResolver 
 	 * selected. {@code Double.valueOf(...)} keeps both branches reference-typed so only the
 	 * selected branch's value is used, null included.
 	 */
-	private static Double gpmFor(WsfuDemandRow row, SystemType systemType) {
-		return systemType == SystemType.FLUSH_TANK ? Double.valueOf(row.gpmFlushTanks()) : row.gpmFlushValves();
+	private static Double gpmFor(WsfuDemandRow row, FlushSystemType systemType) {
+		return systemType == FlushSystemType.FLUSH_TANK ? Double.valueOf(row.gpmFlushTanks()) : row.gpmFlushValves();
 	}
 
 	@Override

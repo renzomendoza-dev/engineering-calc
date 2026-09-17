@@ -49,7 +49,7 @@ class ExpansionTankCalculatorTest {
 		// fillAbs = 300000 + 101325 = 401325 Pa; maxAbs = 550000 + 101325 = 651325 Pa
 		// requiredTankVolume = 0.0032413 / (1 - 401325/651325) = 0.0032413 / 0.383833 = 0.0084445 m3
 		ExpansionTankInput input = new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
@@ -77,7 +77,7 @@ class ExpansionTankCalculatorTest {
 		// 500 L boiler water content, 50m of 25mm piping, 10 degC cold / 90 degC hot (965.3 kg/m3
 		// at 90 degC), 150 kPa fill / 300 kPa max operating, sea level.
 		ExpansionTankInput input = new ExpansionTankInput(
-				SystemType.HYDRONIC_HEATING,
+				HeatingSystemType.HYDRONIC_HEATING,
 				litres(500.0),
 				metres(50.0),
 				25.0,
@@ -104,7 +104,7 @@ class ExpansionTankCalculatorTest {
 	@Test
 	void calculate_additionalVolumeFactorAppliedCorrectly() {
 		ExpansionTankInput baseline = new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
@@ -115,7 +115,7 @@ class ExpansionTankCalculatorTest {
 				pascal(550000.0),
 				metres(0.0));
 		ExpansionTankInput scaled = new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
@@ -135,7 +135,7 @@ class ExpansionTankCalculatorTest {
 	@Test
 	void construct_nonPositiveVesselVolume_throws() {
 		assertThrows(CalculationException.class, () -> new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(0.0),
 				metres(10.0),
 				20.0,
@@ -150,7 +150,7 @@ class ExpansionTankCalculatorTest {
 	@Test
 	void construct_hotTemperatureAtOrBelowColdTemperature_throws() {
 		assertThrows(CalculationException.class, () -> new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
@@ -165,7 +165,7 @@ class ExpansionTankCalculatorTest {
 	@Test
 	void construct_maxOperatingPressureAtOrBelowFillPressure_throws() {
 		assertThrows(CalculationException.class, () -> new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
@@ -180,7 +180,7 @@ class ExpansionTankCalculatorTest {
 	@Test
 	void calculate_outOfRangeTemperature_propagatesFluidPropertiesResolverException() {
 		ExpansionTankInput input = new ExpansionTankInput(
-				SystemType.DOMESTIC_WATER_HEATER,
+				HeatingSystemType.DOMESTIC_WATER_HEATER,
 				litres(190.0),
 				metres(10.0),
 				20.0,
