@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded PR pushes get cancelled; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21 # matches <java.version> in the poms and the Dockerfile's temurin-21 images
+          cache: maven
+
+      # `verify` runs every calc-core and calc-api test, then packages the Spring Boot jar, so a
+      # broken packaging step fails here rather than first surfacing in a Docker build.
+      - name: Build and test
+        run: ./calc-api/mvnw -B -f pom.xml -pl calc-core,calc-api -am verify
