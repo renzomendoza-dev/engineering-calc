@@ -70,7 +70,18 @@ dynamically rather than hardcoding filenames.
   figures as a placeholder, low confidence on exact wall thickness per size.
   Recommend cross-checking against a specific brand's datasheet
   (e.g. a local PPR supplier catalog) before treating as final.
-- **GI / BI**: ANSI B36.10M Schedule 40 — standard, stable, safe to use
+- **GI / BI, 3-1/2" / 5" / 8"**: added for sprinkler hydraulic calculations,
+  which need steel sizes up to 8". Entered from ASME B36.10M Schedule 40 from
+  general knowledge and **not yet confirmed against the printed table** —
+  treat as `verify`. `PipeSizeRow` has no per-row confidence field, so they are
+  flagged here rather than in the JSON. The three rows:
+  3-1/2" OD 101.6 / wall 5.74 / ID 90.12 mm; 5" OD 141.3 / wall 6.55 /
+  ID 128.2 mm; 8" OD 219.1 / wall 8.18 / ID 202.74 mm.
+  Note `resolveNextStandardSize` can now return these, so a design-mode pipe
+  velocity calculation that previously failed with "no size large enough" may
+  now resolve to 5" or 8".
+- **GI / BI (1/8" through 3", 4", 6")**: ANSI B36.10M Schedule 40 — standard,
+  stable, safe to use
   as-is. BI pipe uses identical dimensions to GI (same steel pipe standard);
   the separate file exists so `PipeDimensionResolver` and the future
   pressure-loss calculator's roughness lookup can key on material

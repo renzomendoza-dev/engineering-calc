@@ -1,0 +1,17 @@
+{
+  "standard": "NFPA 13 (2019 edition) - nominal K-factors for listed sprinklers (US units, gpm/psi^0.5)",
+  "confidence": "verify",
+  "note": "Nominal K-factors only. A listed sprinkler's actual K comes from its manufacturer data sheet and may differ slightly; the calculator always takes K from the caller's input rather than this table, which exists to populate a dropdown. orificeNominal is null where the nominal orifice size is not confirmed.",
+  "kFactors": [
+    { "nominalK": 2.8, "orificeNominal": null, "label": "K=2.8", "confidence": "verify" },
+    { "nominalK": 4.2, "orificeNominal": null, "label": "K=4.2", "confidence": "verify" },
+    { "nominalK": 5.6, "orificeNominal": "1/2 in.", "label": "K=5.6 (1/2 in.)", "confidence": "verify" },
+    { "nominalK": 8.0, "orificeNominal": "17/32 in.", "label": "K=8.0 (17/32 in.)", "confidence": "verify" },
+    { "nominalK": 11.2, "orificeNominal": "5/8 in.", "label": "K=11.2 (5/8 in.)", "confidence": "verify" },
+    { "nominalK": 14.0, "orificeNominal": "3/4 in.", "label": "K=14.0 (3/4 in.)", "confidence": "verify" },
+    { "nominalK": 16.8, "orificeNominal": null, "label": "K=16.8", "confidence": "verify" },
+    { "nominalK": 19.6, "orificeNominal": null, "label": "K=19.6", "confidence": "verify" },
+    { "nominalK": 22.4, "orificeNominal": null, "label": "K=22.4", "confidence": "verify" },
+    { "nominalK": 25.2, "orificeNominal": null, "label": "K=25.2", "confidence": "verify" }
+  ]
+}

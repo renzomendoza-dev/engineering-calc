@@ -1,0 +1,51 @@
+{
+  "standard": "NFPA 13 (2019 edition) - Table 23.4.3.1.1, Equivalent Pipe Length Chart",
+  "cFactorBasis": 120,
+  "confidence": "placeholder",
+  "note": "DELIBERATELY UNPOPULATED. equivalentLengthFtByNominalSize is empty for every fitting until the published table is supplied; no values are guessed. SprinklerHydraulicCalculator throws CalculationException when a segment references a fitting type/size with no published length, rather than silently treating it as zero. A caller who does not have the table can instead pass an explicit equivalentLengthFt on the segment. Keys are nominalSize values as used in reference/pipes/*.json (\"3/4\", \"1\", \"1-1/4\", ... \"8\").",
+  "cFactorBasisNote": "Published lengths are based on C=120. NFPA 13 requires multiplying them by (120/C)^1.85 for pipe with a different C factor (e.g. 0.713 for C=100). That adjustment is NOT applied by the calculator yet - see README.md.",
+  "fittings": [
+    {
+      "fittingType": "ELBOW_90_STANDARD",
+      "label": "90 degree standard elbow",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "ELBOW_90_LONG_TURN",
+      "label": "90 degree long-turn elbow",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "ELBOW_45",
+      "label": "45 degree elbow",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "TEE_OR_CROSS_FLOW_TURNED_90",
+      "label": "Tee or cross, flow turned 90 degrees",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "GATE_VALVE",
+      "label": "Gate valve",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "BUTTERFLY_VALVE",
+      "label": "Butterfly valve",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    },
+    {
+      "fittingType": "SWING_CHECK_VALVE",
+      "label": "Swing check valve",
+      "confidence": "placeholder",
+      "equivalentLengthFtByNominalSize": {}
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "standard": "NFPA 13 (2019 edition) - Figure 19.3.3.1.1 density/area curves, Table 11.2.3.1.2 hose stream/duration, Table 10.2.4.2.1 protection areas",
+  "confidence": "verify",
+  "note": "density/designArea are the MINIMUM points of each density/area curve (lowest density at its paired maximum area), which is the usual starting design point - not the only valid point on the curve. A designer may select any point along the curve, so these are presets, not limits. hoseStreamGpm/durationMinutes duplicate the coarser LIGHT/ORDINARY/EXTRA rows in reference/storage/fire-water-duration.json (which does not split the Ordinary/Extra groups); see README.md. Where NFPA 13 gives a duration range, the conservative upper bound is used.",
+  "presets": [
+    {
+      "hazard": "LIGHT",
+      "label": "Light Hazard",
+      "densityGpmPerSqFt": 0.10,
+      "designAreaSqFt": 1500,
+      "hoseStreamGpm": 100,
+      "durationMinutes": 30,
+      "maxCoverageSqFtPerSprinkler": 225,
+      "confidence": "verify",
+      "sourceNote": "0.10 gpm/ft2 over 1500 ft2 is the minimum point of the Light Hazard curve. Coverage 225 ft2 applies to standard spray, unobstructed construction."
+    },
+    {
+      "hazard": "ORDINARY_GROUP_1",
+      "label": "Ordinary Hazard Group 1",
+      "densityGpmPerSqFt": 0.15,
+      "designAreaSqFt": 1500,
+      "hoseStreamGpm": 250,
+      "durationMinutes": 90,
+      "maxCoverageSqFtPerSprinkler": 130,
+      "confidence": "verify",
+      "sourceNote": "Duration is the upper bound of NFPA 13's 60-90 min Ordinary Hazard range."
+    },
+    {
+      "hazard": "ORDINARY_GROUP_2",
+      "label": "Ordinary Hazard Group 2",
+      "densityGpmPerSqFt": 0.20,
+      "designAreaSqFt": 1500,
+      "hoseStreamGpm": 250,
+      "durationMinutes": 90,
+      "maxCoverageSqFtPerSprinkler": 130,
+      "confidence": "verify",
+      "sourceNote": "Duration is the upper bound of NFPA 13's 60-90 min Ordinary Hazard range."
+    },
+    {
+      "hazard": "EXTRA_GROUP_1",
+      "label": "Extra Hazard Group 1",
+      "densityGpmPerSqFt": 0.30,
+      "designAreaSqFt": 2500,
+      "hoseStreamGpm": 500,
+      "durationMinutes": 120,
+      "maxCoverageSqFtPerSprinkler": 100,
+      "confidence": "verify",
+      "sourceNote": "Duration is the upper bound of NFPA 13's 90-120 min Extra Hazard range."
+    },
+    {
+      "hazard": "EXTRA_GROUP_2",
+      "label": "Extra Hazard Group 2",
+      "densityGpmPerSqFt": 0.40,
+      "designAreaSqFt": 2500,
+      "hoseStreamGpm": 500,
+      "durationMinutes": 120,
+      "maxCoverageSqFtPerSprinkler": 100,
+      "confidence": "verify",
+      "sourceNote": "Duration is the upper bound of NFPA 13's 90-120 min Extra Hazard range."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "standard": "NFPA 13 (2019 edition) - Hazen-Williams C values for sprinkler piping",
+  "confidence": "verify",
+  "note": "systemType ANY means the value does not vary with wet/dry/preaction service. A caller may always override C per pipe segment; this table is the reference/default set.",
+  "cFactors": [
+    {
+      "pipeType": "STEEL",
+      "systemType": "WET",
+      "cFactor": 120,
+      "label": "Steel - wet system",
+      "confidence": "verify",
+      "sourceNote": "Unlined steel pipe in a wet system."
+    },
+    {
+      "pipeType": "STEEL",
+      "systemType": "DRY",
+      "cFactor": 100,
+      "label": "Steel - dry system",
+      "confidence": "verify",
+      "sourceNote": "Lower C than wet service accounts for internal corrosion in dry/alternating pipe."
+    },
+    {
+      "pipeType": "STEEL",
+      "systemType": "PREACTION",
+      "cFactor": 100,
+      "label": "Steel - preaction system",
+      "confidence": "verify",
+      "sourceNote": "Treated as dry service."
+    },
+    {
+      "pipeType": "COPPER",
+      "systemType": "ANY",
+      "cFactor": 150,
+      "label": "Copper tube",
+      "confidence": "verify",
+      "sourceNote": null
+    },
+    {
+      "pipeType": "CPVC",
+      "systemType": "ANY",
+      "cFactor": 150,
+      "label": "CPVC (listed sprinkler pipe)",
+      "confidence": "verify",
+      "sourceNote": null
+    },
+    {
+      "pipeType": "DUCTILE_IRON_UNDERGROUND",
+      "systemType": "ANY",
+      "cFactor": 140,
+      "label": "Ductile iron - cement lined, underground",
+      "confidence": "verify",
+      "sourceNote": "Underground supply mains."
+    }
+  ]
+}

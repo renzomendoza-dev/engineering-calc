@@ -28,6 +28,14 @@ import com.renzoproject.calc.core.mechanical.storage.JsonFireWaterDurationResolv
 import com.renzoproject.calc.core.mechanical.storage.JsonFixtureUnitDemandResolver;
 import com.renzoproject.calc.core.mechanical.storage.JsonPerCapitaConsumptionResolver;
 import com.renzoproject.calc.core.mechanical.storage.PerCapitaConsumptionResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.CFactorResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.FittingEquivalentLengthResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.HazardPresetResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonCFactorResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonFittingEquivalentLengthResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonHazardPresetResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonSprinklerKFactorResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerKFactorResolver;
 import com.renzoproject.calc.core.smokecontrol.JsonSmokeControlDefaultsResolver;
 import com.renzoproject.calc.core.smokecontrol.SmokeControlDefaultsResolver;
 import org.springframework.context.annotation.Bean;
@@ -129,6 +137,28 @@ public class ResolverConfig {
 	@Bean
 	public FireWaterDurationResolver fireWaterDurationResolver() {
 		return new JsonFireWaterDurationResolver();
+	}
+
+	// --- mechanical: sprinkler ---
+
+	@Bean
+	public HazardPresetResolver hazardPresetResolver() {
+		return new JsonHazardPresetResolver();
+	}
+
+	@Bean
+	public CFactorResolver cFactorResolver() {
+		return new JsonCFactorResolver();
+	}
+
+	@Bean
+	public FittingEquivalentLengthResolver fittingEquivalentLengthResolver() {
+		return new JsonFittingEquivalentLengthResolver();
+	}
+
+	@Bean
+	public SprinklerKFactorResolver sprinklerKFactorResolver() {
+		return new JsonSprinklerKFactorResolver();
 	}
 
 	// --- acoustics ---

@@ -28,7 +28,7 @@ calc-core/
   com.renzoproject.calc.core/
     Calculator.java              interface Calculator<Input, Result> { Result calculate(Input input); }
     electrical/                  voltage drop, conduit fill, wire sizing, motor FLC/locked-rotor/conductor sizing, power consumption
-    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire), duct sizing, expansion/pressure tank sizing
+    mechanical/                  pipe velocity/pressure loss, pump TDH/power, fire pump sizing suite, water storage (domestic/fire), duct sizing, expansion/pressure tank sizing, sprinkler hydraulics (NFPA 13, Hazen-Williams)
     acoustics/                   distance attenuation, fire alarm audibility (NFPA 72)
     smokecontrol/                smoke production (plume), t-squared growth variant, natural vent area (NFPA 92)
     common/                      shared reference data (air properties) reusable across domains
@@ -85,12 +85,17 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | POST | `/duct/sizing` | Round/rectangular duct sizing by Equal Friction or Velocity method (ASHRAE Ch.21) |
 | POST | `/tank/expansion` | Thermal expansion tank sizing for a domestic water heater or hydronic heating system |
 | POST | `/tank/pressure` | Hydropneumatic pressure tank drawdown sizing for conventional or VFD pump control |
+| POST | `/sprinkler/hydraulics` | Fire sprinkler remote-area hydraulic calculation, Hazen-Williams (NFPA 13) |
 | GET | `/reference/pipe-materials` | Supported pipe materials |
 | GET | `/reference/lpcd-consumption-table` | Per-capita consumption by occupancy type (domestic storage) |
 | GET | `/reference/wsfu-demand-table` | WSFU → peak demand, NSPC 2009 Table B.5.4 (domestic storage) |
 | GET | `/reference/fire-water-duration-table` | Hazard classification → duration range, NFPA 13 Table 11.2.3.1.2 (fire storage) |
 | GET | `/reference/duct-roughness-table` | Duct material absolute roughness, ASHRAE Fundamentals Table 1 (duct sizing) |
 | GET | `/reference/duct-velocity-limits-table` | Recommended max velocity by duct location + NC/RC acoustic rating, ASHRAE Fundamentals Table 12 (duct sizing) |
+| GET | `/reference/sprinkler-hazard-presets-table` | NFPA 13 density/area, hose stream, duration and coverage presets by hazard (sprinkler) |
+| GET | `/reference/sprinkler-c-factors-table` | Hazen-Williams C by pipe type and service (sprinkler) |
+| GET | `/reference/sprinkler-fitting-equivalent-lengths-table` | Fitting equivalent lengths, NFPA 13 Table 23.4.3.1.1 — **ships unpopulated**, see `reference/sprinkler/README.md` |
+| GET | `/reference/sprinkler-k-factors-table` | Nominal sprinkler K-factors (sprinkler) |
 
 ### Acoustics — `/api/acoustics`
 
