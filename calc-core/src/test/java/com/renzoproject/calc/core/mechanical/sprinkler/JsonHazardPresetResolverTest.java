@@ -44,11 +44,24 @@ class JsonHazardPresetResolverTest {
 	}
 
 	@Test
-	void everyRowIsTaggedPendingVerification() {
-		// Nothing in this file has been checked against the printed standard yet; the calculator's
-		// warnings and reference/sprinkler/README.md both depend on these tags being honest.
-		assertTrue(resolver.allEntries().stream().allMatch(row -> "verify".equals(row.confidence())),
-				"expected every hazard preset to be tagged 'verify'");
+	void everyRowIsVerifiedAgainstThePrintedStandard() {
+		// Every field has now been checked against the 2019 edition: density and area off
+		// Figure 19.3.3.1.1, hose and duration from Table 19.3.3.1.2, coverage from
+		// Table 10.2.4.2.1. The calculator's warnings and the README both depend on these tags
+		// being honest, so this asserts the promotion rather than leaving it to a reader.
+		assertTrue(resolver.allEntries().stream().allMatch(row -> "verified".equals(row.confidence())),
+				"expected every hazard preset to be tagged 'verified'");
+	}
+
+	@Test
+	void storedPointIsTheMinimumAreaEndOfEachCurve() {
+		// The curves slope from a lower density over a larger area to a higher density over the
+		// minimum area; the stored pair is that minimum-area end. Light/Ordinary bottom out at
+		// 1500 ft2 and Extra at 2500 ft2, per 19.3.3.1.4.
+		assertEquals(1500.0, resolver.resolve(SprinklerHazard.LIGHT).designAreaSqFt(), 1e-9);
+		assertEquals(1500.0, resolver.resolve(SprinklerHazard.ORDINARY_GROUP_2).designAreaSqFt(), 1e-9);
+		assertEquals(2500.0, resolver.resolve(SprinklerHazard.EXTRA_GROUP_1).designAreaSqFt(), 1e-9);
+		assertEquals(2500.0, resolver.resolve(SprinklerHazard.EXTRA_GROUP_2).designAreaSqFt(), 1e-9);
 	}
 
 }

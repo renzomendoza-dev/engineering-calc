@@ -11,6 +11,7 @@ record SprinklerKFactorFile(
 		String edition,
 		String confidence,
 		String note,
+		String dryTypeNote,
 		List<SprinklerKFactorRow> kFactors) {
 
 }

@@ -14,25 +14,40 @@ Every file carries a file-level `confidence`, and most rows carry their own:
 - `placeholder` — not known. Never silently treated as zero: the calculator
   throws instead of guessing.
 
-**Almost nothing in this directory is `verified` yet** — only three C factor
-rows taken straight from Table A.27.2.4.8.2. The rest needs confirming against
-a copy of NFPA 13 2019:
+**Checked against the printed NFPA 13 2019 so far:** all five hazard presets,
+all thirteen K-factors, and three C factor rows. Still outstanding: the fitting
+transcription, three C factor rows that are our own mapping, and the added pipe
+sizes.
 
-| Data | Status | What would clear it |
+| Data | Status | Source / what would clear it |
 |---|---|---|
-| Hazard presets: design area | ✅ checked | 19.3.3.1.4 — 1500 ft² light/ordinary, 2500 ft² extra |
-| Hazard presets: hose + duration | ✅ checked | Table 19.3.3.1.2 — 100/30, 250/60–90, 500/90–120 |
-| Hazard presets: max coverage | ✅ checked | Table 10.2.4.2.1(a)(b)(c) — 225 / 130 / 100 ft² |
-| Hazard presets: **density** | `verify` ×5 | Must be read off the plotted curves in Figure 19.3.3.1.1 (p. 13‑162); not checkable from page text |
+| **Hazard presets** (all 5 fields) | ✅ `verified` | Figure 19.3.3.1.1, §19.3.3.1.4, Table 19.3.3.1.2, Table 10.2.4.2.1(a)(b)(c) |
+| **K-factors** (13 rows) | ✅ `verified` | Table 7.2.2.1 |
+| C factors: steel wet/dry, copper | ✅ `verified` | Table A.27.2.4.8.2 |
 | Fitting equivalent lengths | `verify` ×8 | A second read of the transcription, especially the two non-monotonic cells |
-| K-factors | `verify` ×10 | §7.2.1–7.2.2 on **p. 13‑49** (the page supplied started at 7.2.3) |
 | C factors: preaction, CPVC, ductile iron | `verify` ×3 | Mapping decisions + a source for ductile iron 140 |
 | Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 dimensions (not an NFPA document) |
 
-Rows stay at `verify` while **any** of their fields is unconfirmed, so the
-hazard presets are still tagged `verify` even though four of their five fields
-are now checked — density is the holdout. Per-field detail is in each row's
-`sourceNote`.
+A row stays at `verify` while **any** of its fields is unconfirmed; per-field
+detail is in each row's `sourceNote`.
+
+### How to read the density/area curves
+
+Each curve slopes from a **lower density over a larger area** down-right to a
+**higher density over the minimum area**. The pair stored for each hazard is
+that minimum-area end — the usual starting design point, not the only valid
+one. Full spans, for a UI that lets an engineer pick elsewhere on the curve:
+
+| Hazard | Large-area end | Stored (minimum-area end) |
+|---|---|---|
+| Light | 0.07 @ 3000 ft² | **0.10 @ 1500 ft²** |
+| Ordinary 1 | 0.10 @ 4000 ft² | **0.15 @ 1500 ft²** |
+| Ordinary 2 | 0.15 @ 4000 ft² | **0.20 @ 1500 ft²** |
+| Extra 1 | 0.20 @ 5000 ft² | **0.30 @ 2500 ft²** |
+| Extra 2 | 0.30 @ 5000 ft² | **0.40 @ 2500 ft²** |
+
+Only the stored endpoint exists as structured data today; the spans are
+recorded in the JSON's `curveNote`.
 
 **Citations were renumbered in the 2019 edition** and ours were written against
 the older numbering. Confirmed and corrected so far: the fitting chart is
@@ -171,13 +186,27 @@ row can be reconciled against the printed chart. An **explicitly supplied**
 and silently rescaling someone else's number would be worse than leaving it
 alone.
 
-### `sprinkler-k-factors.json` — `verify`
+### `sprinkler-k-factors.json` — `verified`
 
-Nominal K-factors 2.8 through 25.2 for a form's dropdown. Orifice sizes are
-recorded only for 5.6 (1/2 in.), 8.0 (17/32 in.), 11.2 (5/8 in.) and
-14.0 (3/4 in.); the rest are `null` rather than guessed. The calculator always
-takes K from the caller, since a listed sprinkler's actual K comes from its
-data sheet.
+**Table 7.2.2.1** (Sprinkler Discharge Characteristics Identification), all 13
+rows, K = 1.4 through 28.0, with each row's published K range, L/min/bar
+equivalent, discharge as a percentage of a K-5.6 head, and thread type.
+
+Two corrections came out of checking this against the printed table: the
+earlier data listed only 10 rows (1.4, 1.9 and 28.0 were missing), and it
+carried an `orificeNominal` field — **the standard's table publishes a thread
+type, not an orifice size**. Those orifice values (17/32 in., 5/8 in. …) were
+legacy descriptors from general knowledge and have been replaced by the
+published `threadType`.
+
+The calculator always takes K from the caller, since a listed sprinkler's
+actual K comes from its data sheet and need only fall inside the published
+range.
+
+**Dry-type sprinklers:** the table's own note says these nominal values are for
+sprinkler *selection*, and that dry-type sprinklers use an adjusted K for
+hydraulic calculation (27.2.4.10.3). This application does not apply that
+adjustment — a caller calculating a dry-type sprinkler must pass the adjusted K.
 
 ## Related data outside this directory
 

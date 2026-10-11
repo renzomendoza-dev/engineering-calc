@@ -35,7 +35,7 @@ class SprinklerReferenceControllerTest {
 				.andExpect(jsonPath("$[?(@.hazard == 'LIGHT')].densityGpmPerSqFt").value(contains(0.10)))
 				.andExpect(jsonPath("$[?(@.hazard == 'LIGHT')].designAreaSqFt").value(contains(1500.0)))
 				.andExpect(jsonPath("$[?(@.hazard == 'EXTRA_GROUP_2')].densityGpmPerSqFt").value(contains(0.40)))
-				.andExpect(jsonPath("$[?(@.confidence == 'verify')]", hasSize(5)));
+				.andExpect(jsonPath("$[?(@.confidence == 'verified')]", hasSize(5)));
 	}
 
 	@Test
@@ -80,11 +80,15 @@ class SprinklerReferenceControllerTest {
 	}
 
 	@Test
-	void kFactorsTable_returnsNominalKFactors() throws Exception {
+	void kFactorsTable_returnsTheFullPublishedTable() throws Exception {
+		// Table 7.2.2.1: 13 nominal K-factors with their allowed range, discharge percentage and
+		// thread type (a thread size, not an orifice size).
 		mockMvc.perform(get(BASE_URL + "/sprinkler-k-factors-table"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$", hasSize(10)))
-				.andExpect(jsonPath("$[?(@.nominalK == 5.6)].orificeNominal").value(contains("1/2 in.")));
+				.andExpect(jsonPath("$", hasSize(13)))
+				.andExpect(jsonPath("$[?(@.nominalK == 5.6)].threadType").value(contains("1/2 in. (15 mm) NPT")))
+				.andExpect(jsonPath("$[?(@.nominalK == 5.6)].percentOfK56Discharge").value(contains(100.0)))
+				.andExpect(jsonPath("$[?(@.nominalK == 28.0)].kFactorRangeMaxGpm").value(contains(29.4)));
 	}
 
 }

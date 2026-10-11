@@ -1,10 +1,11 @@
 {
   "standard": "NFPA 13 (2019 edition) - Figure 19.3.3.1.1 density/area curves (p. 13-162), Table 19.3.3.1.2 hose stream + duration (p. 13-162), Table 10.2.4.2.1(a)/(b)/(c) protection areas (p. 13-78 onward)",
   "edition": "NFPA 13, 2019 edition",
-  "confidence": "verify",
-  "note": "density/designArea are the MINIMUM points of each density/area curve (lowest density at its paired maximum area), which is the usual starting design point - not the only valid point on the curve. A designer may select any point along the curve, so these are presets, not limits. hoseStreamGpm/durationMinutes duplicate the coarser LIGHT/ORDINARY/EXTRA rows in reference/storage/fire-water-duration.json (which does not split the Ordinary/Extra groups); see README.md. Where NFPA 13 gives a duration range, the conservative upper bound is used.",
-  "verificationNote": "CONFIRMED against the printed 2019 edition: designAreaSqFt (19.3.3.1.4 sets the minimum area of sprinkler operation at 1500 ft2 for light/ordinary and 2500 ft2 for extra hazard), hoseStreamGpm and the duration ranges (Table 19.3.3.1.2 - light 100 gpm / 30 min, ordinary 250 gpm / 60-90 min, extra 500 gpm / 90-120 min), and maxCoverageSqFtPerSprinkler (Table 10.2.4.2.1(a)/(b)/(c)). NOT YET CONFIRMED: densityGpmPerSqFt, which has to be read off the plotted curves in Figure 19.3.3.1.1 and cannot be checked from the page's text. That is what keeps every row at 'verify'. Note the hose/duration table is 19.3.3.1.2 in the 2019 edition, not the 2016 number 11.2.3.1.2; reference/storage/fire-water-duration.json has been corrected to match.",
+  "confidence": "verified",
+  "note": "Each hazard's density/area curve slopes from a lower density over a larger area down to a HIGHER density over the minimum area. The density/designArea pair stored here is that minimum-area end of the curve, which is the usual starting design point - not the only valid one. A designer may select any point along the curve, so these are presets, not limits. hoseStreamGpm/durationMinutes duplicate the coarser LIGHT/ORDINARY/EXTRA rows in reference/storage/fire-water-duration.json (which does not split the Ordinary/Extra groups); see README.md. Where NFPA 13 gives a duration range, the conservative upper bound is stored.",
+  "verificationNote": "All fields checked against the printed 2019 edition. densityGpmPerSqFt and designAreaSqFt read off the minimum-area end of each curve in Figure 19.3.3.1.1; designAreaSqFt also agrees with 19.3.3.1.4, which sets the minimum area of sprinkler operation at 1500 ft2 for light/ordinary and 2500 ft2 for extra hazard. hoseStreamGpm and the duration ranges from Table 19.3.3.1.2. maxCoverageSqFtPerSprinkler from Table 10.2.4.2.1(a)/(b)/(c). Nothing here is from general knowledge any more. Note the hose/duration table is 19.3.3.1.2 in the 2019 edition, not the 2016 number 11.2.3.1.2; reference/storage/fire-water-duration.json has been corrected to match.",
   "coverageNote": "maxCoverageSqFtPerSprinkler is the MAXIMUM for the hazard, not the only value. Light hazard is 225 ft2 for unobstructed construction but drops to 200 ft2 obstructed and 168/130 ft2 for combustible construction with closely spaced members; extra hazard's 100 ft2 applies to hydraulically calculated systems with a density of at least 0.25 gpm/ft2 (90 ft2 under the pipe schedule method). A real design takes the figure for its own construction type from Table 10.2.4.2.1(a)-(d).",
+  "curveNote": "Full span of each curve in Figure 19.3.3.1.1, for a UI that lets an engineer pick a different point: Light 0.07 gpm/ft2 at 3000 ft2 to 0.10 at 1500; Ordinary 1, 0.10 at 4000 to 0.15 at 1500; Ordinary 2, 0.15 at 4000 to 0.20 at 1500; Extra 1, 0.20 at 5000 to 0.30 at 2500; Extra 2, 0.30 at 5000 to 0.40 at 2500. Only the minimum-area endpoint is stored as structured data today.",
   "presets": [
     {
       "hazard": "LIGHT",
@@ -14,8 +15,8 @@
       "hoseStreamGpm": 100,
       "durationMinutes": 30,
       "maxCoverageSqFtPerSprinkler": 225,
-      "confidence": "verify",
-      "sourceNote": "Area, hose and duration confirmed (19.3.3.1.4, Table 19.3.3.1.2). Coverage 225 ft2 confirmed as the unobstructed maximum, Table 10.2.4.2.1(a). Density 0.10 still to be read off Figure 19.3.3.1.1."
+      "confidence": "verified",
+      "sourceNote": "Minimum-area end of the Light curve, Figure 19.3.3.1.1 (curve spans 0.07 at 3000 ft2 to 0.10 at 1500 ft2). Hose and duration from Table 19.3.3.1.2. Coverage 225 ft2 is the unobstructed maximum, Table 10.2.4.2.1(a)."
     },
     {
       "hazard": "ORDINARY_GROUP_1",
@@ -25,8 +26,8 @@
       "hoseStreamGpm": 250,
       "durationMinutes": 90,
       "maxCoverageSqFtPerSprinkler": 130,
-      "confidence": "verify",
-      "sourceNote": "Area, hose and duration confirmed (19.3.3.1.4, Table 19.3.3.1.2); duration is the upper bound of the published 60-90 min range. Coverage 130 ft2 confirmed, Table 10.2.4.2.1(b). Density 0.15 still to be read off Figure 19.3.3.1.1."
+      "confidence": "verified",
+      "sourceNote": "Minimum-area end of the Ordinary 1 curve, Figure 19.3.3.1.1 (curve spans 0.10 at 4000 ft2 to 0.15 at 1500 ft2). Hose and duration from Table 19.3.3.1.2; duration is the upper bound of the published 60-90 min range. Coverage 130 ft2, Table 10.2.4.2.1(b)."
     },
     {
       "hazard": "ORDINARY_GROUP_2",
@@ -36,8 +37,8 @@
       "hoseStreamGpm": 250,
       "durationMinutes": 90,
       "maxCoverageSqFtPerSprinkler": 130,
-      "confidence": "verify",
-      "sourceNote": "Area, hose and duration confirmed (19.3.3.1.4, Table 19.3.3.1.2); duration is the upper bound of the published 60-90 min range. Coverage 130 ft2 confirmed, Table 10.2.4.2.1(b). Density 0.20 still to be read off Figure 19.3.3.1.1."
+      "confidence": "verified",
+      "sourceNote": "Minimum-area end of the Ordinary 2 curve, Figure 19.3.3.1.1 (curve spans 0.15 at 4000 ft2 to 0.20 at 1500 ft2). Hose and duration from Table 19.3.3.1.2; duration is the upper bound of the published 60-90 min range. Coverage 130 ft2, Table 10.2.4.2.1(b)."
     },
     {
       "hazard": "EXTRA_GROUP_1",
@@ -47,8 +48,8 @@
       "hoseStreamGpm": 500,
       "durationMinutes": 120,
       "maxCoverageSqFtPerSprinkler": 100,
-      "confidence": "verify",
-      "sourceNote": "Area, hose and duration confirmed (19.3.3.1.4, Table 19.3.3.1.2); duration is the upper bound of the published 90-120 min range. Coverage 100 ft2 confirmed for hydraulically calculated systems at density >= 0.25 gpm/ft2, Table 10.2.4.2.1(c). Density 0.30 still to be read off Figure 19.3.3.1.1."
+      "confidence": "verified",
+      "sourceNote": "Minimum-area end of the Extra Hazard Group 1 curve, Figure 19.3.3.1.1 (curve spans 0.20 at 5000 ft2 to 0.30 at 2500 ft2). Hose and duration from Table 19.3.3.1.2; duration is the upper bound of the published 90-120 min range. Coverage 100 ft2 for hydraulically calculated systems at density >= 0.25 gpm/ft2, Table 10.2.4.2.1(c)."
     },
     {
       "hazard": "EXTRA_GROUP_2",
@@ -58,8 +59,8 @@
       "hoseStreamGpm": 500,
       "durationMinutes": 120,
       "maxCoverageSqFtPerSprinkler": 100,
-      "confidence": "verify",
-      "sourceNote": "Area, hose and duration confirmed (19.3.3.1.4, Table 19.3.3.1.2); duration is the upper bound of the published 90-120 min range. Coverage 100 ft2 confirmed for hydraulically calculated systems at density >= 0.25 gpm/ft2, Table 10.2.4.2.1(c). Density 0.40 still to be read off Figure 19.3.3.1.1."
+      "confidence": "verified",
+      "sourceNote": "Minimum-area end of the Extra Hazard Group 2 curve, Figure 19.3.3.1.1 (curve spans 0.30 at 5000 ft2 to 0.40 at 2500 ft2). Hose and duration from Table 19.3.3.1.2; duration is the upper bound of the published 90-120 min range. Coverage 100 ft2 for hydraulically calculated systems at density >= 0.25 gpm/ft2, Table 10.2.4.2.1(c)."
     }
   ]
 }

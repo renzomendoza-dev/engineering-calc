@@ -1,18 +1,22 @@
 {
-  "standard": "NFPA 13 (2019 edition) - nominal K-factors for listed sprinklers (US units, gpm/psi^0.5)",
+  "standard": "NFPA 13 (2019 edition) - Table 7.2.2.1, Sprinkler Discharge Characteristics Identification",
   "edition": "NFPA 13, 2019 edition",
-  "confidence": "verify",
-  "note": "Nominal K-factors only. A listed sprinkler's actual K comes from its manufacturer data sheet and may differ slightly; the calculator always takes K from the caller's input rather than this table, which exists to populate a dropdown. orificeNominal is null where the nominal orifice size is not confirmed.",
+  "confidence": "verified",
+  "note": "Nominal K-factors as published. The calculator always takes K from the caller's input rather than this table, which exists to populate a dropdown: a listed sprinkler's actual K comes from its data sheet and need only fall inside the published range. kFactorRangeMinGpm/MaxGpm are that allowed range; percentOfK56Discharge is the table's discharge comparison against a K-5.6 head; threadType is the published thread, NOT an orifice size.",
+  "dryTypeNote": "Per the table's own note, these nominal K-factors are used for sprinkler SELECTION. Dry-type sprinklers use an adjusted K-factor for hydraulic calculation purposes (see 27.2.4.10.3). This application does not apply that adjustment - a caller calculating a dry-type sprinkler must pass the adjusted K.",
   "kFactors": [
-    { "nominalK": 2.8, "orificeNominal": null, "label": "K=2.8", "confidence": "verify" },
-    { "nominalK": 4.2, "orificeNominal": null, "label": "K=4.2", "confidence": "verify" },
-    { "nominalK": 5.6, "orificeNominal": "1/2 in.", "label": "K=5.6 (1/2 in.)", "confidence": "verify" },
-    { "nominalK": 8.0, "orificeNominal": "17/32 in.", "label": "K=8.0 (17/32 in.)", "confidence": "verify" },
-    { "nominalK": 11.2, "orificeNominal": "5/8 in.", "label": "K=11.2 (5/8 in.)", "confidence": "verify" },
-    { "nominalK": 14.0, "orificeNominal": "3/4 in.", "label": "K=14.0 (3/4 in.)", "confidence": "verify" },
-    { "nominalK": 16.8, "orificeNominal": null, "label": "K=16.8", "confidence": "verify" },
-    { "nominalK": 19.6, "orificeNominal": null, "label": "K=19.6", "confidence": "verify" },
-    { "nominalK": 22.4, "orificeNominal": null, "label": "K=22.4", "confidence": "verify" },
-    { "nominalK": 25.2, "orificeNominal": null, "label": "K=25.2", "confidence": "verify" }
+    { "nominalK": 1.4, "nominalKLpmBar": 20, "kFactorRangeMinGpm": 1.3, "kFactorRangeMaxGpm": 1.5, "percentOfK56Discharge": 25, "threadType": "1/2 in. (15 mm) NPT", "label": "K=1.4", "confidence": "verified" },
+    { "nominalK": 1.9, "nominalKLpmBar": 27, "kFactorRangeMinGpm": 1.8, "kFactorRangeMaxGpm": 2.0, "percentOfK56Discharge": 33.3, "threadType": "1/2 in. (15 mm) NPT", "label": "K=1.9", "confidence": "verified" },
+    { "nominalK": 2.8, "nominalKLpmBar": 40, "kFactorRangeMinGpm": 2.6, "kFactorRangeMaxGpm": 2.9, "percentOfK56Discharge": 50, "threadType": "1/2 in. (15 mm) NPT", "label": "K=2.8", "confidence": "verified" },
+    { "nominalK": 4.2, "nominalKLpmBar": 60, "kFactorRangeMinGpm": 4.0, "kFactorRangeMaxGpm": 4.4, "percentOfK56Discharge": 75, "threadType": "1/2 in. (15 mm) NPT", "label": "K=4.2", "confidence": "verified" },
+    { "nominalK": 5.6, "nominalKLpmBar": 80, "kFactorRangeMinGpm": 5.3, "kFactorRangeMaxGpm": 5.8, "percentOfK56Discharge": 100, "threadType": "1/2 in. (15 mm) NPT", "label": "K=5.6", "confidence": "verified" },
+    { "nominalK": 8.0, "nominalKLpmBar": 115, "kFactorRangeMinGpm": 7.4, "kFactorRangeMaxGpm": 8.2, "percentOfK56Discharge": 140, "threadType": "3/4 in. (20 mm) NPT or 1/2 in. (15 mm) NPT", "label": "K=8.0", "confidence": "verified" },
+    { "nominalK": 11.2, "nominalKLpmBar": 160, "kFactorRangeMinGpm": 10.7, "kFactorRangeMaxGpm": 11.7, "percentOfK56Discharge": 200, "threadType": "1/2 in. (15 mm) NPT or 3/4 in. (20 mm) NPT", "label": "K=11.2", "confidence": "verified" },
+    { "nominalK": 14.0, "nominalKLpmBar": 200, "kFactorRangeMinGpm": 13.5, "kFactorRangeMaxGpm": 14.5, "percentOfK56Discharge": 250, "threadType": "3/4 in. (20 mm) NPT", "label": "K=14.0", "confidence": "verified" },
+    { "nominalK": 16.8, "nominalKLpmBar": 240, "kFactorRangeMinGpm": 16.0, "kFactorRangeMaxGpm": 17.6, "percentOfK56Discharge": 300, "threadType": "3/4 in. (20 mm) NPT", "label": "K=16.8", "confidence": "verified" },
+    { "nominalK": 19.6, "nominalKLpmBar": 280, "kFactorRangeMinGpm": 18.6, "kFactorRangeMaxGpm": 20.6, "percentOfK56Discharge": 350, "threadType": "1 in. (25 mm) NPT", "label": "K=19.6", "confidence": "verified" },
+    { "nominalK": 22.4, "nominalKLpmBar": 320, "kFactorRangeMinGpm": 21.3, "kFactorRangeMaxGpm": 23.5, "percentOfK56Discharge": 400, "threadType": "1 in. (25 mm) NPT", "label": "K=22.4", "confidence": "verified" },
+    { "nominalK": 25.2, "nominalKLpmBar": 360, "kFactorRangeMinGpm": 23.9, "kFactorRangeMaxGpm": 26.5, "percentOfK56Discharge": 450, "threadType": "1 in. (25 mm) NPT", "label": "K=25.2", "confidence": "verified" },
+    { "nominalK": 28.0, "nominalKLpmBar": 400, "kFactorRangeMinGpm": 26.6, "kFactorRangeMaxGpm": 29.4, "percentOfK56Discharge": 500, "threadType": "1 in. (25 mm) NPT", "label": "K=28.0", "confidence": "verified" }
   ]
 }
