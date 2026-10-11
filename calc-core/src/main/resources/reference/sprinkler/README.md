@@ -314,6 +314,32 @@ sprinkler *selection*, and that dry-type sprinklers use an adjusted K for
 hydraulic calculation (27.2.4.10.3). This application does not apply that
 adjustment — a caller calculating a dry-type sprinkler must pass the adjusted K.
 
+### `quick-response-area-reduction.json` — `verified` (curve only)
+
+**Figure 19.3.3.2.3.1**, *Design Area Reduction for Quick-Response Sprinklers*:
+the percentage taken off the design area of operation, by ceiling height.
+
+| Ceiling height | Reduction |
+|---|---|
+| under 10 ft | 40 % |
+| 10 ft to 20 ft inclusive | `y = -3x/2 + 55` (40 % at 10 ft, falling to 25 % at 20 ft) |
+| over 20 ft | none |
+
+Transcribed from the printed figure and checked for internal consistency: the
+US formula, the two plotted end points, and the figure's own SI note
+(`y = -4.8x + 54.6`, x in metres) all agree. Only the US form is stored.
+
+The step at 20 ft is the standard's own — 20.0 ft takes 25 %, anything above
+takes none — and is left as published rather than smoothed.
+
+**What is not here.** The *conditions* NFPA 13 attaches to using the reduction
+(which system types, which hazard classifications, how widely quick-response
+sprinklers must be installed, any minimum on the reduced area) are in the text
+of section 19.3.3.2.3 and have **not** been transcribed. The file says so in
+`conditionsConfidence: "not-transcribed"`, and every result that applies a
+reduction says its conditions were not checked, because a reduction is the
+less conservative direction.
+
 ## Related data outside this directory
 
 - **Pipe inside diameters** — `reference/pipes/bi.json` / `gi.json`

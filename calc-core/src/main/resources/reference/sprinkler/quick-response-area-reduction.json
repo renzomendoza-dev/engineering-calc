@@ -1,0 +1,14 @@
+{
+  "standard": "NFPA 13 (2019 edition) - Figure 19.3.3.2.3.1, Design Area Reduction for Quick-Response Sprinklers",
+  "edition": "NFPA 13, 2019 edition",
+  "confidence": "verified",
+  "note": "Percent reduction to the design area of operation as a function of ceiling height, for quick-response sprinklers. The printed figure gives the rule in four parts: below 10 ft the reduction is a flat 40 percent; from 10 ft to 20 ft inclusive it is y = -3x/2 + 55 (x in feet), falling linearly from 40 percent to 25 percent; above 20 ft it is zero. The SI note (y = -4.8x + 54.6, x in metres) agrees with the US figures at the plotted end points (40.2 and 25.3 at 3.0 m and 6.1 m), so only the US customary form is stored. The step at 20 ft is the standard's own: 20.0 ft takes 25 percent, anything above takes none.",
+  "conditionsConfidence": "not-transcribed",
+  "conditionsNote": "This file holds the CURVE only. The conditions NFPA 13 attaches to using it -- which system types, which hazard classifications, how widely quick-response sprinklers must be installed, and any minimum the reduced area may not go below -- are in the text of section 19.3.3.2.3 and have NOT been transcribed. The calculator therefore applies the curve when the caller says quick-response sprinklers are in use, and says on every result that those conditions were not checked. A reduction makes a design less conservative, so do not treat the reduced area as permitted until the section's conditions have been confirmed against the printed standard.",
+  "lowCeilingFt": 10.0,
+  "highCeilingFt": 20.0,
+  "reductionBelowLowCeilingPercent": 40.0,
+  "reductionAboveHighCeilingPercent": 0.0,
+  "slopePercentPerFt": -1.5,
+  "interceptPercent": 55.0
+}
