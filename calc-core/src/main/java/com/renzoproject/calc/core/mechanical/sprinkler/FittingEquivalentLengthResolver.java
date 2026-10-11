@@ -5,7 +5,7 @@ import com.renzoproject.calc.core.exception.CalculationException;
 import java.util.List;
 
 /**
- * Resolves fitting equivalent pipe lengths (NFPA 13 Table 23.4.3.1.1).
+ * Resolves fitting equivalent pipe lengths (NFPA 13 Table 27.2.3.1.1).
  */
 public interface FittingEquivalentLengthResolver {
 

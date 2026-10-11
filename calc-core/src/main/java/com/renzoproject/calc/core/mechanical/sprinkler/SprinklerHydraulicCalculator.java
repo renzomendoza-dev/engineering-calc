@@ -277,13 +277,13 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			if (publishedFt == null) {
 				throw new CalculationException("No published equivalent length for fitting " + fitting.fittingType()
 						+ " at nominal size " + segment.nominalSize() + " (reference data confidence: "
-						+ row.confidence() + ") -- supply NFPA 13 Table 23.4.3.1.1 in "
+						+ row.confidence() + ") -- supply NFPA 13 Table 27.2.3.1.1 in "
 						+ "reference/sprinkler/fitting-equivalent-lengths.json, or pass an "
 						+ "explicitEquivalentLengthFt on the fitting");
 			}
 			if (!VERIFIED_CONFIDENCE.equalsIgnoreCase(row.confidence())) {
 				warnings.add("Fitting equivalent length for " + row.fittingType() + " is reference data tagged '"
-						+ row.confidence() + "' -- confirm against NFPA 13 Table 23.4.3.1.1 before relying on this "
+						+ row.confidence() + "' -- confirm against NFPA 13 Table 27.2.3.1.1 before relying on this "
 						+ "calculation");
 			}
 			total += fitting.quantity() * publishedFt;

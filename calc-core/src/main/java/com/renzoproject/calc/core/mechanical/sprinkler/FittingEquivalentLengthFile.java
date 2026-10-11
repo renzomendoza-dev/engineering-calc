@@ -8,10 +8,12 @@ import java.util.List;
  */
 record FittingEquivalentLengthFile(
 		String standard,
+		String edition,
 		double cFactorBasis,
 		String confidence,
 		String note,
 		String cFactorBasisNote,
+		String transcriptionNote,
 		List<FittingEquivalentLengthRow> fittings) {
 
 }

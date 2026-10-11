@@ -1,51 +1,81 @@
 {
-  "standard": "NFPA 13 (2019 edition) - Table 23.4.3.1.1, Equivalent Pipe Length Chart",
+  "standard": "NFPA 13 (2019 edition) - Table 27.2.3.1.1, Equivalent Schedule 40 Steel Pipe Length Chart",
+  "edition": "NFPA 13, 2019 edition",
   "cFactorBasis": 120,
-  "confidence": "placeholder",
-  "note": "DELIBERATELY UNPOPULATED. equivalentLengthFtByNominalSize is empty for every fitting until the published table is supplied; no values are guessed. SprinklerHydraulicCalculator throws CalculationException when a segment references a fitting type/size with no published length, rather than silently treating it as zero. A caller who does not have the table can instead pass an explicit equivalentLengthFt on the segment. Keys are nominalSize values as used in reference/pipes/*.json (\"3/4\", \"1\", \"1-1/4\", ... \"8\").",
-  "cFactorBasisNote": "Published lengths are based on C=120. NFPA 13 requires multiplying them by (120/C)^1.85 for pipe with a different C factor (e.g. 0.713 for C=100). That adjustment is NOT applied by the calculator yet - see README.md.",
+  "confidence": "verify",
+  "note": "Equivalent length in FEET of Schedule 40 steel pipe, keyed by the same nominalSize strings as reference/pipes/*.json. A size missing from a fitting's map is not published for that fitting (shown as a dash in the table) -- SprinklerHydraulicCalculator throws for that combination rather than assuming zero, and a caller can pass an explicit equivalentLengthFt instead. 10 in. and 12 in. are transcribed for completeness even though reference/pipes/*.json currently stops at 8 in.",
+  "cFactorBasisNote": "Published lengths are based on C=120. NFPA 13 requires multiplying them by (120/C)^1.85 for pipe with a different C factor (about 0.713 for C=100, i.e. dry and preaction steel). That adjustment is NOT applied by the calculator yet - see README.md.",
+  "transcriptionNote": "Transcribed from an image of the printed table, so tagged 'verify' until a second pass confirms it. Two oddities are transcribed as published, not corrected: the butterfly valve is 12 ft at 4 in. but 9 ft at 5 in. (non-monotonic), and 1/2 in. appears only because NFPA 13 Sections 29.4/29.5 allow that size. Swing check values are averages, per the table's own footnote, because equivalent length varies with valve design.",
   "fittings": [
+    {
+      "fittingType": "ELBOW_45",
+      "label": "45 degree elbow",
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "3/4": 1, "1": 1, "1-1/4": 1, "1-1/2": 2, "2": 2, "2-1/2": 3, "3": 3,
+        "3-1/2": 3, "4": 4, "5": 5, "6": 7, "8": 9, "10": 11, "12": 13
+      }
+    },
     {
       "fittingType": "ELBOW_90_STANDARD",
       "label": "90 degree standard elbow",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "1/2": 1, "3/4": 2, "1": 2, "1-1/4": 3, "1-1/2": 4, "2": 5, "2-1/2": 6, "3": 7,
+        "3-1/2": 8, "4": 10, "5": 12, "6": 14, "8": 18, "10": 22, "12": 27
+      }
     },
     {
       "fittingType": "ELBOW_90_LONG_TURN",
       "label": "90 degree long-turn elbow",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
-    },
-    {
-      "fittingType": "ELBOW_45",
-      "label": "45 degree elbow",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "1/2": 0.5, "3/4": 1, "1": 2, "1-1/4": 2, "1-1/2": 2, "2": 3, "2-1/2": 4, "3": 5,
+        "3-1/2": 5, "4": 6, "5": 8, "6": 9, "8": 13, "10": 16, "12": 18
+      }
     },
     {
       "fittingType": "TEE_OR_CROSS_FLOW_TURNED_90",
       "label": "Tee or cross, flow turned 90 degrees",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
-    },
-    {
-      "fittingType": "GATE_VALVE",
-      "label": "Gate valve",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "1/2": 3, "3/4": 4, "1": 5, "1-1/4": 6, "1-1/2": 8, "2": 10, "2-1/2": 12, "3": 15,
+        "3-1/2": 17, "4": 20, "5": 25, "6": 30, "8": 35, "10": 50, "12": 60
+      }
     },
     {
       "fittingType": "BUTTERFLY_VALVE",
       "label": "Butterfly valve",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "2": 6, "2-1/2": 7, "3": 10, "4": 12, "5": 9, "6": 10, "8": 12, "10": 19, "12": 21
+      }
+    },
+    {
+      "fittingType": "GATE_VALVE",
+      "label": "Gate valve",
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "2": 1, "2-1/2": 1, "3": 1, "3-1/2": 1, "4": 2, "5": 2, "6": 3, "8": 4, "10": 5, "12": 6
+      }
+    },
+    {
+      "fittingType": "VANE_TYPE_FLOW_SWITCH",
+      "label": "Vane type flow switch",
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "1": 6, "1-1/4": 9, "1-1/2": 10, "2": 14, "2-1/2": 17, "3": 22,
+        "4": 30, "6": 16, "8": 22, "10": 29, "12": 36
+      }
     },
     {
       "fittingType": "SWING_CHECK_VALVE",
-      "label": "Swing check valve",
-      "confidence": "placeholder",
-      "equivalentLengthFtByNominalSize": {}
+      "label": "Swing check valve (average, per the table's footnote)",
+      "confidence": "verify",
+      "equivalentLengthFtByNominalSize": {
+        "1": 5, "1-1/4": 7, "1-1/2": 9, "2": 11, "2-1/2": 14, "3": 16,
+        "3-1/2": 19, "4": 22, "5": 27, "6": 32, "8": 45, "10": 55, "12": 65
+      }
     }
   ]
 }

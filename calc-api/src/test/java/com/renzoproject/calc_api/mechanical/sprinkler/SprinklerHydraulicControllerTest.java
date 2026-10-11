@@ -124,10 +124,29 @@ class SprinklerHydraulicControllerTest {
 	}
 
 	@Test
-	void unpublishedFittingLength_isCalcCoreValidation_returns400() throws Exception {
+	void publishedFittingLength_isLookedUpAndAddedToTheSegment() throws Exception {
+		// Table 27.2.3.1.1: a 90 degree standard elbow on 2" pipe is 5 ft, so two add 10 ft.
 		SprinklerPipeSegmentDto withFitting = new SprinklerPipeSegmentDto(
 				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
 				List.of(new SegmentFittingDto("ELBOW_90_STANDARD", 2, null)));
+		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
+				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
+				List.of(withFitting), supply(), null);
+
+		SprinklerHydraulicResponse response = postForResponse(request);
+
+		assertEquals(10.0, response.segments().get(0).fittingEquivalentLengthFt(), 1e-9);
+		assertEquals(20.0, response.segments().get(0).totalLengthFt(), 1e-9);
+	}
+
+	@Test
+	void unpublishedFittingLength_isCalcCoreValidation_returns400() throws Exception {
+		// Table 27.2.3.1.1 publishes no butterfly valve below 2", so a 1-1/2" one has no length
+		// and must be refused rather than silently treated as zero.
+		SprinklerPipeSegmentDto withFitting = new SprinklerPipeSegmentDto(
+				"S1", "RISER", "BI", "SCH40", "1-1/2", 120.0, 10.0, 0.0,
+				List.of(new SegmentFittingDto("BUTTERFLY_VALVE", 1, null)));
 		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),

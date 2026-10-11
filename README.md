@@ -94,7 +94,7 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | GET | `/reference/duct-velocity-limits-table` | Recommended max velocity by duct location + NC/RC acoustic rating, ASHRAE Fundamentals Table 12 (duct sizing) |
 | GET | `/reference/sprinkler-hazard-presets-table` | NFPA 13 density/area, hose stream, duration and coverage presets by hazard (sprinkler) |
 | GET | `/reference/sprinkler-c-factors-table` | Hazen-Williams C by pipe type and service (sprinkler) |
-| GET | `/reference/sprinkler-fitting-equivalent-lengths-table` | Fitting equivalent lengths, NFPA 13 Table 23.4.3.1.1 — **ships unpopulated**, see `reference/sprinkler/README.md` |
+| GET | `/reference/sprinkler-fitting-equivalent-lengths-table` | Fitting equivalent lengths, NFPA 13 Table 27.2.3.1.1 (sprinkler) |
 | GET | `/reference/sprinkler-k-factors-table` | Nominal sprinkler K-factors (sprinkler) |
 
 ### Acoustics — `/api/acoustics`

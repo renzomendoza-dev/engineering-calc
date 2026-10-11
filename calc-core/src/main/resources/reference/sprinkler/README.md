@@ -15,7 +15,9 @@ Every file carries a file-level `confidence`, and most rows carry their own:
   throws instead of guessing.
 
 **Nothing in this directory is `verified` yet.** The list below is the full set
-to confirm against a copy of NFPA 13 2019.
+to confirm against a copy of NFPA 13 2019. The fitting lengths came from the
+printed table and need a transcription check; the rest were entered from
+general knowledge and need a source check.
 
 ## Files
 
@@ -58,28 +60,72 @@ Notes:
 | CPVC | any | 150 |
 | Ductile iron (underground, cement lined) | any | 140 |
 
+Source: **Table A.27.2.4.8.2** (Annex A, "Suggested ε-Factor for Aged Pipe"),
+which pairs each C with an equivalent absolute roughness. Those ε values are
+stored alongside (`epsilonFactorInch`/`epsilonFactorMm`) for display only —
+Hazen-Williams takes C, not roughness, so nothing in calc-core reads them.
+
+Per-row confidence differs here:
+
+- `verified` — straight from the annex: steel wet (120, ε 0.004 in.), steel dry
+  (100, ε 0.015 in.), copper (150, ε 0.000084 in.).
+- `verify` — **our mapping**, not the annex's wording: preaction treated as dry
+  service, and CPVC read as the annex's "Plastic" row. A specific listed CPVC
+  product's C comes from its listing.
+- `verify` — ductile iron 140 isn't in the annex at all and still needs a
+  source; its ε is `null` rather than invented.
+
+The annex also lists **steel (new) at C=143**, not exposed here: NFPA 13 design
+practice uses the aged values, and pipe age isn't a dimension this table is
+keyed on. Its ε of 0.045 mm does match `reference/pipes/bi.json`'s
+`absoluteRoughnessMm`, the Darcy-Weisbach figure the pipe package uses.
+
 The calculator takes C per pipe segment, so this table is a reference/default
 set only.
 
-### `fitting-equivalent-lengths.json` — `placeholder`, intentionally empty
+### `fitting-equivalent-lengths.json` — `verify`
 
-Schema only: fitting type x nominal size -> equivalent length in feet, keyed by
-the same `nominalSize` strings as `reference/pipes/*.json`. **No values are
-entered**, because guessing an equivalent length silently changes every
-downstream pressure.
+NFPA 13 2019 **Table 27.2.3.1.1** (Equivalent Schedule 40 Steel Pipe Length
+Chart), in feet, keyed by the same `nominalSize` strings as
+`reference/pipes/*.json`. All 8 rows x 15 columns of published values are
+entered (102 values; the dashes in the table are omitted, not zeroed).
 
-To populate: NFPA 13 2019 **Table 23.4.3.1.1**. Until then, either
-- pass `explicitEquivalentLengthFt` on the fitting, or
-- leave the segment's fitting list empty.
+| Fitting | 1/2 | 3/4 | 1 | 1-1/4 | 1-1/2 | 2 | 2-1/2 | 3 | 3-1/2 | 4 | 5 | 6 | 8 | 10 | 12 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 45° elbow | — | 1 | 1 | 1 | 2 | 2 | 3 | 3 | 3 | 4 | 5 | 7 | 9 | 11 | 13 |
+| 90° standard elbow | 1 | 2 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10 | 12 | 14 | 18 | 22 | 27 |
+| 90° long-turn elbow | 0.5 | 1 | 2 | 2 | 2 | 3 | 4 | 5 | 5 | 6 | 8 | 9 | 13 | 16 | 18 |
+| Tee or cross (flow turned 90°) | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 15 | 17 | 20 | 25 | 30 | 35 | 50 | 60 |
+| Butterfly valve | — | — | — | — | — | 6 | 7 | 10 | — | 12 | 9 | 10 | 12 | 19 | 21 |
+| Gate valve | — | — | — | — | — | 1 | 1 | 1 | 1 | 2 | 2 | 3 | 4 | 5 | 6 |
+| Vane type flow switch | — | — | 6 | 9 | 10 | 14 | 17 | 22 | — | 30 | — | 16 | 22 | 29 | 36 |
+| Swing check | — | — | 5 | 7 | 9 | 11 | 14 | 16 | 19 | 22 | 27 | 32 | 45 | 55 | 65 |
 
-A segment that references a fitting type/size with no published length throws
-`CalculationException`.
+Tagged `verify` because it was transcribed from an image of the printed page —
+the source is authoritative, the transcription has not had a second pass. The
+calculator warns on every calculation that uses one of these values until the
+tag becomes `verified`.
 
-**C factor basis (open item):** published equivalent lengths assume C = 120.
-NFPA 13 requires multiplying them by `(120/C)^1.85` for other C factors (about
-0.713 for C = 100). The calculator does **not** apply that adjustment yet —
-with the table empty there is nothing to adjust. Decide this when the table is
-entered; for a dry system (C = 100) it matters.
+Transcribed as published, deliberately not "corrected":
+
+- **Butterfly valve is non-monotonic**: 12 ft at 4 in. but 9 ft at 5 in.
+- **Swing check values are averages**, per the table's own footnote, because
+  equivalent length varies with valve design.
+- **1/2 in. appears at all** only because NFPA 13 Sections 29.4/29.5 allow that
+  size (the table says so in its note).
+- **10 in. and 12 in. are included** even though `reference/pipes/*.json` stops
+  at 8 in., so the fitting data doesn't need revisiting when larger pipe is
+  added.
+
+A fitting/size combination the table leaves blank still throws
+`CalculationException`; pass `explicitEquivalentLengthFt` for those.
+
+**C factor basis (open item, now live):** these lengths assume C = 120. NFPA 13
+requires multiplying them by `(120/C)^1.85` for other C factors — about 0.713
+at C = 100, which is what dry and preaction steel use. The calculator does
+**not** apply that adjustment, so a dry-system calculation with fittings
+currently overstates their equivalent length by about 40%. Decide before this
+data is relied on.
 
 ### `sprinkler-k-factors.json` — `verify`
 

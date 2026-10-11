@@ -195,11 +195,34 @@ class SprinklerHydraulicCalculatorTest {
 	}
 
 	@Test
-	void fittingWithoutPublishedEquivalentLength_throwsRatherThanAssumingZero() {
-		// reference/sprinkler/fitting-equivalent-lengths.json ships intentionally unpopulated.
+	void fittingLookedUpFromThePublishedTable_isAddedToTheSegmentLength() {
+		// NFPA 13 Table 27.2.3.1.1: a 90 degree standard elbow on 2" pipe is 5 ft, so two of them
+		// add 10 ft to the segment's 10 ft of pipe.
 		SprinklerPipeSegment withFittings = new SprinklerPipeSegment(
 				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
 				List.of(new SegmentFitting("ELBOW_90_STANDARD", 2, null)));
+
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(withFittings), SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+		SegmentFlowRow row = result.segments().get(0);
+
+		assertEquals(10.0, row.fittingEquivalentLengthFt(), 1e-9);
+		assertEquals(20.0, row.totalLengthFt(), 1e-9);
+		// The table is transcribed but not yet double-checked, so using it must say so.
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),
+				"expected a reference-data warning, got " + result.warnings());
+	}
+
+	@Test
+	void fittingSizeTheTableLeavesBlank_throwsRatherThanAssumingZero() {
+		// Table 27.2.3.1.1 publishes no butterfly valve below 2", so a 1-1/2" one has no length.
+		SprinklerPipeSegment withFittings = new SprinklerPipeSegment(
+				"S1", "RISER", "BI", "SCH40", "1-1/2", 120.0, 10.0, 0.0,
+				List.of(new SegmentFitting("BUTTERFLY_VALVE", 1, null)));
 
 		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
 				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,

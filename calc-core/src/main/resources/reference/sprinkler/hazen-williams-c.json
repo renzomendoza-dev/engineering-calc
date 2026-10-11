@@ -1,55 +1,69 @@
 {
-  "standard": "NFPA 13 (2019 edition) - Hazen-Williams C values for sprinkler piping",
+  "standard": "NFPA 13 (2019 edition) - Hazen-Williams C values for sprinkler piping; C/epsilon pairings per Table A.27.2.4.8.2 (Suggested Epsilon-Factor for Aged Pipe)",
+  "edition": "NFPA 13, 2019 edition",
   "confidence": "verify",
-  "note": "systemType ANY means the value does not vary with wet/dry/preaction service. A caller may always override C per pipe segment; this table is the reference/default set.",
+  "note": "systemType ANY means the value does not vary with wet/dry/preaction service. A caller may always override C per pipe segment; this table is the reference/default set. epsilonFactor is the equivalent absolute roughness NFPA 13's annex pairs with each C value -- recorded for reference only, since this package uses Hazen-Williams (which takes C, not roughness). Nothing in calc-core reads it today; mechanical.pipe's Darcy-Weisbach path gets its roughness from reference/pipes/*.json instead.",
+  "annexNote": "Table A.27.2.4.8.2 also lists steel (new) at C=143 / epsilon 0.0018 in. This app does not expose that row: NFPA 13 design practice uses the aged values (120 wet, 100 dry), and 'new vs aged' is a pipe-age dimension this table is not keyed on. Its epsilon of 0.045 mm does match reference/pipes/bi.json's absoluteRoughnessMm, which is the Darcy-Weisbach figure the pipe package uses.",
   "cFactors": [
     {
       "pipeType": "STEEL",
       "systemType": "WET",
       "cFactor": 120,
+      "epsilonFactorInch": 0.004,
+      "epsilonFactorMm": 0.100,
       "label": "Steel - wet system",
-      "confidence": "verify",
-      "sourceNote": "Unlined steel pipe in a wet system."
+      "confidence": "verified",
+      "sourceNote": "Table A.27.2.4.8.2 'Steel' row, C=120. Unlined steel pipe in a wet system."
     },
     {
       "pipeType": "STEEL",
       "systemType": "DRY",
       "cFactor": 100,
+      "epsilonFactorInch": 0.015,
+      "epsilonFactorMm": 0.375,
       "label": "Steel - dry system",
-      "confidence": "verify",
-      "sourceNote": "Lower C than wet service accounts for internal corrosion in dry/alternating pipe."
+      "confidence": "verified",
+      "sourceNote": "Table A.27.2.4.8.2 'Steel' row, C=100. The lower C than wet service accounts for internal corrosion in dry/alternating pipe."
     },
     {
       "pipeType": "STEEL",
       "systemType": "PREACTION",
       "cFactor": 100,
+      "epsilonFactorInch": 0.015,
+      "epsilonFactorMm": 0.375,
       "label": "Steel - preaction system",
       "confidence": "verify",
-      "sourceNote": "Treated as dry service."
+      "sourceNote": "C=100 itself is the published Table A.27.2.4.8.2 value, but treating preaction as dry service is this application's mapping, not something the table states."
     },
     {
       "pipeType": "COPPER",
       "systemType": "ANY",
       "cFactor": 150,
+      "epsilonFactorInch": 0.000084,
+      "epsilonFactorMm": 0.0021,
       "label": "Copper tube",
-      "confidence": "verify",
-      "sourceNote": null
+      "confidence": "verified",
+      "sourceNote": "Table A.27.2.4.8.2 'Copper' row."
     },
     {
       "pipeType": "CPVC",
       "systemType": "ANY",
       "cFactor": 150,
+      "epsilonFactorInch": 0.000084,
+      "epsilonFactorMm": 0.0021,
       "label": "CPVC (listed sprinkler pipe)",
       "confidence": "verify",
-      "sourceNote": null
+      "sourceNote": "Table A.27.2.4.8.2 lists 'Plastic' at C=150; reading CPVC as that row is this application's mapping. A specific listed CPVC product's C comes from its listing."
     },
     {
       "pipeType": "DUCTILE_IRON_UNDERGROUND",
       "systemType": "ANY",
       "cFactor": 140,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
       "label": "Ductile iron - cement lined, underground",
       "confidence": "verify",
-      "sourceNote": "Underground supply mains."
+      "sourceNote": "Not listed in Table A.27.2.4.8.2; entered from general knowledge of underground supply mains and still needs a source."
     }
   ]
 }

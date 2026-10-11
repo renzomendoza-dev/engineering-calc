@@ -8,8 +8,10 @@ import java.util.List;
  */
 record CFactorFile(
 		String standard,
+		String edition,
 		String confidence,
 		String note,
+		String annexNote,
 		List<CFactorRow> cFactors) {
 
 }

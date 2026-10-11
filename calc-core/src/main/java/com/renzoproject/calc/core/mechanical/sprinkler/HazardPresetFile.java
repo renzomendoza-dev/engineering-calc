@@ -8,6 +8,7 @@ import java.util.List;
  */
 record HazardPresetFile(
 		String standard,
+		String edition,
 		String confidence,
 		String note,
 		List<HazardPresetRow> presets) {

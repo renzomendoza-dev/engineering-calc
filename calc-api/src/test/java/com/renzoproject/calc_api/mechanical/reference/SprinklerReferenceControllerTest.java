@@ -51,15 +51,32 @@ class SprinklerReferenceControllerTest {
 	}
 
 	@Test
-	void fittingEquivalentLengthsTable_exposesThePlaceholderStateHonestly() throws Exception {
-		// Empty maps plus a placeholder tag are how a form learns it must collect an explicit
-		// equivalent length instead of offering the lookup.
+	void fittingEquivalentLengthsTable_returnsThePublishedChart() throws Exception {
+		// NFPA 13 2019 Table 27.2.3.1.1: 8 fitting rows, keyed by the same nominal size strings
+		// the pipe reference data uses, so a form can look a fitting up per segment size.
 		mockMvc.perform(get(BASE_URL + "/sprinkler-fitting-equivalent-lengths-table"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$", hasSize(7)))
-				.andExpect(jsonPath("$[?(@.confidence == 'placeholder')]", hasSize(7)))
-				.andExpect(jsonPath("$[?(@.fittingType == 'ELBOW_90_STANDARD')].equivalentLengthFtByNominalSize")
-						.value(contains(org.hamcrest.Matchers.anEmptyMap())));
+				.andExpect(jsonPath("$", hasSize(8)))
+				.andExpect(jsonPath("$[?(@.confidence == 'verify')]", hasSize(8)))
+				.andExpect(jsonPath("$[?(@.fittingType == 'ELBOW_90_STANDARD')].equivalentLengthFtByNominalSize['2']")
+						.value(contains(5.0)))
+				.andExpect(jsonPath("$[?(@.fittingType == 'TEE_OR_CROSS_FLOW_TURNED_90')].equivalentLengthFtByNominalSize['4']")
+						.value(contains(20.0)));
+	}
+
+	@Test
+	void cFactorsTable_carriesTheAnnexEpsilonFiguresAndPerRowConfidence() throws Exception {
+		// Table A.27.2.4.8.2 pairs each C with an absolute roughness; a form shows it, the
+		// calculation ignores it. Rows that are this app's mapping rather than the annex's own
+		// wording stay 'verify' so they can be badged differently.
+		mockMvc.perform(get(BASE_URL + "/sprinkler-c-factors-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'WET')].epsilonFactorMm")
+						.value(contains(0.1)))
+				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'WET')].confidence")
+						.value(contains("verified")))
+				.andExpect(jsonPath("$[?(@.pipeType == 'DUCTILE_IRON_UNDERGROUND')].confidence")
+						.value(contains("verify")));
 	}
 
 	@Test

@@ -1,5 +1,6 @@
 {
   "standard": "NFPA 13 (2019 edition) - nominal K-factors for listed sprinklers (US units, gpm/psi^0.5)",
+  "edition": "NFPA 13, 2019 edition",
   "confidence": "verify",
   "note": "Nominal K-factors only. A listed sprinkler's actual K comes from its manufacturer data sheet and may differ slightly; the calculator always takes K from the caller's input rather than this table, which exists to populate a dropdown. orificeNominal is null where the nominal orifice size is not confirmed.",
   "kFactors": [

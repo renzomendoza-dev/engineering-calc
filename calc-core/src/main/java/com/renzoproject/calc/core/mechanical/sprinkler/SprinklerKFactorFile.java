@@ -8,6 +8,7 @@ import java.util.List;
  */
 record SprinklerKFactorFile(
 		String standard,
+		String edition,
 		String confidence,
 		String note,
 		List<SprinklerKFactorRow> kFactors) {
