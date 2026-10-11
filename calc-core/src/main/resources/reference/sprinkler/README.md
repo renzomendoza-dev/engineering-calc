@@ -14,10 +14,24 @@ Every file carries a file-level `confidence`, and most rows carry their own:
 - `placeholder` — not known. Never silently treated as zero: the calculator
   throws instead of guessing.
 
-**Nothing in this directory is `verified` yet.** The list below is the full set
-to confirm against a copy of NFPA 13 2019. The fitting lengths came from the
-printed table and need a transcription check; the rest were entered from
-general knowledge and need a source check.
+**Almost nothing in this directory is `verified` yet** — only three C factor
+rows taken straight from Table A.27.2.4.8.2. The rest needs confirming against
+a copy of NFPA 13 2019:
+
+| Data | Tag | What would clear it |
+|---|---|---|
+| Fitting equivalent lengths | `verify` x8 | A second read of the transcription, especially the two non-monotonic cells |
+| Hazard presets: density + area | `verify` x5 | Figure 19.3.3.1.1 (figure number also unconfirmed) |
+| Hazard presets: max coverage | `verify` x5 | Table 10.2.4.2.1 (table number also unconfirmed) |
+| Hazard presets: hose + duration | — | Already corroborated in-repo by `storage/fire-water-duration.json` (`verified`) |
+| K-factors | `verify` x10 | The nominal K table, incl. which orifice sizes are published |
+| C factors: preaction, CPVC, ductile iron | `verify` x3 | Mapping decisions + a source for ductile iron 140 |
+| Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 dimensions (not an NFPA document) |
+
+The section/table numbers for the hazard presets are themselves unconfirmed:
+the fitting chart turned out to be renumbered in the 2019 edition
+(27.2.3.1.1, not the 23.4.3.1.1 an earlier edition used), so the
+19.3.3.1.1 / 10.2.4.2.1 citations may be stale in the same way.
 
 ## Files
 
@@ -109,6 +123,11 @@ tag becomes `verified`.
 Transcribed as published, deliberately not "corrected":
 
 - **Butterfly valve is non-monotonic**: 12 ft at 4 in. but 9 ft at 5 in.
+- **Vane type flow switch is non-monotonic**: 30 ft at 4 in. but 16 ft at
+  6 in. (5 in. is not published). Together with the butterfly row, these are
+  the two cells most worth re-reading against the printed page — a
+  monotonicity check over the whole chart flags exactly these two and nothing
+  else.
 - **Swing check values are averages**, per the table's own footnote, because
   equivalent length varies with valve design.
 - **1/2 in. appears at all** only because NFPA 13 Sections 29.4/29.5 allow that

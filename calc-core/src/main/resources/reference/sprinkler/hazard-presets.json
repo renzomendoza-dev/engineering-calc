@@ -2,7 +2,7 @@
   "standard": "NFPA 13 (2019 edition) - Figure 19.3.3.1.1 density/area curves, Table 11.2.3.1.2 hose stream/duration, Table 10.2.4.2.1 protection areas",
   "edition": "NFPA 13, 2019 edition",
   "confidence": "verify",
-  "note": "density/designArea are the MINIMUM points of each density/area curve (lowest density at its paired maximum area), which is the usual starting design point - not the only valid point on the curve. A designer may select any point along the curve, so these are presets, not limits. hoseStreamGpm/durationMinutes duplicate the coarser LIGHT/ORDINARY/EXTRA rows in reference/storage/fire-water-duration.json (which does not split the Ordinary/Extra groups); see README.md. Where NFPA 13 gives a duration range, the conservative upper bound is used.",
+  "note": "density/designArea are the MINIMUM points of each density/area curve (lowest density at its paired maximum area), which is the usual starting design point - not the only valid point on the curve. A designer may select any point along the curve, so these are presets, not limits. hoseStreamGpm/durationMinutes duplicate the coarser LIGHT/ORDINARY/EXTRA rows in reference/storage/fire-water-duration.json (which does not split the Ordinary/Extra groups); see README.md. Where NFPA 13 gives a duration range, the conservative upper bound is used. CORROBORATION: hoseStreamGpm and durationMinutes on every row agree with reference/storage/fire-water-duration.json, which is tagged 'verified' and cites Table 11.2.3.1.2 - so those two fields have in-repo support. densityGpmPerSqFt, designAreaSqFt and maxCoverageSqFtPerSprinkler do not, and are what keeps these rows at 'verify'.",
   "presets": [
     {
       "hazard": "LIGHT",
