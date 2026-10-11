@@ -15,16 +15,43 @@ Every file carries a file-level `confidence`, and most rows carry their own:
   throws instead of guessing.
 
 **Checked against the printed NFPA 13 2019 so far:** all five hazard presets,
-all thirteen K-factors, and the whole C factor table. Still outstanding: the
-fitting transcription and the three added pipe sizes (an ASME document, not an
-NFPA one).
+all thirteen K-factors, the whole C factor table, and seven of the eight
+fitting rows. Still outstanding: the **vane type flow switch** row, which may
+not belong in the standard's table at all, and the three added pipe sizes
+(an ASME document, not an NFPA one).
+
+### Cross-checking against a 2016-edition copy
+
+A 2016-edition copy of four of these tables was used as a second reader. It is
+worth knowing what that exercise found, because the same source is likely to be
+used again:
+
+| Finding | Outcome |
+|---|---|
+| 91 of 102 fitting cells agreed | Seven rows promoted to `verified` |
+| Butterfly valve 12 ft @ 4 in. → 9 ft @ 5 in. | **Confirmed published**, not a slip |
+| No vane type flow switch row | Our 8th row called into question |
+| C values: all ten rows agreed | Already `verified`; 2019 adds "brass" to the copper/stainless row |
+| K-factors: 3 metric values differed | **Ours upheld** — see below |
+| Light hazard coverage prose | **Ours corrected** — it conflated two axes of the table |
+
+Two of its own cells are provably wrong (a 220 ft² entry whose paired 18.6 m²
+means 200, and a thread column reading 1, 2, 3, 4 in. NPT in sequence — there
+is no 4 in. NPT sprinkler, so that is a spreadsheet autofill). **Treat it as a
+second reader, not as a source.** Where it disagrees, the disagreement has to
+be resolved on its merits rather than by deferring to either copy.
+
+The K-factor disagreement resolved cleanly that way: the metric column is
+`round(K × 14.29)` on twelve of thirteen rows, and the three disputed cells are
+exactly the three where that pattern picks our value. No data changed.
 
 | Data | Status | Source / what would clear it |
 |---|---|---|
 | **Hazard presets** (all 5 fields) | ✅ `verified` | Figure 19.3.3.1.1, §19.3.3.1.4, Table 19.3.3.1.2, Table 10.2.4.2.1(a)(b)(c) |
 | **K-factors** (13 rows) | ✅ `verified` | Table 7.2.2.1 |
 | **C factors** (11 rows) | ✅ `verified` | Table 27.2.4.8.1 (normative) + Table A.27.2.4.8.2 (ε) |
-| Fitting equivalent lengths | `verify` ×8 | A second read of the transcription, especially the two non-monotonic cells |
+| **Fitting equivalent lengths** (7 of 8 rows) | ✅ `verified` | Table 27.2.3.1.1, second read done — 91 of 102 cells agreed across three sources |
+| Fitting: **vane type flow switch** | `verify` ×1 | Confirm the row exists in the printed 2019 table — two independent reproductions of the chart do not contain it |
 | Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 wall thicknesses (not an NFPA document). ID = OD − 2t checks out on every row, and the ODs are exact standard inch values, so only the three wall figures are unconfirmed |
 
 A row stays at `verify` while **any** of its fields is unconfirmed; per-field
@@ -204,19 +231,35 @@ entered (102 values; the dashes in the table are omitted, not zeroed).
 | Vane type flow switch | — | — | 6 | 9 | 10 | 14 | 17 | 22 | — | 30 | — | 16 | 22 | 29 | 36 |
 | Swing check | — | — | 5 | 7 | 9 | 11 | 14 | 16 | 19 | 22 | 27 | 32 | 45 | 55 | 65 |
 
-Tagged `verify` because it was transcribed from an image of the printed page —
-the source is authoritative, the transcription has not had a second pass. The
-calculator warns on every calculation that uses one of these values until the
-tag becomes `verified`.
+**Second read complete for seven of the eight rows.** The transcription was
+checked cell-for-cell against two independent reproductions of the same NFPA
+chart — a 2016-edition copy (numbered 23.4.3.1.1 there) and a commercial
+sprinkler design program's NFPA table. **91 of the 102 values agree exactly
+across all three**, so those seven rows are now `verified` and the calculator
+no longer warns when it uses them.
 
-Transcribed as published, deliberately not "corrected":
+The 11 values that remain are the whole vane type flow switch row.
 
-- **Butterfly valve is non-monotonic**: 12 ft at 4 in. but 9 ft at 5 in.
-- **Vane type flow switch is non-monotonic**: 30 ft at 4 in. but 16 ft at
-  6 in. (5 in. is not published). Together with the butterfly row, these are
-  the two cells most worth re-reading against the printed page — a
-  monotonicity check over the whole chart flags exactly these two and nothing
-  else.
+> ### ⚠ The vane type flow switch row is not confirmed
+>
+> **Neither reproduction contains a vane type flow switch row at all.** The
+> 2016 chart has seven rows; the design program lists alarm valve, dry pipe
+> valve, strainer and mushroom valve as extras but no flow switch. Our row's
+> values are also the least plausible in the file — 30 ft at 4 in. then 16 ft
+> at 6 in., with 5 in. absent entirely.
+>
+> Either the 2019 edition added the row, or it was transcribed in error.
+> **Check the printed 2019 Table 27.2.3.1.1.** If the row isn't there, delete
+> it rather than re-tagging it — a waterflow device's equivalent length then
+> comes from its own listing, not from NFPA 13, and callers should pass
+> `explicitEquivalentLengthFt`.
+
+Published as printed, deliberately not "corrected":
+
+- **Butterfly valve is non-monotonic**: 12 ft at 4 in. but 9 ft at 5 in. This
+  was the other cell under suspicion and it is **confirmed real** — the same
+  pair appears in both independent sources. A test now pins it so nobody
+  "fixes" it later.
 - **Swing check values are averages**, per the table's own footnote, because
   equivalent length varies with valve design.
 - **1/2 in. appears at all** only because NFPA 13 Sections 29.4/29.5 allow that

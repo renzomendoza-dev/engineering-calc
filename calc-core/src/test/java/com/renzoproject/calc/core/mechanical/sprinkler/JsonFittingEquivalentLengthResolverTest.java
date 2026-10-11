@@ -58,9 +58,25 @@ class JsonFittingEquivalentLengthResolverTest {
 	}
 
 	@Test
-	void everyRowIsTaggedPendingTranscriptionCheck() {
-		assertTrue(resolver.allEntries().stream().allMatch(row -> "verify".equals(row.confidence())),
-				"expected every fitting row to be tagged 'verify' until the transcription is double-checked");
+	void everyRowExceptTheVaneFlowSwitchHasPassedItsSecondRead() {
+		// The transcription was checked cell-for-cell against two independent reproductions of
+		// the same NFPA chart and 91 of 102 values agreed. The 11 that did not are the vane type
+		// flow switch, which neither reproduction contains at all -- see fittingRowUnderReview
+		// in the JSON. That row stays 'verify' so the calculator keeps warning on it.
+		for (FittingEquivalentLengthRow row : resolver.allEntries()) {
+			String expected = "VANE_TYPE_FLOW_SWITCH".equals(row.fittingType()) ? "verify" : "verified";
+			assertEquals(expected, row.confidence(),
+					row.fittingType() + " should be tagged '" + expected + "'");
+		}
+	}
+
+	@Test
+	void theTwoNonMonotonicButterflyCellsArePublished() {
+		// 12 ft at 4 in. then 9 ft at 5 in. looks like a transcription slip and is not: both
+		// independent reproductions carry the same pair. Pinned so nobody "fixes" it later.
+		assertEquals(12.0, lengthFt("BUTTERFLY_VALVE", "4"), 1e-9);
+		assertEquals(9.0, lengthFt("BUTTERFLY_VALVE", "5"), 1e-9);
+		assertEquals(10.0, lengthFt("BUTTERFLY_VALVE", "6"), 1e-9);
 	}
 
 	private double lengthFt(String fittingType, String nominalSize) {

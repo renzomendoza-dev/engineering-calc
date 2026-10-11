@@ -235,6 +235,26 @@ class SprinklerHydraulicCalculatorTest {
 	}
 
 	@Test
+	void unverifiedFittingRow_stillWarns() {
+		// The vane type flow switch is the one row that failed its second read -- neither
+		// independent reproduction of the NFPA chart contains it. Until that is settled, any
+		// calculation leaning on it has to say so.
+		SprinklerPipeSegment withFlowSwitch = new SprinklerPipeSegment(
+				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
+				List.of(new SegmentFitting("VANE_TYPE_FLOW_SWITCH", 1, null)));
+
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(withFlowSwitch), SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),
+				"expected a reference-data warning, got " + result.warnings());
+	}
+
+	@Test
 	void fittingLookedUpFromThePublishedTable_isAddedToTheSegmentLength() {
 		// NFPA 13 Table 27.2.3.1.1: a 90 degree standard elbow on 2" pipe is 5 ft, so two of them
 		// add 10 ft to the segment's 10 ft of pipe.
@@ -253,9 +273,9 @@ class SprinklerHydraulicCalculatorTest {
 		assertEquals(10.0, row.fittingEquivalentLengthFt(), 1e-9);
 		assertEquals(1.0, row.fittingCFactorAdjustment(), 1e-9, "C=120 is the chart's own basis");
 		assertEquals(20.0, row.totalLengthFt(), 1e-9);
-		// The table is transcribed but not yet double-checked, so using it must say so.
-		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),
-				"expected a reference-data warning, got " + result.warnings());
+		// This row has passed its second read against the printed chart, so using it is silent.
+		assertTrue(result.warnings().stream().noneMatch(warning -> warning.contains("tagged 'verify'")),
+				"a verified fitting row should not warn, got " + result.warnings());
 	}
 
 	@Test

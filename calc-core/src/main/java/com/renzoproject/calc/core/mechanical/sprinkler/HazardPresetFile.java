@@ -13,6 +13,7 @@ record HazardPresetFile(
 		String note,
 		String verificationNote,
 		String coverageNote,
+		String coverageCorrectionNote,
 		String curveNote,
 		String dryPipeAreaNote,
 		List<HazardPresetRow> presets) {

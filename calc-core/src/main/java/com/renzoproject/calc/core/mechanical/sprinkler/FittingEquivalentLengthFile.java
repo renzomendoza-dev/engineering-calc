@@ -14,6 +14,7 @@ record FittingEquivalentLengthFile(
 		String note,
 		String cFactorBasisNote,
 		String transcriptionNote,
+		String fittingRowUnderReview,
 		List<FittingEquivalentLengthRow> fittings) {
 
 }
