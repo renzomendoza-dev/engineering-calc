@@ -9,12 +9,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Hand-worked cases. Uses the shipped reference data (1.2 x sqrt(A), 7 psi), so what ships is what
- * is tested.
+ * Hand-worked cases, including the front page of the Everstrong hydraulic calculation workbook.
+ * Uses the shipped reference data (1.2 x sqrt(A), 7 psi), so what ships is what is tested.
  */
 class RemoteAreaPlanCalculatorTest {
 
@@ -23,34 +24,80 @@ class RemoteAreaPlanCalculatorTest {
 			rules, new QuickResponseAreaReductionCalculator(new JsonQuickResponseAreaReductionResolver()));
 
 	private RemoteAreaPlanInput input(
-			double area, double density, double k, double spacing, double branchSpacing,
+			double area, double density, double k, double coverage, Double spacing,
 			boolean quickResponse, Double ceilingFt, Double maxCoverage) {
-		return new RemoteAreaPlanInput(area, density, k, spacing, branchSpacing, quickResponse, ceilingFt, maxCoverage);
+		return new RemoteAreaPlanInput(area, density, k, coverage, spacing, quickResponse, ceilingFt, maxCoverage);
 	}
 
 	@Test
-	void lightHazardOnTenByTenSpacing_matchesTheHandWorkedLayout() {
-		// A = 1500 ft2, density 0.10, K 5.6, 10 ft x 10 ft spacing.
-		//   length  = 1.2 * sqrt(1500) = 1.2 * 38.7298 = 46.476 ft
-		//   width   = 1500 / 46.476    = 32.275 ft
-		//   per branch = ceil(46.476 / 10) = ceil(4.65) = 5
-		//   branches   = ceil(1500 / (5 * 100)) = ceil(3.0) = 3
-		//   total      = 15 sprinklers, protecting 15 * 100 = 1500 ft2
-		//   min flow   = 0.10 * 100 = 10 gpm  ->  (10 / 5.6)^2 = 3.189 psi, BELOW 7 psi
-		//   so 7 psi governs, and the sprinkler discharges 5.6 * sqrt(7) = 14.816 gpm
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 10, 10, false, null, 225.0));
+	void workbookFrontPage_ordinaryHazard_matchesTheSheet() {
+		// Everstrong workbook, Front Page: ordinary hazard, AS = 130 ft2, D = 0.15, AP = 1500 ft2, K 5.6.
+		//   number of sprinklers = ROUNDUP(1500 / 130)   = 12        (11.54 rounds up)
+		//   flow per sprinkler   = 0.15 * 130            = 19.5 gpm
+		//   P residual           = (19.5 / 5.6)^2        = 12.1253 psi  -- above 7, so it stands
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.15, 5.6, 130, null, false, null, 130.0));
 
-		assertEquals(1500.0, plan.adjustedDesignAreaSqFt(), 1e-9);
+		assertEquals(12, plan.sprinklersForArea());
+		assertEquals(19.5, plan.flowPerSprinklerGpm(), 1e-9);
+		assertEquals(12.125319, plan.pressureForFlowPsi(), 1e-6);
+		assertFalse(plan.floorGoverned());
+		assertEquals(12.125319, plan.firstSprinklerPressurePsi(), 1e-6);
+		// Nothing was added by a floor, so it discharges exactly the design flow.
+		assertEquals(19.5, plan.firstSprinklerFlowGpm(), 1e-9);
+	}
+
+	@Test
+	void workbookLayout_fourPerBranchOnThreeBranches_withTwelveFootSpacing() {
+		// The workbook builds 3 branch lines of 4 sprinklers. With 12 ft along the branch:
+		//   length = 1.2 * sqrt(1500) = 46.476 ft;  46.476 / 12 = 3.87 -> 4 per branch
+		//   branches = ceil(1500 / (4 * 130)) = ceil(2.88) = 3;  total = 12;  protects 1560 ft2
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.15, 5.6, 130, 12.0, false, null, 130.0));
+
+		assertEquals(4, plan.sprinklersPerBranch());
+		assertEquals(3, plan.branchLines());
+		assertEquals(12, plan.totalSprinklers());
+		assertEquals(1560.0, plan.totalProtectedAreaSqFt(), 1e-9);
+		// 130 ft2 over 12 ft along the branch leaves 10.83 ft between branches.
+		assertEquals(130.0 / 12.0, plan.branchSpacingFt(), 1e-9);
+	}
+
+	@Test
+	void withoutTheSpacing_everythingButTheLayoutIsStillWorkedOut() {
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, null, false, null, null));
+
+		// Available from the design basis alone, so a form can show it before layout is known.
+		assertEquals(15, plan.sprinklersForArea());
+		assertEquals(10.0, plan.flowPerSprinklerGpm(), 1e-9);
 		assertEquals(46.4758, plan.remoteAreaLengthFt(), 1e-3);
 		assertEquals(32.2749, plan.remoteAreaWidthFt(), 1e-3);
-		assertEquals(100.0, plan.coveragePerSprinklerSqFt(), 1e-9);
+		assertEquals(7.0, plan.firstSprinklerPressurePsi(), 1e-9);
+
+		assertFalse(plan.hasLayout());
+		assertNull(plan.branchSpacingFt());
+		assertNull(plan.sprinklersPerBranch());
+		assertNull(plan.branchLines());
+		assertNull(plan.totalSprinklers());
+		assertNull(plan.totalProtectedAreaSqFt());
+	}
+
+	@Test
+	void lightHazardOnTenByTen_matchesTheHandWorkedLayoutAndTheFlooredFirstSprinkler() {
+		// A = 1500 ft2, density 0.10, K 5.6, 100 ft2 each, 10 ft along the branch.
+		//   length  = 1.2 * sqrt(1500) = 46.476 ft;  width = 32.275 ft
+		//   per branch = ceil(4.65) = 5;  branches = ceil(1500 / (5 * 100)) = 3;  15 sprinklers
+		//   flow = 0.10 * 100 = 10 gpm  ->  (10 / 5.6)^2 = 3.189 psi, BELOW 7 psi
+		//   so 7 psi governs, and the sprinkler discharges 5.6 * sqrt(7) = 14.816 gpm
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, 10.0, false, null, 225.0));
+
+		assertEquals(1500.0, plan.adjustedDesignAreaSqFt(), 1e-9);
+		assertEquals(15, plan.sprinklersForArea());
 		assertEquals(5, plan.sprinklersPerBranch());
 		assertEquals(3, plan.branchLines());
 		assertEquals(15, plan.totalSprinklers());
 		assertEquals(1500.0, plan.totalProtectedAreaSqFt(), 1e-9);
+		assertEquals(10.0, plan.branchSpacingFt(), 1e-9);
 
-		assertEquals(10.0, plan.minimumFlowPerSprinklerGpm(), 1e-9);
-		assertEquals(3.1888, plan.pressureForMinimumFlowPsi(), 1e-3);
+		assertEquals(3.1888, plan.pressureForFlowPsi(), 1e-3);
 		assertTrue(plan.floorGoverned());
 		assertEquals(7.0, plan.firstSprinklerPressurePsi(), 1e-9);
 		assertEquals(14.8162073, plan.firstSprinklerFlowGpm(), 1e-6);
@@ -60,29 +107,30 @@ class RemoteAreaPlanCalculatorTest {
 	}
 
 	@Test
-	void whenTheDemandNeedsMoreThanSevenPsi_theFloorStaysOutOfIt() {
-		// Ordinary Group 2: density 0.20 over 13 x 10 = 130 ft2 = 26 gpm; (26 / 5.6)^2 = 21.556 psi.
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.20, 5.6, 13, 10, false, null, 130.0));
+	void whenTheFlowNeedsMoreThanSevenPsi_theFloorStaysOutOfIt() {
+		// Ordinary Group 2: 0.20 over 130 ft2 = 26 gpm; (26 / 5.6)^2 = 21.556 psi.
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.20, 5.6, 130, null, false, null, 130.0));
 
 		assertFalse(plan.floorGoverned());
-		assertEquals(26.0, plan.minimumFlowPerSprinklerGpm(), 1e-9);
+		assertEquals(26.0, plan.flowPerSprinklerGpm(), 1e-9);
 		assertEquals(21.5561, plan.firstSprinklerPressurePsi(), 1e-3);
-		// Delivered flow is exactly the minimum -- nothing extra was added.
 		assertEquals(26.0, plan.firstSprinklerFlowGpm(), 1e-9);
 		assertTrue(plan.notes().stream().noneMatch(n -> n.contains("minimum operating pressure")));
 	}
 
 	@Test
-	void quickResponseReduction_feedsTheLayout() {
+	void quickResponseReduction_feedsTheCountsAndTheLayout() {
 		// 15 ft ceiling: -3(15)/2 + 55 = 32.5 percent off 1500 -> 1012.5 ft2.
+		//   fewest sprinklers = ceil(1012.5 / 100) = 11
 		//   length = 1.2 * sqrt(1012.5) = 38.184 ft;  per branch = ceil(3.818) = 4
 		//   branches = ceil(1012.5 / (4 * 100)) = ceil(2.53) = 3;  total = 12;  protects 1200 ft2
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 10, 10, true, 15.0, 225.0));
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, 10.0, true, 15.0, 225.0));
 
 		assertTrue(plan.reductionApplied());
 		assertEquals(32.5, plan.reductionPercent(), 1e-9);
 		assertEquals(1500.0, plan.baseDesignAreaSqFt(), 1e-9);
 		assertEquals(1012.5, plan.adjustedDesignAreaSqFt(), 1e-9);
+		assertEquals(11, plan.sprinklersForArea());
 		assertEquals(38.1838, plan.remoteAreaLengthFt(), 1e-3);
 		assertEquals(4, plan.sprinklersPerBranch());
 		assertEquals(3, plan.branchLines());
@@ -92,7 +140,7 @@ class RemoteAreaPlanCalculatorTest {
 
 	@Test
 	void ceilingAboveTwentyFeet_withQuickResponse_takesNoReduction() {
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 10, 10, true, 24.0, null));
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, 10.0, true, 24.0, null));
 
 		assertFalse(plan.reductionApplied());
 		assertEquals(1500.0, plan.adjustedDesignAreaSqFt(), 1e-9);
@@ -100,10 +148,10 @@ class RemoteAreaPlanCalculatorTest {
 	}
 
 	@Test
-	void anExactFit_isNotRoundedUpAPastWhatItNeeds() {
+	void anExactFit_isNotRoundedUpPastWhatItNeeds() {
 		// A = 2500: length = 1.2 * 50 = 60 ft, and 60 / 10 is exactly 6 -- not 7. Float noise in the
 		// division must not turn a whole number of sprinklers into one more.
-		RemoteAreaPlanResult plan = calculator.calculate(input(2500, 0.30, 5.6, 10, 10, false, null, null));
+		RemoteAreaPlanResult plan = calculator.calculate(input(2500, 0.30, 5.6, 100, 10.0, false, null, null));
 
 		assertEquals(6, plan.sprinklersPerBranch());
 		// 2500 / (6 * 100) = 4.17 -> 5 branches, 30 sprinklers, 3000 ft2.
@@ -117,19 +165,22 @@ class RemoteAreaPlanCalculatorTest {
 		for (double area : new double[] {700, 1000, 1234, 1500, 1950, 2500, 3250}) {
 			for (double spacing : new double[] {8, 10, 12, 13}) {
 				RemoteAreaPlanResult plan =
-						calculator.calculate(input(area, 0.10, 5.6, spacing, 10, false, null, null));
+						calculator.calculate(input(area, 0.10, 5.6, 100, spacing, false, null, null));
 				assertTrue(
 						plan.totalProtectedAreaSqFt() >= plan.adjustedDesignAreaSqFt() - 1e-9,
 						"area " + area + " spacing " + spacing + " protects " + plan.totalProtectedAreaSqFt());
+				assertTrue(
+						plan.totalSprinklers() >= plan.sprinklersForArea(),
+						"area " + area + " spacing " + spacing + ": " + plan.totalSprinklers()
+								+ " < the " + plan.sprinklersForArea() + " the area needs");
 			}
 		}
 	}
 
 	@Test
-	void spacingCoveringMoreThanTheHazardAllows_isWarnedAbout() {
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 16, 16, false, null, 225.0));
+	void coverageAboveWhatTheHazardAllows_isWarnedAbout() {
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 256, null, false, null, 225.0));
 
-		assertEquals(256.0, plan.coveragePerSprinklerSqFt(), 1e-9);
 		assertTrue(
 				plan.warnings().stream().anyMatch(w -> w.contains("above the 225 ft2 maximum")),
 				"expected a coverage warning: " + plan.warnings());
@@ -139,7 +190,7 @@ class RemoteAreaPlanCalculatorTest {
 	void unverifiedRules_areDisclosedOnEveryPlan() {
 		// remote-area-rules.json is tagged 'verify' until the 1.2 x sqrt(A) rule and the 7 psi minimum
 		// are checked against the printed standard; the plan must say so each time.
-		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 10, 10, false, null, null));
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, null, false, null, null));
 
 		assertEquals("verify", plan.rulesConfidence());
 		assertTrue(
@@ -151,17 +202,20 @@ class RemoteAreaPlanCalculatorTest {
 	void quickResponseWithoutACeilingHeight_isRejected() {
 		CalculationException thrown = assertThrows(
 				CalculationException.class,
-				() -> input(1500, 0.10, 5.6, 10, 10, true, null, null));
+				() -> input(1500, 0.10, 5.6, 100, null, true, null, null));
 		assertTrue(thrown.getMessage().contains("ceilingHeightFt is required"), thrown.getMessage());
 	}
 
 	@Test
-	void nonPositiveFigures_areRejected() {
-		assertThrows(CalculationException.class, () -> input(0, 0.10, 5.6, 10, 10, false, null, null));
-		assertThrows(CalculationException.class, () -> input(1500, 0, 5.6, 10, 10, false, null, null));
-		assertThrows(CalculationException.class, () -> input(1500, 0.10, 0, 10, 10, false, null, null));
-		assertThrows(CalculationException.class, () -> input(1500, 0.10, 5.6, 0, 10, false, null, null));
-		assertThrows(CalculationException.class, () -> input(1500, 0.10, 5.6, 10, -2, false, null, null));
+	void nonPositiveFigures_areRejected_andTheSpacingMayBeAbsent() {
+		assertThrows(CalculationException.class, () -> input(0, 0.10, 5.6, 100, null, false, null, null));
+		assertThrows(CalculationException.class, () -> input(1500, 0, 5.6, 100, null, false, null, null));
+		assertThrows(CalculationException.class, () -> input(1500, 0.10, 0, 100, null, false, null, null));
+		assertThrows(CalculationException.class, () -> input(1500, 0.10, 5.6, 0, null, false, null, null));
+		// A spacing that is given must be sensible; one that is absent is simply not laid out.
+		assertThrows(CalculationException.class, () -> input(1500, 0.10, 5.6, 100, 0.0, false, null, null));
+		assertThrows(CalculationException.class, () -> input(1500, 0.10, 5.6, 100, -4.0, false, null, null));
+		calculator.calculate(input(1500, 0.10, 5.6, 100, null, false, null, null));
 	}
 
 	// --- the same floor, enforced in the hydraulic calculation itself ---

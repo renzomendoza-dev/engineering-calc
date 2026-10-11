@@ -247,6 +247,31 @@ class SprinklerHydraulicControllerTest {
 	}
 
 	@Test
+	void omittedStartingPressure_isAccepted_andTheDesignFlowAndTheFloorGovern() throws Exception {
+		// 0.10 gpm/ft2 over 130 ft2 = 13 gpm, which needs (13/5.6)^2 = 5.39 psi -- below the 7 psi
+		// minimum operating pressure. With no starting pressure supplied, 7 psi must still govern, so
+		// the sprinkler discharges 5.6 * sqrt(7) = 14.816 gpm, exactly as when 7.0 is passed.
+		SprinklerHydraulicRequest withoutIt = new SprinklerHydraulicRequest(
+				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, null,
+				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				supply(), null);
+		SprinklerHydraulicRequest withSeven = new SprinklerHydraulicRequest(
+				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				supply(), null);
+
+		SprinklerHydraulicResponse omitted = postForResponse(withoutIt);
+
+		assertEquals(14.8162073, omitted.segments().get(0).flowGpm(), 1e-6);
+		assertEquals(
+				postForResponse(withSeven).requiredPressureAtSupplyPsi(),
+				omitted.requiredPressureAtSupplyPsi(),
+				0.0);
+	}
+
+	@Test
 	void repeatedCalls_areSideEffectFree() throws Exception {
 		// The frontend will call this on every debounced keystroke, so the same request must give
 		// the same answer with no accumulated state in the shared resolvers.

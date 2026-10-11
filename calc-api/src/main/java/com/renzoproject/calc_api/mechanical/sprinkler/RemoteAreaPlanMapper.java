@@ -17,8 +17,8 @@ public final class RemoteAreaPlanMapper {
 				request.designAreaSqFt(),
 				request.densityGpmPerSqFt(),
 				request.kFactor(),
+				request.coveragePerSprinklerSqFt(),
 				request.sprinklerSpacingFt(),
-				request.branchSpacingFt(),
 				request.quickResponseSprinklers(),
 				request.ceilingHeightFt(),
 				request.maxCoveragePerSprinklerSqFt());

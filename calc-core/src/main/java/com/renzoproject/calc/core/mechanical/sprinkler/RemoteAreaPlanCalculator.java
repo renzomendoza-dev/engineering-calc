@@ -7,23 +7,26 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Works out how many sprinklers make up the remote area and how they are arranged, the way a
- * designer does it by hand before drawing the network:
+ * Works out the remote area the way a designer does by hand before drawing the network:
  *
  * <ol>
  *   <li>Take the design area, reduced for quick-response sprinklers where the ceiling allows it
  *       ({@link QuickResponseAreaReductionCalculator}).</li>
- *   <li>Lay it out as a rectangle whose side along the branch lines is {@code 1.2 * sqrt(A)}.</li>
- *   <li>Fit sprinklers along that side: {@code ceil(length / S)} per branch -- rounded up.</li>
- *   <li>Fit branches across: enough that {@code sprinklersPerBranch * branches} sprinklers cover
- *       the area.</li>
- *   <li>Find the first sprinkler's pressure: {@code (density * coverage / K)^2}, but never below
- *       the minimum operating pressure.</li>
+ *   <li>Each sprinkler covers a set area, so it must flow {@code density * coverage}, and the
+ *       fewest sprinklers that protect the area is {@code ceil(area / coverage)}.</li>
+ *   <li>The first sprinkler's pressure is {@code (flow / K)^2}, but never below the minimum
+ *       operating pressure.</li>
+ *   <li>Lay the area out as a rectangle whose side along the branch lines is
+ *       {@code 1.2 * sqrt(A)}.</li>
+ *   <li>With the spacing along the branch: {@code ceil(length / S)} sprinklers per branch, and
+ *       enough branches that {@code perBranch * branches} sprinklers cover the area.</li>
  * </ol>
  *
+ * <p>The steps are independent tiers, so a form can show each as soon as its inputs exist: the
+ * first three need no spacing, and the layout counts are left {@code null} until it is given.
+ *
  * <p>Rounding up is deliberate throughout: a partial sprinkler is a whole sprinkler, so the counts
- * never under-state the demand. The plan is therefore always at least the design area, and says by
- * how much.
+ * never under-state the demand.
  *
  * <p>This is a layout aid, not part of the hydraulic calculation: {@link SprinklerHydraulicCalculator}
  * takes whatever sprinklers the caller lists. The plan is what tells the caller how many to list.
@@ -65,42 +68,54 @@ public class RemoteAreaPlanCalculator implements Calculator<RemoteAreaPlanInput,
 			notes.addAll(reduction.notes());
 		}
 
-		// 2. The rectangle: length along the branch lines, then the width that makes up the area.
-		double length = rules.remoteAreaLengthFactor() * Math.sqrt(adjustedArea);
-		double width = adjustedArea / length;
+		// 2. What each sprinkler flows, and the fewest that protect the area.
+		double coverage = input.coveragePerSprinklerSqFt();
+		double flowPerSprinkler = input.densityGpmPerSqFt() * coverage;
+		int sprinklersForArea = roundUp(adjustedArea / coverage);
 
-		// 3 and 4. Whole sprinklers along a branch, then whole branches to cover the area.
-		double coverage = input.sprinklerSpacingFt() * input.branchSpacingFt();
-		int perBranch = roundUp(length / input.sprinklerSpacingFt());
-		int branches = roundUp(adjustedArea / (perBranch * coverage));
-		int total = perBranch * branches;
-		double protectedArea = total * coverage;
-
-		// 5. The first sprinkler: the pressure its share of the density needs, floored.
-		double minimumFlow = input.densityGpmPerSqFt() * coverage;
-		double pressureForFlow = SprinklerMath.pressurePsi(input.kFactor(), minimumFlow);
+		// 3. The first sprinkler: the pressure its flow needs, floored.
+		double pressureForFlow = SprinklerMath.pressurePsi(input.kFactor(), flowPerSprinkler);
 		double floor = rules.minimumOperatingPressurePsi();
 		boolean floorGoverned = pressureForFlow < floor;
 		double firstPressure = Math.max(pressureForFlow, floor);
 		double firstFlow = SprinklerMath.flowGpm(input.kFactor(), firstPressure);
 
+		// 4. The rectangle: length along the branch lines, then the width that makes up the area.
+		double length = rules.remoteAreaLengthFactor() * Math.sqrt(adjustedArea);
+		double width = adjustedArea / length;
+
+		// 5. The layout, once the spacing along the branch is known.
+		Double branchSpacing = null;
+		Integer perBranch = null;
+		Integer branches = null;
+		Integer total = null;
+		Double protectedArea = null;
+		if (input.sprinklerSpacingFt() != null) {
+			double spacing = input.sprinklerSpacingFt();
+			branchSpacing = coverage / spacing;
+			perBranch = roundUp(length / spacing);
+			branches = roundUp(adjustedArea / (perBranch * coverage));
+			total = perBranch * branches;
+			protectedArea = total * coverage;
+			notes.add("Remote area " + format(length) + " ft along the branch lines by " + format(width)
+					+ " ft: " + perBranch + " sprinklers per branch on " + branches + " branch lines is " + total
+					+ " sprinklers, protecting " + format(protectedArea) + " ft2 against a design area of "
+					+ format(adjustedArea) + " ft2. The counts round up, so the plan is never smaller than the "
+					+ "design area.");
+		}
+
 		if (floorGoverned) {
-			notes.add("The " + format(minimumFlow) + " gpm needed over one sprinkler's coverage takes only "
+			notes.add("The " + format(flowPerSprinkler) + " gpm needed over one sprinkler's coverage takes only "
 					+ format(pressureForFlow) + " psi at K " + format(input.kFactor()) + ", below the "
 					+ format(floor) + " psi minimum operating pressure -- so " + format(floor)
 					+ " psi is used, and the sprinkler discharges " + format(firstFlow) + " gpm, more than the "
 					+ "minimum.");
 		}
-		notes.add("Remote area " + format(length) + " ft along the branch lines by " + format(width) + " ft: "
-				+ perBranch + " sprinklers per branch on " + branches + " branch lines is " + total
-				+ " sprinklers, protecting " + format(protectedArea) + " ft2 against a design area of "
-				+ format(adjustedArea) + " ft2. The counts round up, so the plan is never smaller than the "
-				+ "design area.");
 
 		if (input.maxCoveragePerSprinklerSqFt() != null && coverage > input.maxCoveragePerSprinklerSqFt()) {
 			warnings.add("Each sprinkler would cover " + format(coverage) + " ft2, above the "
 					+ format(input.maxCoveragePerSprinklerSqFt()) + " ft2 maximum for this hazard and construction "
-					+ "-- reduce the spacing.");
+					+ "-- reduce the coverage.");
 		}
 		if (!rules.isVerified()) {
 			warnings.add("The remote area dimension (" + format(rules.remoteAreaLengthFactor()) + " x the square "
@@ -114,19 +129,21 @@ public class RemoteAreaPlanCalculator implements Calculator<RemoteAreaPlanInput,
 				reductionPercent,
 				reductionApplied,
 				adjustedArea,
-				length,
-				width,
 				coverage,
-				perBranch,
-				branches,
-				total,
-				protectedArea,
-				minimumFlow,
+				sprinklersForArea,
+				flowPerSprinkler,
 				pressureForFlow,
 				floor,
 				firstPressure,
 				firstFlow,
 				floorGoverned,
+				length,
+				width,
+				branchSpacing,
+				perBranch,
+				branches,
+				total,
+				protectedArea,
 				rules.confidence(),
 				List.copyOf(notes),
 				List.copyOf(warnings));

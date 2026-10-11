@@ -30,9 +30,12 @@ import java.util.List;
  * @param designAreaSqFt          area of sprinkler operation the remote area represents
  * @param hoseStreamGpm           hose stream allowance; pass {@code 0} for none
  * @param hoseStreamNodeId        node the hose allowance is taken at (not the remote sprinkler)
- * @param assumedStartPressurePsi assumed starting pressure at the most remote sprinkler; the
- *                                minimum-flow pressure wins if it is higher. Pass {@code 0} to let
- *                                the minimum flow govern outright
+ * @param assumedStartPressurePsi <b>optional</b>. A starting pressure at the most remote sprinkler
+ *                                to raise the start to. It can only <i>raise</i> it: the start is
+ *                                always at least the pressure the design flow needs and the
+ *                                minimum operating pressure, so omitting this (or passing
+ *                                {@code 0}) simply lets those govern. Kept for callers that want to
+ *                                design to a higher figure
  * @param sprinklers              flowing sprinklers in the remote area
  * @param segments                pipe network, each segment pointing toward the supply
  * @param waterSupply             where the water comes from: a flow test or an elevated tank.
@@ -48,7 +51,7 @@ public record SprinklerHydraulicRequest(
 		@NotNull @Positive Double designAreaSqFt,
 		@NotNull @PositiveOrZero Double hoseStreamGpm,
 		String hoseStreamNodeId,
-		@NotNull @PositiveOrZero Double assumedStartPressurePsi,
+		@PositiveOrZero Double assumedStartPressurePsi,
 		@NotEmpty @Valid List<RemoteAreaSprinklerDto> sprinklers,
 		@NotEmpty @Valid List<SprinklerPipeSegmentDto> segments,
 		@Valid WaterSupplyDto waterSupply,

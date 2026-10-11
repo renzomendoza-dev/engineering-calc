@@ -34,7 +34,9 @@ public final class SprinklerHydraulicMapper {
 				request.designAreaSqFt(),
 				request.hoseStreamGpm(),
 				request.hoseStreamNodeId(),
-				request.assumedStartPressurePsi(),
+				// Optional: absent means "no figure to raise it to", which calc-core reads as 0 so the
+				// design flow and the minimum operating pressure govern.
+				request.assumedStartPressurePsi() == null ? 0.0 : request.assumedStartPressurePsi(),
 				toCoreSprinklers(request.sprinklers()),
 				toCoreSegments(request.segments()),
 				toCoreWaterSupply(request.waterSupply()),
