@@ -11,11 +11,17 @@ import java.util.List;
  * @param segments                     calculation-sheet rows, most remote sprinkler first
  * @param totalDemandFlowGpm           demand at the supply point, including the hose allowance
  * @param requiredPressureAtSupplyPsi  pressure needed at the supply point, including device losses
- * @param availablePressureAtDemandPsi what the supply curve delivers at that demand
- * @param safetyMarginPsi              available minus required; negative means the design fails
- * @param safetyMarginPercent          margin as a percentage of the available pressure
- * @param passes                       whether the supply meets the requirement
- * @param supplyCurve                  sampled supply curve, including the demand point
+ * @param availablePressureAtDemandPsi what the supply delivers at that demand; <b>null</b> when
+ *                                     the request carried no water supply
+ * @param safetyMarginPsi              available minus required; negative means the design fails.
+ *                                     <b>Null</b> when there is no supply
+ * @param safetyMarginPercent          margin as a percentage of the available pressure;
+ *                                     <b>null</b> when there is no supply
+ * @param passes                       whether the supply meets the requirement; <b>null</b> when
+ *                                     there is no supply -- not false, which would read as a
+ *                                     failed system rather than a question nobody asked
+ * @param supplyCurve                  sampled supply curve, including the demand point; empty
+ *                                     when there is no supply
  * @param warnings                     advisory messages; never a substitute for {@code passes}
  */
 public record SprinklerHydraulicResponse(

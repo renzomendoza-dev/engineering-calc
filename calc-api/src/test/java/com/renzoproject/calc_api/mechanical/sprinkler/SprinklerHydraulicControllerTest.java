@@ -12,6 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,7 +31,8 @@ class SprinklerHydraulicControllerTest {
 	private ObjectMapper objectMapper;
 
 	private static WaterSupplyDto supply() {
-		return new WaterSupplyDto(80.0, 60.0, 1000.0);
+		return new WaterSupplyDto(
+				WaterSupplySourceDto.FLOW_TEST, new FlowTestSupplyDto(80.0, 60.0, 1000.0), null);
 	}
 
 	private static SprinklerPipeSegmentDto segment(
@@ -158,6 +160,90 @@ class SprinklerHydraulicControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message")
 						.value(org.hamcrest.Matchers.containsString("No published equivalent length")));
+	}
+
+	/** The hand-calculated network, with whatever supply (or none) the caller wants to try. */
+	private static SprinklerHydraulicRequest requestWithSupply(WaterSupplyDto supply) {
+		return new SprinklerHydraulicRequest(
+				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 100.0, "RISER", 7.0,
+				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
+				List.of(segment("S1", "B1", "1", 10.0, 0.0), segment("B1", "RISER", "2", 12.0, 10.0)),
+				supply,
+				List.of(new DeviceLossDto("Alarm valve", 5.0)));
+	}
+
+	@Test
+	void gravityTankSupply_returns200_withTheHeadLessTheOutletRunsFriction() throws Exception {
+		// 100 ft of water = 43.3 psi at no flow. At the 114.8162 gpm demand, 200 ft of 4" Sch 40
+		// (ID 4.026 in) takes a little of it back; the demand side is unchanged from the flow-test
+		// case, so only what the supply offers differs.
+		SprinklerHydraulicResponse response = postForResponse(requestWithSupply(new WaterSupplyDto(
+				WaterSupplySourceDto.GRAVITY_TANK,
+				null,
+				new GravityTankSupplyDto(100.0, List.of(
+						new SupplyPipeRunDto("BI", "SCH40", "4", 120.0, 200.0, null))))));
+
+		assertEquals(114.8162073, response.totalDemandFlowGpm(), 1e-6);
+		assertEquals(17.110689, response.requiredPressureAtSupplyPsi(), 1e-6);
+		assertTrue(
+				response.availablePressureAtDemandPsi() < 43.3,
+				"the outlet run should cost something: " + response.availablePressureAtDemandPsi());
+		assertTrue(
+				response.availablePressureAtDemandPsi() > 42.0,
+				"200 ft of 4\" at 115 gpm shouldn't cost much: " + response.availablePressureAtDemandPsi());
+		assertEquals(
+				response.availablePressureAtDemandPsi() - response.requiredPressureAtSupplyPsi(),
+				response.safetyMarginPsi(),
+				1e-9);
+		assertTrue(response.passes());
+		assertTrue(response.supplyCurve().size() >= 5);
+	}
+
+	@Test
+	void noWaterSupply_returns200_withTheDemandAndANullVerdict() throws Exception {
+		SprinklerHydraulicResponse response = postForResponse(requestWithSupply(null));
+
+		// Demand is identical to the flow-test case: it never depended on the supply.
+		assertEquals(114.8162073, response.totalDemandFlowGpm(), 1e-6);
+		assertEquals(17.110689, response.requiredPressureAtSupplyPsi(), 1e-6);
+		assertEquals(2, response.segments().size());
+
+		assertNull(response.availablePressureAtDemandPsi());
+		assertNull(response.safetyMarginPsi());
+		assertNull(response.safetyMarginPercent());
+		assertNull(response.passes());
+		assertTrue(response.supplyCurve().isEmpty());
+		assertTrue(
+				response.warnings().stream().anyMatch(w -> w.contains("No water supply given")),
+				"the absent comparison should be stated: " + response.warnings());
+	}
+
+	@Test
+	void supplyBlockNotMatchingItsSource_isBeanValidation_returns400() throws Exception {
+		SprinklerHydraulicRequest request = requestWithSupply(new WaterSupplyDto(
+				WaterSupplySourceDto.FLOW_TEST, null, new GravityTankSupplyDto(100.0, null)));
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				// Bean Validation names a class-level @AssertTrue after its getter, so the key is
+				// the method's property name rather than the field's -- pinned here because the
+				// frontend places inline errors by these keys.
+				.andExpect(jsonPath("$.fieldErrors['waterSupply.sourceBlockPresent']")
+						.value(org.hamcrest.Matchers.containsString("exactly the block matching")));
+	}
+
+	@Test
+	void gravityTankAtOrBelowTheConnection_isBeanValidation_returns400() throws Exception {
+		SprinklerHydraulicRequest request = requestWithSupply(new WaterSupplyDto(
+				WaterSupplySourceDto.GRAVITY_TANK, null, new GravityTankSupplyDto(0.0, null)));
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.fieldErrors['waterSupply.gravityTank.waterLevelHeightFt']").exists());
 	}
 
 	@Test

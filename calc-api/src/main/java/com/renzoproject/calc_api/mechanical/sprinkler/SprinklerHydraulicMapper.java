@@ -1,6 +1,7 @@
 package com.renzoproject.calc_api.mechanical.sprinkler;
 
 import com.renzoproject.calc.core.mechanical.sprinkler.DeviceLoss;
+import com.renzoproject.calc.core.mechanical.sprinkler.GravityTankSupply;
 import com.renzoproject.calc.core.mechanical.sprinkler.RemoteAreaSprinkler;
 import com.renzoproject.calc.core.mechanical.sprinkler.SegmentFitting;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerHazard;
@@ -9,6 +10,8 @@ import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerHydraulicResult;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerPipeSegment;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerSystemType;
 import com.renzoproject.calc.core.mechanical.sprinkler.SupplyCurve;
+import com.renzoproject.calc.core.mechanical.sprinkler.SupplyPipeRun;
+import com.renzoproject.calc.core.mechanical.sprinkler.WaterSupply;
 
 import java.util.List;
 
@@ -34,7 +37,7 @@ public final class SprinklerHydraulicMapper {
 				request.assumedStartPressurePsi(),
 				toCoreSprinklers(request.sprinklers()),
 				toCoreSegments(request.segments()),
-				toCoreSupplyCurve(request.waterSupply()),
+				toCoreWaterSupply(request.waterSupply()),
 				toCoreDeviceLosses(request.deviceLosses()));
 	}
 
@@ -52,15 +55,20 @@ public final class SprinklerHydraulicMapper {
 		return segments.stream().map(SprinklerHydraulicMapper::toCoreSegment).toList();
 	}
 
+	private static List<SegmentFitting> toCoreFittings(List<SegmentFittingDto> fittings) {
+		if (fittings == null) {
+			return List.of();
+		}
+		return fittings.stream()
+				.map(fitting -> new SegmentFitting(
+						fitting.fittingType(),
+						fitting.quantity(),
+						fitting.explicitEquivalentLengthFt()))
+				.toList();
+	}
+
 	private static SprinklerPipeSegment toCoreSegment(SprinklerPipeSegmentDto dto) {
-		List<SegmentFitting> fittings = dto.fittings() == null
-				? List.of()
-				: dto.fittings().stream()
-						.map(fitting -> new SegmentFitting(
-								fitting.fittingType(),
-								fitting.quantity(),
-								fitting.explicitEquivalentLengthFt()))
-						.toList();
+		List<SegmentFitting> fittings = toCoreFittings(dto.fittings());
 
 		return new SprinklerPipeSegment(
 				dto.fromNodeId(),
@@ -74,8 +82,35 @@ public final class SprinklerHydraulicMapper {
 				fittings);
 	}
 
-	private static SupplyCurve toCoreSupplyCurve(WaterSupplyDto dto) {
-		return new SupplyCurve(dto.staticPressurePsi(), dto.residualPressurePsi(), dto.flowAtResidualGpm());
+	/** Null stays null: calc-core reads that as "no supply given" and leaves the verdict unanswered. */
+	private static WaterSupply toCoreWaterSupply(WaterSupplyDto dto) {
+		if (dto == null) {
+			return null;
+		}
+		return switch (dto.source()) {
+			case FLOW_TEST -> new SupplyCurve(
+					dto.flowTest().staticPressurePsi(),
+					dto.flowTest().residualPressurePsi(),
+					dto.flowTest().flowAtResidualGpm());
+			case GRAVITY_TANK -> new GravityTankSupply(
+					dto.gravityTank().waterLevelHeightFt(),
+					toCoreOutletRuns(dto.gravityTank().outletRuns()));
+		};
+	}
+
+	private static List<SupplyPipeRun> toCoreOutletRuns(List<SupplyPipeRunDto> runs) {
+		if (runs == null) {
+			return List.of();
+		}
+		return runs.stream()
+				.map(run -> new SupplyPipeRun(
+						run.pipeMaterial(),
+						run.schedule(),
+						run.nominalSize(),
+						run.cFactor(),
+						run.pipeLengthFt(),
+						toCoreFittings(run.fittings())))
+				.toList();
 	}
 
 	private static List<DeviceLoss> toCoreDeviceLosses(List<DeviceLossDto> deviceLosses) {

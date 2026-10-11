@@ -10,11 +10,18 @@ import java.util.List;
  *                                     allowance
  * @param requiredPressureAtSupplyPsi  pressure the system needs at the supply point, including
  *                                     device losses
- * @param availablePressureAtDemandPsi what the supply curve delivers at {@code totalDemandFlowGpm}
- * @param safetyMarginPsi              available minus required; negative means the system fails
- * @param safetyMarginPercent          margin as a percentage of the available pressure
- * @param passes                       true when the supply meets or exceeds the requirement
- * @param supplyCurve                  sampled supply curve points, including the demand point
+ * @param availablePressureAtDemandPsi what the supply delivers at {@code totalDemandFlowGpm};
+ *                                     <b>null</b> when the input carried no water supply
+ * @param safetyMarginPsi              available minus required; negative means the system fails.
+ *                                     <b>Null</b> when there is no supply to compare against
+ * @param safetyMarginPercent          margin as a percentage of the available pressure;
+ *                                     <b>null</b> when there is no supply
+ * @param passes                       true when the supply meets or exceeds the requirement;
+ *                                     <b>null</b> when there is no supply -- not {@code false},
+ *                                     which would read as a failed system rather than an
+ *                                     unanswered question
+ * @param supplyCurve                  sampled supply curve points, including the demand point;
+ *                                     empty when there is no supply
  * @param warnings                     advisory messages (velocity, thin margin, unverified
  *                                     reference data) -- never a substitute for {@code passes}
  */
@@ -22,11 +29,16 @@ public record SprinklerHydraulicResult(
 		List<SegmentFlowRow> segments,
 		double totalDemandFlowGpm,
 		double requiredPressureAtSupplyPsi,
-		double availablePressureAtDemandPsi,
-		double safetyMarginPsi,
-		double safetyMarginPercent,
-		boolean passes,
+		Double availablePressureAtDemandPsi,
+		Double safetyMarginPsi,
+		Double safetyMarginPercent,
+		Boolean passes,
 		List<SupplyCurvePoint> supplyCurve,
 		List<String> warnings) {
+
+	/** True when a supply was given, so the margin and verdict carry an answer. */
+	public boolean hasSupply() {
+		return passes != null;
+	}
 
 }

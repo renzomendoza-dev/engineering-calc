@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * NFPA 13 hydraulic calculation for a sprinkler system's remote design area, worked from the most
@@ -91,10 +92,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		double deviceLossPsi = input.deviceLosses().stream().mapToDouble(DeviceLoss::pressureLossPsi).sum();
 		double requiredPsi = supply.pressurePsi() + deviceLossPsi;
 		double demandGpm = supply.flowGpm();
-		double availablePsi = input.waterSupply().availablePressurePsi(demandGpm);
-		double marginPsi = availablePsi - requiredPsi;
-		double marginPercent = availablePsi == 0 ? 0 : (marginPsi / availablePsi) * 100.0;
-		boolean passes = marginPsi >= 0;
 
 		for (SegmentFlowRow row : supply.rows()) {
 			if (row.velocityFps() > VELOCITY_WARNING_FPS) {
@@ -103,6 +100,23 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 						+ " fps that normally needs justification");
 			}
 		}
+
+		// No supply: the demand half of the answer is complete and correct on its own, and the
+		// comparison half is left unanswered rather than filled in against a supply nobody gave.
+		if (input.waterSupply() == null) {
+			warnings.add("No water supply given -- the demand figures below are complete, but nothing has been "
+					+ "compared against them, so there is no safety margin or pass/fail verdict");
+			return new SprinklerHydraulicResult(
+					List.copyOf(supply.rows()), demandGpm, requiredPsi, null, null, null, null, List.of(),
+					List.copyOf(warnings));
+		}
+
+		EvaluatedSupply evaluated = evaluateSupply(input.waterSupply(), warnings);
+		double availablePsi = evaluated.pressureAtFlow().applyAsDouble(demandGpm);
+		double marginPsi = availablePsi - requiredPsi;
+		double marginPercent = availablePsi == 0 ? 0 : (marginPsi / availablePsi) * 100.0;
+		boolean passes = marginPsi >= 0;
+
 		if (passes && marginPercent < MARGIN_WARNING_PERCENT) {
 			warnings.add("Safety margin is " + round(marginPercent) + "%, below " + MARGIN_WARNING_PERCENT
 					+ "% -- little room for supply deterioration or as-built deviation");
@@ -116,8 +130,61 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				marginPsi,
 				marginPercent,
 				passes,
-				sampleSupplyCurve(input.waterSupply(), demandGpm),
+				sampleSupplyCurve(evaluated, demandGpm),
 				List.copyOf(warnings));
+	}
+
+	/**
+	 * Turns a supply spec into something that can state a pressure at a flow.
+	 *
+	 * <p>A flow test already knows its own curve. A gravity tank's has to be built here, because it
+	 * depends on pipe bores and fitting equivalent lengths that only this class holds resolvers
+	 * for: full head at no flow, less the friction in the run down to the connection as flow rises.
+	 */
+	private EvaluatedSupply evaluateSupply(WaterSupply supply, Set<String> warnings) {
+		return switch (supply) {
+			case SupplyCurve curve -> new EvaluatedSupply(curve::availablePressurePsi, curve.flowAtResidualGpm());
+			case GravityTankSupply tank -> evaluateGravityTank(tank, warnings);
+		};
+	}
+
+	private EvaluatedSupply evaluateGravityTank(GravityTankSupply tank, Set<String> warnings) {
+		double staticPsi = tank.staticPressurePsi();
+		List<ResolvedRun> runs = tank.outletRuns().stream().map(run -> {
+			double insideDiameterInch = dimensionResolver
+					.resolve(run.pipeMaterial(), run.schedule(), run.nominalSize())
+					.internalDiameter()
+					.to(SprinklerUnits.INCH)
+					.getValue()
+					.doubleValue();
+			FittingLengths fittings = fittingEquivalentLengthFt(
+					run.nominalSize(), run.cFactor(), run.fittings(), warnings);
+			return new ResolvedRun(insideDiameterInch, run.cFactor(), run.pipeLengthFt() + fittings.totalFt());
+		}).toList();
+
+		if (runs.isEmpty()) {
+			warnings.add("The gravity tank was given no outlet piping, so its full head is credited at every flow "
+					+ "-- the friction between tank and connection is real, so this reads better than the system "
+					+ "will perform");
+		}
+
+		DoubleUnaryOperator pressureAtFlow = flowGpm -> {
+			double loss = runs.stream()
+					.mapToDouble(run -> HazenWilliams.frictionLossPsiPerFoot(flowGpm, run.cFactor(), run.insideDiameterInch())
+							* run.totalLengthFt())
+					.sum();
+			// A tank that has run out of head at this flow delivers nothing, not a negative push.
+			return Math.max(0, staticPsi - loss);
+		};
+		return new EvaluatedSupply(pressureAtFlow, 0);
+	}
+
+	/** A supply reduced to "what pressure at this flow", plus a flow to scale a plot by. */
+	private record EvaluatedSupply(DoubleUnaryOperator pressureAtFlow, double nominalFlowGpm) {
+	}
+
+	/** One gravity tank outlet run with its reference data already resolved. */
+	private record ResolvedRun(double insideDiameterInch, double cFactor, double totalLengthFt) {
 	}
 
 	/**
@@ -274,20 +341,30 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * else's number would be worse than leaving it alone.
 	 */
 	private FittingLengths fittingEquivalentLengthFt(SprinklerPipeSegment segment, Set<String> warnings) {
+		return fittingEquivalentLengthFt(segment.nominalSize(), segment.cFactor(), segment.fittings(), warnings);
+	}
+
+	/**
+	 * Takes the three things that actually matter rather than a segment, so a gravity tank's outlet
+	 * runs resolve their fittings through exactly this code -- including the C factor rescaling and
+	 * the unverified-data warning -- instead of a parallel copy that could drift from it.
+	 */
+	private FittingLengths fittingEquivalentLengthFt(
+			String nominalSize, double cFactor, List<SegmentFitting> fittings, Set<String> warnings) {
 		double publishedFtTotal = 0;
 		double explicitFtTotal = 0;
 
-		for (SegmentFitting fitting : segment.fittings()) {
+		for (SegmentFitting fitting : fittings) {
 			if (fitting.explicitEquivalentLengthFt() != null) {
 				explicitFtTotal += fitting.quantity() * fitting.explicitEquivalentLengthFt();
 				continue;
 			}
 
 			FittingEquivalentLengthRow row = fittingResolver.resolve(fitting.fittingType());
-			Double publishedFt = row.equivalentLengthFtByNominalSize().get(segment.nominalSize());
+			Double publishedFt = row.equivalentLengthFtByNominalSize().get(nominalSize);
 			if (publishedFt == null) {
 				throw new CalculationException("No published equivalent length for fitting " + fitting.fittingType()
-						+ " at nominal size " + segment.nominalSize() + " (reference data confidence: "
+						+ " at nominal size " + nominalSize + " (reference data confidence: "
 						+ row.confidence() + ") -- supply NFPA 13 Table 27.2.3.1.1 in "
 						+ "reference/sprinkler/fitting-equivalent-lengths.json, or pass an "
 						+ "explicitEquivalentLengthFt on the fitting");
@@ -305,7 +382,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		}
 
 		double adjustment = HazenWilliams.equivalentLengthAdjustmentFactor(
-				segment.cFactor(), fittingResolver.cFactorBasis());
+				cFactor, fittingResolver.cFactorBasis());
 		return new FittingLengths(publishedFtTotal * adjustment + explicitFtTotal, adjustment);
 	}
 
@@ -330,16 +407,23 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	}
 
 	/**
-	 * Samples the supply curve at quarter points of the flow test plus the system's own demand, so
-	 * a caller can plot demand against supply without re-deriving the curve.
+	 * Samples the supply at quarter points of its own flow scale plus the system's own demand, so a
+	 * caller can plot demand against supply without re-deriving the curve.
+	 *
+	 * <p>A flow test sets that scale from the flow it was measured at. A gravity tank has no test
+	 * flow to scale by, so the plot spans twice the demand instead -- enough to show the curve
+	 * falling away on both sides of the point that matters.
 	 */
-	private static List<SupplyCurvePoint> sampleSupplyCurve(SupplyCurve curve, double demandGpm) {
+	private static List<SupplyCurvePoint> sampleSupplyCurve(EvaluatedSupply supply, double demandGpm) {
+		double scale = supply.nominalFlowGpm() > 0 ? supply.nominalFlowGpm() : demandGpm * 2;
 		Set<Double> flows = new TreeSet<>();
 		for (double fraction : new double[] {0, 0.25, 0.5, 0.75, 1.0}) {
-			flows.add(curve.flowAtResidualGpm() * fraction);
+			flows.add(scale * fraction);
 		}
 		flows.add(demandGpm);
-		return flows.stream().map(flow -> new SupplyCurvePoint(flow, curve.availablePressurePsi(flow))).toList();
+		return flows.stream()
+				.map(flow -> new SupplyCurvePoint(flow, supply.pressureAtFlow().applyAsDouble(flow)))
+				.toList();
 	}
 
 	private static double round(double value) {

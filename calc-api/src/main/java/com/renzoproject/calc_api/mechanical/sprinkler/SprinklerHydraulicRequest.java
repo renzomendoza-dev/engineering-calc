@@ -35,7 +35,10 @@ import java.util.List;
  *                                the minimum flow govern outright
  * @param sprinklers              flowing sprinklers in the remote area
  * @param segments                pipe network, each segment pointing toward the supply
- * @param waterSupply             supply flow test
+ * @param waterSupply             where the water comes from: a flow test or an elevated tank.
+ *                                <b>Optional</b> -- omit it for a system with no pressurised
+ *                                source yet (a cistern awaiting a pump) and the response carries
+ *                                the demand figures with a null margin, verdict and supply curve
  * @param deviceLosses            fixed device losses; may be omitted
  */
 public record SprinklerHydraulicRequest(
@@ -48,7 +51,7 @@ public record SprinklerHydraulicRequest(
 		@NotNull @PositiveOrZero Double assumedStartPressurePsi,
 		@NotEmpty @Valid List<RemoteAreaSprinklerDto> sprinklers,
 		@NotEmpty @Valid List<SprinklerPipeSegmentDto> segments,
-		@NotNull @Valid WaterSupplyDto waterSupply,
+		@Valid WaterSupplyDto waterSupply,
 		@Valid List<DeviceLossDto> deviceLosses) {
 
 }

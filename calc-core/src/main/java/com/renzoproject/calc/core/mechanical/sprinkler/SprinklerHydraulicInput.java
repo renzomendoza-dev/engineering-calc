@@ -34,7 +34,12 @@ import java.util.Set;
  * @param sprinklers              flowing sprinklers in the remote area; at least one, node ids
  *                                unique
  * @param segments                pipe network; at least one, {@code (from, to)} pairs unique
- * @param waterSupply             supply flow-test curve
+ * @param waterSupply             where the water comes from -- a flow test ({@link SupplyCurve})
+ *                                or an elevated tank ({@link GravityTankSupply}). <b>May be
+ *                                null</b>, for a system whose supply isn't known yet or has no
+ *                                pressure of its own (a cistern awaiting a pump): the demand is
+ *                                still calculated, and the margin, verdict and supply curve come
+ *                                back null rather than guessed
  * @param deviceLosses            fixed device losses added before comparing to the supply; may be
  *                                empty or null
  * @throws CalculationException if any rule above is violated
@@ -49,7 +54,7 @@ public record SprinklerHydraulicInput(
 		double assumedStartPressurePsi,
 		List<RemoteAreaSprinkler> sprinklers,
 		List<SprinklerPipeSegment> segments,
-		SupplyCurve waterSupply,
+		WaterSupply waterSupply,
 		List<DeviceLoss> deviceLosses) {
 
 	public SprinklerHydraulicInput {
@@ -80,9 +85,7 @@ public record SprinklerHydraulicInput(
 		if (segments == null || segments.isEmpty()) {
 			throw new CalculationException("at least one pipe segment is required");
 		}
-		if (waterSupply == null) {
-			throw new CalculationException("waterSupply is required");
-		}
+		// waterSupply is deliberately optional -- see the record's Javadoc.
 
 		Set<String> sprinklerNodes = new HashSet<>();
 		for (RemoteAreaSprinkler sprinkler : sprinklers) {

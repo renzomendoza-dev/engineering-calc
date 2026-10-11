@@ -23,7 +23,7 @@ import com.renzoproject.calc.core.exception.CalculationException;
 public record SupplyCurve(
 		double staticPressurePsi,
 		double residualPressurePsi,
-		double flowAtResidualGpm) {
+		double flowAtResidualGpm) implements WaterSupply {
 
 	private static final double FLOW_EXPONENT = 1.85;
 
