@@ -11,6 +11,8 @@ record HazardPresetFile(
 		String edition,
 		String confidence,
 		String note,
+		String verificationNote,
+		String coverageNote,
 		List<HazardPresetRow> presets) {
 
 }

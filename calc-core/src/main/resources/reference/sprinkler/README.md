@@ -18,20 +18,28 @@ Every file carries a file-level `confidence`, and most rows carry their own:
 rows taken straight from Table A.27.2.4.8.2. The rest needs confirming against
 a copy of NFPA 13 2019:
 
-| Data | Tag | What would clear it |
+| Data | Status | What would clear it |
 |---|---|---|
-| Fitting equivalent lengths | `verify` x8 | A second read of the transcription, especially the two non-monotonic cells |
-| Hazard presets: density + area | `verify` x5 | Figure 19.3.3.1.1 (figure number also unconfirmed) |
-| Hazard presets: max coverage | `verify` x5 | Table 10.2.4.2.1 (table number also unconfirmed) |
-| Hazard presets: hose + duration | — | Already corroborated in-repo by `storage/fire-water-duration.json` (`verified`) |
-| K-factors | `verify` x10 | The nominal K table, incl. which orifice sizes are published |
-| C factors: preaction, CPVC, ductile iron | `verify` x3 | Mapping decisions + a source for ductile iron 140 |
+| Hazard presets: design area | ✅ checked | 19.3.3.1.4 — 1500 ft² light/ordinary, 2500 ft² extra |
+| Hazard presets: hose + duration | ✅ checked | Table 19.3.3.1.2 — 100/30, 250/60–90, 500/90–120 |
+| Hazard presets: max coverage | ✅ checked | Table 10.2.4.2.1(a)(b)(c) — 225 / 130 / 100 ft² |
+| Hazard presets: **density** | `verify` ×5 | Must be read off the plotted curves in Figure 19.3.3.1.1 (p. 13‑162); not checkable from page text |
+| Fitting equivalent lengths | `verify` ×8 | A second read of the transcription, especially the two non-monotonic cells |
+| K-factors | `verify` ×10 | §7.2.1–7.2.2 on **p. 13‑49** (the page supplied started at 7.2.3) |
+| C factors: preaction, CPVC, ductile iron | `verify` ×3 | Mapping decisions + a source for ductile iron 140 |
 | Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 dimensions (not an NFPA document) |
 
-The section/table numbers for the hazard presets are themselves unconfirmed:
-the fitting chart turned out to be renumbered in the 2019 edition
-(27.2.3.1.1, not the 23.4.3.1.1 an earlier edition used), so the
-19.3.3.1.1 / 10.2.4.2.1 citations may be stale in the same way.
+Rows stay at `verify` while **any** of their fields is unconfirmed, so the
+hazard presets are still tagged `verify` even though four of their five fields
+are now checked — density is the holdout. Per-field detail is in each row's
+`sourceNote`.
+
+**Citations were renumbered in the 2019 edition** and ours were written against
+the older numbering. Confirmed so far: the fitting chart is 27.2.3.1.1 (was
+23.4.3.1.1), and hose stream/duration is **Table 19.3.3.1.2** (was 11.2.3.1.2).
+`reference/storage/fire-water-duration.json` still carries that old 11.2.3.1.2
+citation for the same data while being labelled 2019 — its numbers match, only
+the pointer is stale.
 
 ## Files
 
