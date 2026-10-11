@@ -340,6 +340,36 @@ of section 19.3.3.2.3 and have **not** been transcribed. The file says so in
 reduction says its conditions were not checked, because a reduction is the
 less conservative direction.
 
+### `remote-area-rules.json` — `verify`
+
+Two rules, both entered from general knowledge of the standard and **not yet
+confirmed against the printed 2019 edition**. Their section numbers are
+deliberately not given, because they have not been looked up.
+
+| Rule | Value | Used for |
+|---|---|---|
+| Remote area dimension parallel to the branch lines | at least `1.2 x sqrt(A)` | how many sprinklers sit on one branch line |
+| Minimum sprinkler operating pressure | 7 psi | the floor under the first sprinkler's pressure |
+
+**The `1.2 x sqrt(A)` rule** fixes the rectangle the remote area is laid out
+as. Sprinklers per branch is `ceil(1.2 * sqrt(A) / S)` with `S` the spacing
+along the branch, rounded **up** — 4.65 sprinklers is five — and branch lines
+are whatever number covers the area at that count. Rounding up everywhere is
+deliberate: a partial sprinkler is a whole one, so the plan can only equal or
+exceed the design area.
+
+**The 7 psi minimum** is the lowest pressure any sprinkler is taken to
+operate at. Where the pressure for the design flow, `(density * coverage / K)^2`,
+comes out lower, 7 psi is used instead and the sprinkler discharges
+`K * sqrt(7)` — more than the minimum flow, which is the conservative
+direction. A listed sprinkler may require more than this; its listing governs.
+
+`SprinklerHydraulicCalculator` applies this floor too. `assumedStartPressurePsi`
+used to be the only thing keeping the start at 7 psi, and a caller could lower
+it to 0; it can now only **raise** the start above the floor.
+
+Every plan warns that these two are unverified until the tag is changed.
+
 ## Related data outside this directory
 
 - **Pipe inside diameters** — `reference/pipes/bi.json` / `gi.json`

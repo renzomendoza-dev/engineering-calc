@@ -1,0 +1,10 @@
+{
+  "standard": "NFPA 13 (2019 edition) - design area of operation and minimum sprinkler operating pressure",
+  "edition": "NFPA 13, 2019 edition",
+  "confidence": "verify",
+  "note": "Two rules the remote-area plan and the hydraulic calculation both rely on, entered from general knowledge of the standard and NOT yet confirmed against the printed 2019 edition. Their section numbers are deliberately not given here, because they have not been looked up. Confirm both, then re-tag as verified.",
+  "remoteAreaLengthFactor": 1.2,
+  "remoteAreaLengthNote": "The area of sprinkler operation is taken as a rectangle whose dimension PARALLEL TO THE BRANCH LINES is at least 1.2 times the square root of the design area. It fixes how many sprinklers sit on one branch line: 1.2 * sqrt(A) / S, rounded up to a whole sprinkler, where S is the spacing along the branch. Rounding up is what keeps the plan from under-counting: 4.65 sprinklers is five.",
+  "minimumOperatingPressurePsi": 7.0,
+  "minimumOperatingPressureNote": "No sprinkler is assumed to operate below this pressure. Where the pressure needed to deliver the design density over one sprinkler's coverage, (density * coverage / K)^2, falls below it, this pressure is used instead and the sprinkler discharges K * sqrt(7) -- more than the minimum required flow, which is the conservative direction. A specific listed sprinkler may require MORE than this; its listing governs, and the caller's assumedStartPressurePsi can only raise the figure, never lower it below this one."
+}

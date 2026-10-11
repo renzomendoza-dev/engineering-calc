@@ -3,6 +3,7 @@ package com.renzoproject.calc_api.mechanical.sprinkler;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.pipe.PipeVelocityCalculator;
 import com.renzoproject.calc.core.mechanical.sprinkler.FittingEquivalentLengthResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.RemoteAreaRulesResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerHydraulicCalculator;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,13 @@ public class SprinklerHydraulicService {
 
 	public SprinklerHydraulicService(
 			PipeDimensionResolver dimensionResolver,
-			FittingEquivalentLengthResolver fittingResolver) {
+			FittingEquivalentLengthResolver fittingResolver,
+			RemoteAreaRulesResolver remoteAreaRulesResolver) {
 		this.calculator = new SprinklerHydraulicCalculator(
 				dimensionResolver,
 				fittingResolver,
-				new PipeVelocityCalculator(dimensionResolver));
+				new PipeVelocityCalculator(dimensionResolver),
+				remoteAreaRulesResolver);
 	}
 
 	public SprinklerHydraulicResponse calculate(SprinklerHydraulicRequest request) {

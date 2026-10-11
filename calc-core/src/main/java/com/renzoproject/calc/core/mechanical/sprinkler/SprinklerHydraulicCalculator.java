@@ -64,6 +64,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	private final PipeDimensionResolver dimensionResolver;
 	private final FittingEquivalentLengthResolver fittingResolver;
 	private final PipeVelocityCalculator velocityCalculator;
+	private final RemoteAreaRulesResolver remoteAreaRulesResolver;
 
 	/**
 	 * @param dimensionResolver resolves each segment's actual inside diameter from
@@ -77,6 +78,20 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			PipeDimensionResolver dimensionResolver,
 			FittingEquivalentLengthResolver fittingResolver,
 			PipeVelocityCalculator velocityCalculator) {
+		this(dimensionResolver, fittingResolver, velocityCalculator, new JsonRemoteAreaRulesResolver());
+	}
+
+	/**
+	 * @param remoteAreaRulesResolver supplies the minimum operating pressure the first sprinkler is
+	 *                                floored at, so the hydraulic calculation and the remote area plan
+	 *                                use the one figure
+	 */
+	public SprinklerHydraulicCalculator(
+			PipeDimensionResolver dimensionResolver,
+			FittingEquivalentLengthResolver fittingResolver,
+			PipeVelocityCalculator velocityCalculator,
+			RemoteAreaRulesResolver remoteAreaRulesResolver) {
+		this.remoteAreaRulesResolver = remoteAreaRulesResolver;
 		this.dimensionResolver = dimensionResolver;
 		this.fittingResolver = fittingResolver;
 		this.velocityCalculator = velocityCalculator;
@@ -248,8 +263,19 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * required flow ({@code density * coverage area}) needs, and the caller's assumed starting
 	 * pressure.
 	 */
-	private static double startingPressurePsi(RemoteAreaSprinkler sprinkler, SprinklerHydraulicInput input) {
-		return Math.max(minimumFlowPressurePsi(sprinkler, input), input.assumedStartPressurePsi());
+	/**
+	 * The pressure the most remote sprinkler starts at: the greatest of what its share of the
+	 * design density needs, the caller's assumed figure, and the minimum operating pressure.
+	 *
+	 * <p>The last of those is the floor. {@code assumedStartPressurePsi} used to be the only thing
+	 * keeping this at 7 psi, which a caller could lower (to 0, to "let the minimum flow govern") and
+	 * so start a calculation below any pressure a sprinkler is taken to operate at. The caller's
+	 * figure can still raise the start pressure; it can no longer take it below the floor.
+	 */
+	private double startingPressurePsi(RemoteAreaSprinkler sprinkler, SprinklerHydraulicInput input) {
+		double floor = remoteAreaRulesResolver.rules().minimumOperatingPressurePsi();
+		return Math.max(
+				floor, Math.max(minimumFlowPressurePsi(sprinkler, input), input.assumedStartPressurePsi()));
 	}
 
 	private static double minimumFlowPressurePsi(RemoteAreaSprinkler sprinkler, SprinklerHydraulicInput input) {

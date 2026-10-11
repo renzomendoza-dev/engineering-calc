@@ -34,7 +34,11 @@ import com.renzoproject.calc.core.mechanical.sprinkler.HazardPresetResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.JsonCFactorResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.JsonFittingEquivalentLengthResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.JsonHazardPresetResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonQuickResponseAreaReductionResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.JsonRemoteAreaRulesResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.JsonSprinklerKFactorResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.QuickResponseAreaReductionResolver;
+import com.renzoproject.calc.core.mechanical.sprinkler.RemoteAreaRulesResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerKFactorResolver;
 import com.renzoproject.calc.core.smokecontrol.JsonSmokeControlDefaultsResolver;
 import com.renzoproject.calc.core.smokecontrol.SmokeControlDefaultsResolver;
@@ -159,6 +163,16 @@ public class ResolverConfig {
 	@Bean
 	public SprinklerKFactorResolver sprinklerKFactorResolver() {
 		return new JsonSprinklerKFactorResolver();
+	}
+
+	@Bean
+	public RemoteAreaRulesResolver remoteAreaRulesResolver() {
+		return new JsonRemoteAreaRulesResolver();
+	}
+
+	@Bean
+	public QuickResponseAreaReductionResolver quickResponseAreaReductionResolver() {
+		return new JsonQuickResponseAreaReductionResolver();
 	}
 
 	// --- acoustics ---
