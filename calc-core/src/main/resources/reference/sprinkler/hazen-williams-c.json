@@ -1,9 +1,10 @@
 {
-  "standard": "NFPA 13 (2019 edition) - Hazen-Williams C values for sprinkler piping; C/epsilon pairings per Table A.27.2.4.8.2 (Suggested Epsilon-Factor for Aged Pipe)",
+  "standard": "NFPA 13 (2019 edition) - Table 27.2.4.8.1, Hazen-Williams C Values; epsilon pairings per Annex Table A.27.2.4.8.2 (Suggested Epsilon-Factor for Aged Pipe)",
   "edition": "NFPA 13, 2019 edition",
-  "confidence": "verify",
-  "note": "systemType ANY means the value does not vary with wet/dry/preaction service. A caller may always override C per pipe segment; this table is the reference/default set. epsilonFactor is the equivalent absolute roughness NFPA 13's annex pairs with each C value -- recorded for reference only, since this package uses Hazen-Williams (which takes C, not roughness). Nothing in calc-core reads it today; mechanical.pipe's Darcy-Weisbach path gets its roughness from reference/pipes/*.json instead.",
-  "annexNote": "Table A.27.2.4.8.2 also lists steel (new) at C=143 / epsilon 0.0018 in. This app does not expose that row: NFPA 13 design practice uses the aged values (120 wet, 100 dry), and 'new vs aged' is a pipe-age dimension this table is not keyed on. Its epsilon of 0.045 mm does match reference/pipes/bi.json's absoluteRoughnessMm, which is the Darcy-Weisbach figure the pipe package uses.",
+  "confidence": "verified",
+  "note": "systemType ANY means the value does not vary with wet/dry/preaction service. A caller may always override C per pipe segment; this table is the reference/default set. epsilonFactor is the equivalent absolute roughness NFPA 13's annex pairs with each C value -- recorded for reference only, since this package uses Hazen-Williams (which takes C, not roughness). Nothing in calc-core reads it today; mechanical.pipe's Darcy-Weisbach path gets its roughness from reference/pipes/*.json instead. Rows the annex does not cover carry a null epsilon rather than an invented one.",
+  "normativeTableNote": "CITATION CORRECTED, then verified. These C values were originally cited to Annex Table A.27.2.4.8.2, which is explanatory material pairing each C with a roughness. The normative source is Table 27.2.4.8.1 in the body of Chapter 27 (renumbered 28.2.4.8.1 in the 2022 edition). All ten published rows have now been read from the printed 2019 table and every pre-existing value was confirmed unchanged. IMPORTANT, per the table's own footnote: 'The authority having jurisdiction is permitted to allow other C values.' These are defaults an AHJ may override, not fixed constants -- which is why the calculator takes C per pipe segment rather than looking it up.",
+  "annexNote": "Annex Table A.27.2.4.8.2 also lists steel (new) at C=143 / epsilon 0.0018 in. This app does not expose that row: the normative table keys on service type (wet/dry) rather than pipe age, and NFPA 13 design practice uses the aged values. Its epsilon of 0.045 mm does match reference/pipes/bi.json's absoluteRoughnessMm, which is the Darcy-Weisbach figure the pipe package uses.",
   "cFactors": [
     {
       "pipeType": "STEEL",
@@ -11,9 +12,9 @@
       "cFactor": 120,
       "epsilonFactorInch": 0.004,
       "epsilonFactorMm": 0.100,
-      "label": "Steel - wet system",
+      "label": "Steel, wet system (black or galvanized)",
       "confidence": "verified",
-      "sourceNote": "Table A.27.2.4.8.2 'Steel' row, C=120. Unlined steel pipe in a wet system."
+      "sourceNote": "Table 27.2.4.8.1 'Black steel (wet systems including deluge)' = 120. The table lists galvanized steel wet separately at the same 120, so this one row covers both; the epsilon is the annex's steel figure. Note the published row says 'including deluge' -- deluge service takes the wet value."
     },
     {
       "pipeType": "STEEL",
@@ -21,9 +22,9 @@
       "cFactor": 100,
       "epsilonFactorInch": 0.015,
       "epsilonFactorMm": 0.375,
-      "label": "Steel - dry system",
+      "label": "Steel, dry system (black or galvanized)",
       "confidence": "verified",
-      "sourceNote": "Table A.27.2.4.8.2 'Steel' row, C=100. The lower C than wet service accounts for internal corrosion in dry/alternating pipe."
+      "sourceNote": "Table 27.2.4.8.1 'Black steel (dry systems including preaction)' = 100. Galvanized steel dry is listed separately at the same 100, so this one row covers both. The lower C than wet service accounts for internal corrosion in dry/alternating pipe."
     },
     {
       "pipeType": "STEEL",
@@ -31,9 +32,9 @@
       "cFactor": 100,
       "epsilonFactorInch": 0.015,
       "epsilonFactorMm": 0.375,
-      "label": "Steel - preaction system",
-      "confidence": "verify",
-      "sourceNote": "C=100 itself is the published Table A.27.2.4.8.2 value, but treating preaction as dry service is this application's mapping, not something the table states."
+      "label": "Steel, preaction system (black or galvanized)",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 names preaction explicitly inside the dry row -- 'Black steel (dry systems including preaction)' = 100. This was previously flagged as this application's own mapping of preaction onto dry service; the printed table makes that mapping the standard's own wording, so the caveat is withdrawn."
     },
     {
       "pipeType": "COPPER",
@@ -43,7 +44,27 @@
       "epsilonFactorMm": 0.0021,
       "label": "Copper tube",
       "confidence": "verified",
-      "sourceNote": "Table A.27.2.4.8.2 'Copper' row."
+      "sourceNote": "Table 27.2.4.8.1 'Copper tube, brass or stainless steel' = 150; epsilon from the annex's 'Copper' row."
+    },
+    {
+      "pipeType": "BRASS",
+      "systemType": "ANY",
+      "cFactor": 150,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
+      "label": "Brass pipe",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Copper tube, brass or stainless steel' = 150. Split into its own row because the published row covers three materials. The annex's roughness table has no brass row, so epsilon is null."
+    },
+    {
+      "pipeType": "STAINLESS_STEEL",
+      "systemType": "ANY",
+      "cFactor": 150,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
+      "label": "Stainless steel",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Copper tube, brass or stainless steel' = 150. Note this is NOT the carbon-steel value: stainless at 150 and black steel at 120/100 are different rows, so pipeType STEEL must not be used for stainless. The annex's roughness table has no stainless row, so epsilon is null."
     },
     {
       "pipeType": "CPVC",
@@ -52,8 +73,8 @@
       "epsilonFactorInch": 0.000084,
       "epsilonFactorMm": 0.0021,
       "label": "CPVC (listed sprinkler pipe)",
-      "confidence": "verify",
-      "sourceNote": "Table A.27.2.4.8.2 lists 'Plastic' at C=150; reading CPVC as that row is this application's mapping. A specific listed CPVC product's C comes from its listing."
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Plastic (listed) all' = 150. The table names the category rather than CPVC specifically, but 'all' is unqualified and listed CPVC sprinkler pipe falls squarely inside it, so this is no longer treated as an interpretive mapping. The epsilon is the annex's 'Plastic' row. A specific listed CPVC product's C still comes from its own listing where that listing states one."
     },
     {
       "pipeType": "DUCTILE_IRON_UNDERGROUND",
@@ -61,9 +82,39 @@
       "cFactor": 140,
       "epsilonFactorInch": null,
       "epsilonFactorMm": null,
-      "label": "Ductile iron - cement lined, underground",
-      "confidence": "verify",
-      "sourceNote": "Not listed in Table A.27.2.4.8.2; entered from general knowledge of underground supply mains and still needs a source."
+      "label": "Cement-lined cast or ductile iron",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Cement-lined cast- or ductile iron' = 140, confirmed against the printed page; this row previously had no source at all. The standard does NOT qualify it as underground -- the pipeType key is historical and kept for API compatibility, while the label now matches the published wording. The lining is what carries the 140: see UNLINED_CAST_OR_DUCTILE_IRON at 100. The annex's roughness table does not list it, so epsilon is null."
+    },
+    {
+      "pipeType": "UNLINED_CAST_OR_DUCTILE_IRON",
+      "systemType": "ANY",
+      "cFactor": 100,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
+      "label": "Unlined cast or ductile iron",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Unlined cast or ductile iron' = 100. Added because the file previously carried only the cement-lined case at 140; an unlined main calculated at 140 would under-predict friction loss by roughly a factor of two. The annex's roughness table does not list it, so epsilon is null."
+    },
+    {
+      "pipeType": "ASBESTOS_CEMENT",
+      "systemType": "ANY",
+      "cFactor": 140,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
+      "label": "Asbestos cement",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Asbestos cement' = 140. Included for completeness of the published table; relevant only to existing buried mains. The annex's roughness table does not list it, so epsilon is null."
+    },
+    {
+      "pipeType": "CONCRETE",
+      "systemType": "ANY",
+      "cFactor": 140,
+      "epsilonFactorInch": null,
+      "epsilonFactorMm": null,
+      "label": "Concrete",
+      "confidence": "verified",
+      "sourceNote": "Table 27.2.4.8.1 'Concrete' = 140. Included for completeness of the published table. The annex's roughness table does not list it, so epsilon is null."
     }
   ]
 }

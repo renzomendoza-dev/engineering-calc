@@ -14,6 +14,7 @@ record HazardPresetFile(
 		String verificationNote,
 		String coverageNote,
 		String curveNote,
+		String dryPipeAreaNote,
 		List<HazardPresetRow> presets) {
 
 }

@@ -40,14 +40,31 @@ class SprinklerReferenceControllerTest {
 
 	@Test
 	void cFactorsTable_returnsThePublishedSet() throws Exception {
+		// NFPA 13 2019 Table 27.2.4.8.1 prints ten rows. This file splits the combined
+		// "copper tube, brass or stainless steel" row into three, and folds black and galvanized
+		// steel together since the table gives them identical values.
 		mockMvc.perform(get(BASE_URL + "/sprinkler-c-factors-table"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$", hasSize(6)))
+				.andExpect(jsonPath("$", hasSize(11)))
 				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'WET')].cFactor")
 						.value(contains(120.0)))
 				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'DRY')].cFactor")
 						.value(contains(100.0)))
 				.andExpect(jsonPath("$[?(@.pipeType == 'CPVC')].cFactor").value(contains(150.0)));
+	}
+
+	@Test
+	void cFactorsTable_separatesLinedFromUnlinedIron() throws Exception {
+		// The cement lining is what carries the 140; serving only that row would let a form
+		// pick 140 for an unlined main and under-predict its friction loss.
+		mockMvc.perform(get(BASE_URL + "/sprinkler-c-factors-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.pipeType == 'DUCTILE_IRON_UNDERGROUND')].cFactor")
+						.value(contains(140.0)))
+				.andExpect(jsonPath("$[?(@.pipeType == 'UNLINED_CAST_OR_DUCTILE_IRON')].cFactor")
+						.value(contains(100.0)))
+				.andExpect(jsonPath("$[?(@.pipeType == 'STAINLESS_STEEL')].cFactor")
+						.value(contains(150.0)));
 	}
 
 	@Test
@@ -65,18 +82,17 @@ class SprinklerReferenceControllerTest {
 	}
 
 	@Test
-	void cFactorsTable_carriesTheAnnexEpsilonFiguresAndPerRowConfidence() throws Exception {
-		// Table A.27.2.4.8.2 pairs each C with an absolute roughness; a form shows it, the
-		// calculation ignores it. Rows that are this app's mapping rather than the annex's own
-		// wording stay 'verify' so they can be badged differently.
+	void cFactorsTable_carriesTheAnnexEpsilonFiguresAndIsFullyVerified() throws Exception {
+		// Annex Table A.27.2.4.8.2 pairs some C values with an absolute roughness; a form shows
+		// it, the calculation ignores it. It covers fewer materials than the normative C table,
+		// so a row it omits carries a null epsilon rather than an invented one.
 		mockMvc.perform(get(BASE_URL + "/sprinkler-c-factors-table"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'WET')].epsilonFactorMm")
 						.value(contains(0.1)))
-				.andExpect(jsonPath("$[?(@.pipeType == 'STEEL' && @.systemType == 'WET')].confidence")
-						.value(contains("verified")))
-				.andExpect(jsonPath("$[?(@.pipeType == 'DUCTILE_IRON_UNDERGROUND')].confidence")
-						.value(contains("verify")));
+				.andExpect(jsonPath("$[?(@.pipeType == 'STAINLESS_STEEL')].epsilonFactorMm")
+						.value(contains((Object) null)))
+				.andExpect(jsonPath("$[?(@.confidence == 'verified')]", hasSize(11)));
 	}
 
 	@Test

@@ -71,18 +71,37 @@ dynamically rather than hardcoding filenames.
   Recommend cross-checking against a specific brand's datasheet
   (e.g. a local PPR supplier catalog) before treating as final.
 - **GI / BI, 3-1/2" / 5" / 8"**: added for sprinkler hydraulic calculations,
-  which need steel sizes up to 8". Entered from ASME B36.10M Schedule 40 from
-  general knowledge and **not yet confirmed against the printed table** —
-  treat as `verify`. `PipeSizeRow` has no per-row confidence field, so they are
-  flagged here rather than in the JSON. The three rows:
-  3-1/2" OD 101.6 / wall 5.74 / ID 90.12 mm; 5" OD 141.3 / wall 6.55 /
-  ID 128.2 mm; 8" OD 219.1 / wall 8.18 / ID 202.74 mm.
+  which need steel sizes up to 8". Still `verify` — `PipeSizeRow` has no
+  per-row confidence field, so they are flagged here rather than in the JSON.
+  The three rows:
+
+  | NPS | OD | Wall | ID |
+  |---|---|---|---|
+  | 3-1/2" | 101.6 mm (4.000") | 5.74 mm (0.226") | 90.12 mm |
+  | 5" | 141.3 mm (5.563") | 6.55 mm (0.258") | 128.20 mm |
+  | 8" | 219.1 mm (8.625") | 8.18 mm (0.322") | 202.74 mm |
+
+  Checks done so far, none of which is a primary source:
+  - `ID = OD − 2 × wall` holds on **every row of both files**, not just these
+    three, so there is no arithmetic slip anywhere.
+  - All three ODs are exact standard inch values.
+  - All three OD/wall pairs match a published vendor dimension chart.
+  - Schedule 40 equals STD wall for NPS 1/8 through 10, so an STD table
+    confirms these rows too.
+
+  What would clear them: **ASME B36.10M** itself, or any engineering handbook
+  reproducing it (Crane TP-410 Appendix B, ASHRAE Fundamentals ch. 22,
+  Machinery's Handbook) or a pipe manufacturer's catalogue. Note 3-1/2" and 5"
+  are the two sizes most online charts skip, which is exactly why they are the
+  ones still open.
+
   Note `resolveNextStandardSize` can now return these, so a design-mode pipe
   velocity calculation that previously failed with "no size large enough" may
   now resolve to 5" or 8".
 - **GI / BI (1/8" through 3", 4", 6")**: ANSI B36.10M Schedule 40 — standard,
-  stable, safe to use
-  as-is. BI pipe uses identical dimensions to GI (same steel pipe standard);
+  stable, safe to use as-is. Their recorded provenance is only "standard NPS
+  schedule dimension tables", so whatever source clears the three sizes above
+  is worth running over the whole file in one pass. BI pipe uses identical dimensions to GI (same steel pipe standard);
   the separate file exists so `PipeDimensionResolver` and the future
   pressure-loss calculator's roughness lookup can key on material
   independently (BI has different absolute roughness than GI once coated).

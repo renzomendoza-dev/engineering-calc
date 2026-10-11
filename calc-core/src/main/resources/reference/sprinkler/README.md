@@ -15,18 +15,17 @@ Every file carries a file-level `confidence`, and most rows carry their own:
   throws instead of guessing.
 
 **Checked against the printed NFPA 13 2019 so far:** all five hazard presets,
-all thirteen K-factors, and three C factor rows. Still outstanding: the fitting
-transcription, three C factor rows that are our own mapping, and the added pipe
-sizes.
+all thirteen K-factors, and the whole C factor table. Still outstanding: the
+fitting transcription and the three added pipe sizes (an ASME document, not an
+NFPA one).
 
 | Data | Status | Source / what would clear it |
 |---|---|---|
 | **Hazard presets** (all 5 fields) | ✅ `verified` | Figure 19.3.3.1.1, §19.3.3.1.4, Table 19.3.3.1.2, Table 10.2.4.2.1(a)(b)(c) |
 | **K-factors** (13 rows) | ✅ `verified` | Table 7.2.2.1 |
-| C factors: steel wet/dry, copper | ✅ `verified` | Table A.27.2.4.8.2 |
+| **C factors** (11 rows) | ✅ `verified` | Table 27.2.4.8.1 (normative) + Table A.27.2.4.8.2 (ε) |
 | Fitting equivalent lengths | `verify` ×8 | A second read of the transcription, especially the two non-monotonic cells |
-| C factors: preaction, CPVC, ductile iron | `verify` ×3 | Mapping decisions + a source for ductile iron 140 |
-| Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 dimensions (not an NFPA document) |
+| Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 wall thicknesses (not an NFPA document). ID = OD − 2t checks out on every row, and the ODs are exact standard inch values, so only the three wall figures are unconfirmed |
 
 A row stays at `verify` while **any** of its fields is unconfirmed; per-field
 detail is in each row's `sourceNote`.
@@ -49,13 +48,37 @@ one. Full spans, for a UI that lets an engineer pick elsewhere on the curve:
 Only the stored endpoint exists as structured data today; the spans are
 recorded in the JSON's `curveNote`.
 
+### Design area is a wet-pipe figure
+
+`designAreaSqFt` is the **wet pipe** value. Table 27.2.4.7.2 (Minimum Design
+Area) shows dry pipe systems take a uniformly 30 percent larger area:
+
+| Hazard | Wet | Dry |
+|---|---|---|
+| Light | 1500 ft² | 1950 ft² |
+| Ordinary | 1500 ft² | 1950 ft² |
+| Extra | 2500 ft² | 3250 ft² |
+
+The presets are not keyed on system type, so a dry or preaction design started
+from a preset is **undersized by 30 percent**. This is not a calculation
+defect — `SprinklerHydraulicCalculator` takes `designAreaSqFt` as an input and
+never looks it up — but a form offering these presets should apply the uplift
+or warn. Recorded in the JSON's `dryPipeAreaNote`; not yet modelled.
+
+*Misprint in the printed table:* its SI column reads 2500 ft² **(130 m²)** for
+extra hazard wet. 2500 ft² is about 232 m², and every neighbouring row converts
+correctly (1500/140, 1950/180, 3250/300), so this is read as a typo for (230).
+Only ft² values are stored, so nothing downstream depends on it.
+
 **Citations were renumbered in the 2019 edition** and ours were written against
 the older numbering. Confirmed and corrected so far: the fitting chart is
 27.2.3.1.1 (was 23.4.3.1.1), and hose stream/duration is **Table 19.3.3.1.2**
 (was 11.2.3.1.2 — also corrected in
 `reference/storage/fire-water-duration.json`, which carried the same stale
 pointer for the same data). Treat any remaining pre-2019 citation in this repo
-as suspect until checked.
+as suspect until checked. A third has since turned up: the C factors were cited
+to Annex Table A.27.2.4.8.2 when the normative source is **Table 27.2.4.8.1** in
+the body of Chapter 27.
 
 ## Files
 
@@ -90,30 +113,70 @@ Notes:
   density/area curves need, so the two coexist deliberately. If one changes,
   change both.
 
-### `hazen-williams-c.json` — `verify`
+### `hazen-williams-c.json` — `verified`
 
-| Pipe type | Service | C |
-|---|---|---|
-| Steel | wet | 120 |
-| Steel | dry / preaction | 100 |
-| Copper | any | 150 |
-| CPVC | any | 150 |
-| Ductile iron (underground, cement lined) | any | 140 |
+**NFPA 13 2019 Table 27.2.4.8.1**, read from the printed page. Ten rows are
+published; this file carries eleven because the combined "copper tube, brass or
+stainless steel" row is split into three, while black and galvanized steel are
+folded together — the table gives them identical values, so separate rows would
+only resolve to the same numbers.
 
-Source: **Table A.27.2.4.8.2** (Annex A, "Suggested ε-Factor for Aged Pipe"),
-which pairs each C with an equivalent absolute roughness. Those ε values are
-stored alongside (`epsilonFactorInch`/`epsilonFactorMm`) for display only —
-Hazen-Williams takes C, not roughness, so nothing in calc-core reads them.
+| Pipe type key | Service | C | Published row |
+|---|---|---|---|
+| `STEEL` | wet | 120 | Black steel (wet systems including deluge) |
+| `STEEL` | dry | 100 | Black steel (dry systems including preaction) |
+| `STEEL` | preaction | 100 | same row — the table names preaction |
+| `COPPER` | any | 150 | Copper tube, brass or stainless steel |
+| `BRASS` | any | 150 | same row |
+| `STAINLESS_STEEL` | any | 150 | same row |
+| `CPVC` | any | 150 | Plastic (listed) all |
+| `DUCTILE_IRON_UNDERGROUND` | any | 140 | Cement-lined cast- or ductile iron |
+| `UNLINED_CAST_OR_DUCTILE_IRON` | any | 100 | Unlined cast or ductile iron |
+| `ASBESTOS_CEMENT` | any | 140 | Asbestos cement |
+| `CONCRETE` | any | 140 | Concrete |
 
-Per-row confidence differs here:
+**The table's own footnote:** *the authority having jurisdiction is permitted to
+allow other C values.* These are defaults an AHJ may override — which is the
+reason the calculator takes C per pipe segment instead of looking it up.
 
-- `verified` — straight from the annex: steel wet (120, ε 0.004 in.), steel dry
-  (100, ε 0.015 in.), copper (150, ε 0.000084 in.).
-- `verify` — **our mapping**, not the annex's wording: preaction treated as dry
-  service, and CPVC read as the annex's "Plastic" row. A specific listed CPVC
-  product's C comes from its listing.
-- `verify` — ductile iron 140 isn't in the annex at all and still needs a
-  source; its ε is `null` rather than invented.
+Two naming traps worth knowing:
+
+- `DUCTILE_IRON_UNDERGROUND` is a **historical key**, kept so the API doesn't
+  break. The standard doesn't say "underground"; it says *cement-lined*. The
+  lining is what carries the 140, and an unlined main is 100 — a 40 percent
+  C difference, so resolving the wrong one under-predicts friction loss badly.
+- `STAINLESS_STEEL` is **150, not** the carbon-steel 120/100. `STEEL` must not
+  be used for stainless.
+
+**Citation corrected, then verified.** These values were originally cited to
+**Table A.27.2.4.8.2** (Annex A, "Suggested ε-Factor for Aged Pipe"). That annex
+table is real and is where the ε values come from, but it is *explanatory*
+material. The **normative** source for C is **Table 27.2.4.8.1** in the body of
+Chapter 27, renumbered 28.2.4.8.1 in the 2022 edition. This was the third
+citation in this repo found pointing at the wrong table; see the renumbering
+warning above.
+
+Reading the printed table changed **no existing value** — steel 120/100, copper
+150, CPVC 150 and cement-lined iron 140 were all confirmed — but it resolved
+every open question and added five rows:
+
+- **Preaction** was carried as *this app's mapping* of preaction onto dry
+  service. The table names it outright: "Black steel (dry systems including
+  preaction)". The caveat is withdrawn.
+- **CPVC** was carried as our reading of the annex's generic "Plastic" row. The
+  normative row is "Plastic (listed) all" — unqualified, so listed CPVC falls
+  squarely inside it. No longer treated as interpretation.
+- **Ductile iron 140** had *no source at all*. It is "Cement-lined cast- or
+  ductile iron" in the printed table.
+
+ε values stay stored alongside (`epsilonFactorInch`/`epsilonFactorMm`) for
+display only — Hazen-Williams takes C, not roughness, so nothing in calc-core
+reads them. The annex covers fewer materials than the normative table, so the
+rows it omits carry `null` rather than an invented figure.
+
+**One secondary-source claim did not survive the printed page:** a "dry/preaction
+with listed nitrogen, C=120" row. It is not in the 2019 table and was not added.
+It appears to be a later-edition change.
 
 The annex also lists **steel (new) at C=143**, not exposed here: NFPA 13 design
 practice uses the aged values, and pipe age isn't a dimension this table is

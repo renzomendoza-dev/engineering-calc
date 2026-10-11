@@ -11,6 +11,7 @@ record CFactorFile(
 		String edition,
 		String confidence,
 		String note,
+		String normativeTableNote,
 		String annexNote,
 		List<CFactorRow> cFactors) {
 
