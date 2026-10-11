@@ -35,11 +35,12 @@ are now checked — density is the holdout. Per-field detail is in each row's
 `sourceNote`.
 
 **Citations were renumbered in the 2019 edition** and ours were written against
-the older numbering. Confirmed so far: the fitting chart is 27.2.3.1.1 (was
-23.4.3.1.1), and hose stream/duration is **Table 19.3.3.1.2** (was 11.2.3.1.2).
-`reference/storage/fire-water-duration.json` still carries that old 11.2.3.1.2
-citation for the same data while being labelled 2019 — its numbers match, only
-the pointer is stale.
+the older numbering. Confirmed and corrected so far: the fitting chart is
+27.2.3.1.1 (was 23.4.3.1.1), and hose stream/duration is **Table 19.3.3.1.2**
+(was 11.2.3.1.2 — also corrected in
+`reference/storage/fire-water-duration.json`, which carried the same stale
+pointer for the same data). Treat any remaining pre-2019 citation in this repo
+as suspect until checked.
 
 ## Files
 
@@ -55,8 +56,10 @@ Density/area minimum points, hose stream, duration, max coverage per hazard.
 | Extra Group 1 | 0.30 | 2500 | 500 | 120 | 100 |
 | Extra Group 2 | 0.40 | 2500 | 500 | 120 | 100 |
 
-Sources to confirm: Figure 19.3.3.1.1 (density/area curves),
-Table 11.2.3.1.2 (hose stream + duration), Table 10.2.4.2.1 (protection areas).
+Sources: Figure 19.3.3.1.1 (density/area curves, p. 13‑162 — **density values
+still to confirm**), Table 19.3.3.1.2 (hose stream + duration, ✅ confirmed),
+Table 10.2.4.2.1(a)(b)(c) (protection areas, ✅ confirmed), §19.3.3.1.4
+(minimum design areas, ✅ confirmed).
 
 Notes:
 

@@ -89,7 +89,7 @@ Interactive docs (Swagger UI) are served at the application root — `http://loc
 | GET | `/reference/pipe-materials` | Supported pipe materials |
 | GET | `/reference/lpcd-consumption-table` | Per-capita consumption by occupancy type (domestic storage) |
 | GET | `/reference/wsfu-demand-table` | WSFU → peak demand, NSPC 2009 Table B.5.4 (domestic storage) |
-| GET | `/reference/fire-water-duration-table` | Hazard classification → duration range, NFPA 13 Table 11.2.3.1.2 (fire storage) |
+| GET | `/reference/fire-water-duration-table` | Hazard classification → duration range, NFPA 13 Table 19.3.3.1.2 (fire storage) |
 | GET | `/reference/duct-roughness-table` | Duct material absolute roughness, ASHRAE Fundamentals Table 1 (duct sizing) |
 | GET | `/reference/duct-velocity-limits-table` | Recommended max velocity by duct location + NC/RC acoustic rating, ASHRAE Fundamentals Table 12 (duct sizing) |
 | GET | `/reference/sprinkler-hazard-presets-table` | NFPA 13 density/area, hose stream, duration and coverage presets by hazard (sprinkler) |

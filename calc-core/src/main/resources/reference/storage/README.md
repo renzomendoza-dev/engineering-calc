@@ -62,9 +62,18 @@ interpolation. Throw `CalculationException` if the type isn't found.
 
 Hazard classification -> required water supply duration (minutes) and hose
 stream allowance (GPM). Transcribed from **NFPA 13 (2019 edition), Table
-11.2.3.1.2**.
+19.3.3.1.2**.
 
-**Confidence: verified** — directly transcribed from a cited NFPA 13 table.
+**Confidence: verified** — directly transcribed from a cited NFPA 13 table,
+and the values re-checked against the printed 2019 page (light 100 gpm /
+30 min, ordinary 250 gpm / 60-90 min, extra 500 gpm / 90-120 min).
+
+**Citation corrected**: this file previously cited Table 11.2.3.1.2, which is
+the **2016** edition's number for the same content — Chapter 11 in the 2019
+edition is extended coverage sprinklers. The numbers were right; the pointer
+was stale. `reference/sprinkler/` had the same class of error (the fitting
+chart renumbered from 23.4.3.1.1 to 27.2.3.1.1), so treat any pre-2019
+citation in this repo as suspect until checked.
 
 **Important**: Ordinary Hazard (60-90 min) and Extra Hazard (90-120 min)
 are **ranges**, not single values — NFPA 13 subdivides these classes

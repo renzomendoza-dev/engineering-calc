@@ -1,5 +1,6 @@
 {
-  "standard": "NFPA 13 (2019 edition), Table 11.2.3.1.2 - Hose Stream Allowance and Water Supply Duration Requirements for Hydraulically Calculated Systems",
+  "standard": "NFPA 13 (2019 edition), Table 19.3.3.1.2 - Hose Stream Allowance and Water Supply Duration Requirements for Hydraulically Calculated Systems",
+  "citationNote": "This table was previously cited here as Table 11.2.3.1.2, which is the 2016 edition's number for the same content (Chapter 11 in the 2019 edition is extended coverage sprinklers). The values below were re-checked against the printed 2019 table and are unchanged; only the citation was wrong.",
   "confidence": "verified",
   "note": "Ordinary and Extra Hazard durations are ranges, not single values - NFPA 13 subdivides these hazard classes further (e.g. Ordinary Hazard Group 1/2, Extra Hazard commodity classification) which this summary table does not capture. A resolver/calculator using this data should expose the range and let the engineer select within it, or default conservatively to the upper bound, rather than silently picking a value.",
   "classifications": [
