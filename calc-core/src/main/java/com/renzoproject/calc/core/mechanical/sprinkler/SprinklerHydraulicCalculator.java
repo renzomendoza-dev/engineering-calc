@@ -198,8 +198,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				.to(SprinklerUnits.INCH)
 				.getValue()
 				.doubleValue();
-		double fittingLengthFt = fittingEquivalentLengthFt(segment, warnings);
-		return buildRow(segment, flowGpm, upstreamPressurePsi, insideDiameterInch, fittingLengthFt);
+		FittingLengths fittingLengths = fittingEquivalentLengthFt(segment, warnings);
+		return buildRow(segment, flowGpm, upstreamPressurePsi, insideDiameterInch, fittingLengths);
 	}
 
 	private SegmentFlowRow buildRow(
@@ -207,7 +207,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			double flowGpm,
 			double upstreamPressurePsi,
 			double insideDiameterInch,
-			double fittingLengthFt) {
+			FittingLengths fittingLengths) {
+		double fittingLengthFt = fittingLengths.totalFt();
 		double totalLengthFt = segment.pipeLengthFt() + fittingLengthFt;
 		double psiPerFoot = HazenWilliams.frictionLossPsiPerFoot(flowGpm, segment.cFactor(), insideDiameterInch);
 		double frictionPsi = psiPerFoot * totalLengthFt;
@@ -223,6 +224,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				segment.cFactor(),
 				segment.pipeLengthFt(),
 				fittingLengthFt,
+				fittingLengths.cFactorAdjustment(),
 				totalLengthFt,
 				psiPerFoot,
 				frictionPsi,
@@ -254,6 +256,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					row.cFactor(),
 					row.pipeLengthFt(),
 					row.fittingEquivalentLengthFt(),
+					row.fittingCFactorAdjustment(),
 					row.totalLengthFt(),
 					psiPerFoot,
 					frictionPsi,
@@ -264,11 +267,19 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		return rescaled;
 	}
 
-	private double fittingEquivalentLengthFt(SprinklerPipeSegment segment, Set<String> warnings) {
-		double total = 0;
+	/**
+	 * Sums a segment's fittings. Lengths looked up from the published chart are rescaled from its
+	 * C=120 basis to the segment's own C, as NFPA 13 requires; an explicitly supplied length is
+	 * used exactly as given, because the caller's basis is unknown and silently rescaling someone
+	 * else's number would be worse than leaving it alone.
+	 */
+	private FittingLengths fittingEquivalentLengthFt(SprinklerPipeSegment segment, Set<String> warnings) {
+		double publishedFtTotal = 0;
+		double explicitFtTotal = 0;
+
 		for (SegmentFitting fitting : segment.fittings()) {
 			if (fitting.explicitEquivalentLengthFt() != null) {
-				total += fitting.quantity() * fitting.explicitEquivalentLengthFt();
+				explicitFtTotal += fitting.quantity() * fitting.explicitEquivalentLengthFt();
 				continue;
 			}
 
@@ -286,9 +297,16 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 						+ row.confidence() + "' -- confirm against NFPA 13 Table 27.2.3.1.1 before relying on this "
 						+ "calculation");
 			}
-			total += fitting.quantity() * publishedFt;
+			publishedFtTotal += fitting.quantity() * publishedFt;
 		}
-		return total;
+
+		if (publishedFtTotal == 0) {
+			return new FittingLengths(explicitFtTotal, 1.0);
+		}
+
+		double adjustment = HazenWilliams.equivalentLengthAdjustmentFactor(
+				segment.cFactor(), fittingResolver.cFactorBasis());
+		return new FittingLengths(publishedFtTotal * adjustment + explicitFtTotal, adjustment);
 	}
 
 	/** Reuses {@link PipeVelocityCalculator} rather than repeating {@code V = Q/A}. */
@@ -326,6 +344,13 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 	private static double round(double value) {
 		return Math.round(value * 100.0) / 100.0;
+	}
+
+	/**
+	 * A segment's total fitting equivalent length and the C factor adjustment that produced it
+	 * ({@code 1.0} when nothing was looked up from the published chart).
+	 */
+	private record FittingLengths(double totalFt, double cFactorAdjustment) {
 	}
 
 	/** Pressure and flow at a node, with the calculation rows for everything upstream of it. */

@@ -12,7 +12,13 @@ package com.renzoproject.calc.core.mechanical.sprinkler;
  * @param insideDiameterInch         actual inside diameter resolved from reference data
  * @param cFactor                    Hazen-Williams C used
  * @param pipeLengthFt               centerline pipe length
- * @param fittingEquivalentLengthFt  total equivalent length of this segment's fittings
+ * @param fittingEquivalentLengthFt  total equivalent length of this segment's fittings, after the
+ *                                   C factor adjustment below
+ * @param fittingCFactorAdjustment   multiplier applied to lengths looked up from the published
+ *                                   chart, which assumes C=120 ({@code (C/120)^1.85}). {@code 1.0}
+ *                                   when the segment is C=120 or when every fitting carried an
+ *                                   explicit length, which is never adjusted. Reported so a
+ *                                   reviewer can reconcile the row against the printed table
  * @param totalLengthFt              {@code pipeLengthFt + fittingEquivalentLengthFt}
  * @param frictionLossPsiPerFoot     Hazen-Williams unit loss at {@code flowGpm}
  * @param frictionLossPsi            {@code frictionLossPsiPerFoot * totalLengthFt}
@@ -29,6 +35,7 @@ public record SegmentFlowRow(
 		double cFactor,
 		double pipeLengthFt,
 		double fittingEquivalentLengthFt,
+		double fittingCFactorAdjustment,
 		double totalLengthFt,
 		double frictionLossPsiPerFoot,
 		double frictionLossPsi,

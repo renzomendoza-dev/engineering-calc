@@ -56,4 +56,33 @@ class HazenWilliamsTest {
 		assertThrows(CalculationException.class, () -> HazenWilliams.frictionLossPsiPerFoot(100.0, 120.0, 0.0));
 	}
 
+	@Test
+	void equivalentLengthAdjustment_reproducesNfpaPublishedFactors() {
+		// NFPA 13 publishes rounded multipliers for converting its C=120 equivalent length chart
+		// to other C values. (C/120)^1.85 reproduces them; (120/C)^1.85 does not, which is the
+		// easy way to get this backwards.
+		assertEquals(0.713, HazenWilliams.equivalentLengthAdjustmentFactor(100.0, 120.0), 0.001);
+		assertEquals(1.16, HazenWilliams.equivalentLengthAdjustmentFactor(130.0, 120.0), 0.001);
+		assertEquals(1.33, HazenWilliams.equivalentLengthAdjustmentFactor(140.0, 120.0), 0.001);
+		assertEquals(1.51, HazenWilliams.equivalentLengthAdjustmentFactor(150.0, 120.0), 0.002);
+	}
+
+	@Test
+	void equivalentLengthAdjustment_atTheBasis_isExactlyOne() {
+		assertEquals(1.0, HazenWilliams.equivalentLengthAdjustmentFactor(120.0, 120.0), 0.0);
+	}
+
+	@Test
+	void equivalentLengthAdjustment_rougherPipeNeedsFewerEquivalentFeet() {
+		// Lower C means more loss per foot, so fewer feet of it match the fitting's own loss.
+		assertTrue(HazenWilliams.equivalentLengthAdjustmentFactor(100.0, 120.0) < 1.0);
+		assertTrue(HazenWilliams.equivalentLengthAdjustmentFactor(150.0, 120.0) > 1.0);
+	}
+
+	@Test
+	void equivalentLengthAdjustment_nonPositiveArguments_throw() {
+		assertThrows(CalculationException.class, () -> HazenWilliams.equivalentLengthAdjustmentFactor(0.0, 120.0));
+		assertThrows(CalculationException.class, () -> HazenWilliams.equivalentLengthAdjustmentFactor(120.0, 0.0));
+	}
+
 }

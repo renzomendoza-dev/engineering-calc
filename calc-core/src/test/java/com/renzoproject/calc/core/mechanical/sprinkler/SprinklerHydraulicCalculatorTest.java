@@ -178,6 +178,46 @@ class SprinklerHydraulicCalculatorTest {
 	}
 
 	@Test
+	void publishedFittingLengths_areRescaledForADrySystemsLowerCFactor() {
+		// NFPA 13's chart is in feet of C=120 pipe. On C=100 dry steel the two 2" 90 degree
+		// elbows (5 ft each published) become 10 * (100/120)^1.85 = 10 * 0.713698 = 7.13698 ft,
+		// so the segment totals 10 + 7.13698 = 17.13698 ft.
+		SprinklerPipeSegment drySegment = new SprinklerPipeSegment(
+				"S1", "RISER", "BI", "SCH40", "2", 100.0, 10.0, 0.0,
+				List.of(new SegmentFitting("ELBOW_90_STANDARD", 2, null)));
+
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.DRY, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(drySegment), SUPPLY, List.of());
+
+		SegmentFlowRow row = calculator.calculate(input).segments().get(0);
+
+		assertEquals(0.713698, row.fittingCFactorAdjustment(), 1e-6);
+		assertEquals(7.13698, row.fittingEquivalentLengthFt(), 1e-5);
+		assertEquals(17.13698, row.totalLengthFt(), 1e-5);
+	}
+
+	@Test
+	void explicitFittingLengths_areNeverRescaled() {
+		// The caller's basis is unknown, so an explicitly supplied length is used as given even
+		// on a C=100 segment, and the reported adjustment stays 1.0.
+		SprinklerPipeSegment drySegment = new SprinklerPipeSegment(
+				"S1", "RISER", "BI", "SCH40", "2", 100.0, 10.0, 0.0,
+				List.of(new SegmentFitting(null, 2, 5.0)));
+
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.DRY, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(drySegment), SUPPLY, List.of());
+
+		SegmentFlowRow row = calculator.calculate(input).segments().get(0);
+
+		assertEquals(10.0, row.fittingEquivalentLengthFt(), 1e-9);
+		assertEquals(1.0, row.fittingCFactorAdjustment(), 1e-9);
+	}
+
+	@Test
 	void fittingWithExplicitEquivalentLength_isAddedToTheSegmentLength() {
 		SprinklerPipeSegment withFittings = new SprinklerPipeSegment(
 				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
@@ -211,6 +251,7 @@ class SprinklerHydraulicCalculatorTest {
 		SegmentFlowRow row = result.segments().get(0);
 
 		assertEquals(10.0, row.fittingEquivalentLengthFt(), 1e-9);
+		assertEquals(1.0, row.fittingCFactorAdjustment(), 1e-9, "C=120 is the chart's own basis");
 		assertEquals(20.0, row.totalLengthFt(), 1e-9);
 		// The table is transcribed but not yet double-checked, so using it must say so.
 		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),

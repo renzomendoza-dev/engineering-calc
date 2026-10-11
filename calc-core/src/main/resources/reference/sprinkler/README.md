@@ -120,12 +120,26 @@ Transcribed as published, deliberately not "corrected":
 A fitting/size combination the table leaves blank still throws
 `CalculationException`; pass `explicitEquivalentLengthFt` for those.
 
-**C factor basis (open item, now live):** these lengths assume C = 120. NFPA 13
-requires multiplying them by `(120/C)^1.85` for other C factors — about 0.713
-at C = 100, which is what dry and preaction steel use. The calculator does
-**not** apply that adjustment, so a dry-system calculation with fittings
-currently overstates their equivalent length by about 40%. Decide before this
-data is relied on.
+**C factor basis — applied.** These lengths are in feet of C = 120 pipe. NFPA 13
+requires rescaling them for other C factors, and the calculator now does:
+
+```
+factor = (C / 120)^1.85
+```
+
+which reproduces NFPA's published multipliers — 0.713 at C = 100, 1.16 at
+C = 130, 1.33 at C = 140, 1.51 at C = 150. Note the direction: a fitting's own
+loss barely depends on the pipe it sits in, so in rougher pipe (lower C, more
+loss per foot) it takes *fewer* feet of that pipe to match the fitting. Dry and
+preaction steel at C = 100 therefore get **shorter** equivalent lengths than the
+printed chart, not longer. (`(120/C)^1.85` is the inverse and does not match
+the published factors.)
+
+Each segment row reports the factor it used as `fittingCFactorAdjustment`, so a
+row can be reconciled against the printed chart. An **explicitly supplied**
+`explicitEquivalentLengthFt` is never rescaled — the caller's basis is unknown,
+and silently rescaling someone else's number would be worse than leaving it
+alone.
 
 ### `sprinkler-k-factors.json` — `verify`
 

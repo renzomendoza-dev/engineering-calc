@@ -51,4 +51,30 @@ public final class HazenWilliams {
 				/ (Math.pow(cFactor, C_EXPONENT) * Math.pow(insideDiameterInch, DIAMETER_EXPONENT));
 	}
 
+	/**
+	 * Multiplier that converts a published fitting equivalent length to the pipe actually being
+	 * used: {@code (C / publishedBasisC)^1.85}.
+	 *
+	 * <p>NFPA 13's equivalent length chart is expressed in feet of C=120 pipe, and the standard
+	 * requires rescaling those lengths for pipe with a different C. The direction is easy to get
+	 * backwards: a fitting's own loss barely depends on the pipe it sits in, so in rougher pipe
+	 * (lower C, more loss per foot) it takes <i>fewer</i> feet of that pipe to match the fitting --
+	 * the factor is below 1 for C below the basis. This formula reproduces NFPA's published
+	 * factors: 0.713 at C=100, 1.16 at C=130, 1.33 at C=140, 1.51 at C=150.
+	 *
+	 * @param cFactor             the segment's actual Hazen-Williams C; must be positive
+	 * @param publishedBasisC     the C the published lengths assume (120 for NFPA 13's chart);
+	 *                            must be positive
+	 * @throws CalculationException if either argument is out of range
+	 */
+	public static double equivalentLengthAdjustmentFactor(double cFactor, double publishedBasisC) {
+		if (cFactor <= 0) {
+			throw new CalculationException("cFactor must be positive (was " + cFactor + ")");
+		}
+		if (publishedBasisC <= 0) {
+			throw new CalculationException("publishedBasisC must be positive (was " + publishedBasisC + ")");
+		}
+		return Math.pow(cFactor / publishedBasisC, C_EXPONENT);
+	}
+
 }
