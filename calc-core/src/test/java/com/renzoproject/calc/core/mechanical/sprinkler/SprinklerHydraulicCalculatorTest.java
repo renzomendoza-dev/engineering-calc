@@ -377,6 +377,11 @@ class SprinklerHydraulicCalculatorTest {
 		assertEquals(23.9958, result.segments().get(0).velocityFps(), 1e-4);
 		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("above the 20.0 fps")),
 				"expected a velocity warning, got " + result.warnings());
+		// It says what the pipe is carrying and in what size, so the fix is evident from the line.
+		String flow = String.valueOf(Math.round(result.segments().get(0).flowGpm() * 100.0) / 100.0);
+		assertTrue(result.warnings().stream().anyMatch(
+						warning -> warning.contains("(" + flow + " gpm in 3/4\" pipe)")),
+				"expected the flow and size in the warning, got " + result.warnings());
 		assertTrue(result.passes(), "a high velocity is a warning, not a failure");
 	}
 
@@ -422,4 +427,80 @@ class SprinklerHydraulicCalculatorTest {
 				.orElseThrow(() -> new AssertionError("no row for " + from + "->" + to + " in " + result.segments()));
 	}
 
+	@Test
+	void everyListedSprinklerReportsItsOwnFlowAndPressure() {
+		// The hand-calculated one-sprinkler case: K 5.6 at the 7 psi floor discharges 14.8162 gpm,
+		// and its share of the design density (0.10 * 130 ft2) is 13 gpm.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertEquals(1, result.sprinklers().size());
+		SprinklerFlowRow row = result.sprinklers().get(0);
+		assertEquals("S1", row.nodeId());
+		assertEquals(5.6, row.kFactor(), 1e-12);
+		assertEquals(14.8162073, row.flowGpm(), 1e-6);
+		assertEquals(7.0, row.pressurePsi(), 1e-9);
+		assertEquals(13.0, row.minimumFlowGpm(), 1e-9);
+	}
+
+	@Test
+	void sprinklerFlowsAddUpToTheDemand_andNoSprinklerIsBelowItsMinimum() {
+		// Three sprinklers on a line, flows differing because pressure builds up along the pipe.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.ORDINARY_GROUP_1, 0.15, 1500.0, 0.0, null, 7.0,
+				List.of(
+						new RemoteAreaSprinkler("S1", 5.6, 130.0),
+						new RemoteAreaSprinkler("S2", 5.6, 130.0),
+						new RemoteAreaSprinkler("S3", 5.6, 130.0)),
+				List.of(
+						segment("S1", "S2", "1", 10.0, 0.0),
+						segment("S2", "S3", "1", 10.0, 0.0),
+						segment("S3", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertEquals(List.of("S1", "S2", "S3"), result.sprinklers().stream().map(SprinklerFlowRow::nodeId).toList());
+		double sum = 0;
+		for (SprinklerFlowRow row : result.sprinklers()) {
+			sum += row.flowGpm();
+			assertTrue(row.flowGpm() >= row.minimumFlowGpm() - 1e-9, row.nodeId() + " below its minimum");
+			// Q = K sqrt(P): the pressure reported is the one that flow corresponds to.
+			assertEquals(row.flowGpm(), row.kFactor() * Math.sqrt(row.pressurePsi()), 1e-9);
+		}
+		assertEquals(result.totalDemandFlowGpm(), sum, 1e-9);
+		// Only the most remote is at its minimum; pressure builds, so the next ones flow more.
+		assertEquals(19.5, result.sprinklers().get(0).flowGpm(), 1e-9);
+		assertTrue(result.sprinklers().get(1).flowGpm() > result.sprinklers().get(0).flowGpm());
+		assertTrue(result.sprinklers().get(2).flowGpm() > result.sprinklers().get(1).flowGpm());
+	}
+
+	@Test
+	void aBalancedBranchsSprinklersAreReportedAtTheScaledFlow() {
+		// Branch B runs longer pipe, so it arrives higher and governs; branch A is scaled up. A's
+		// sprinkler must then be reported at the scaled flow, not at the one it was first worked at.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("A1", 5.6, 130.0), new RemoteAreaSprinkler("B1", 5.6, 130.0)),
+				List.of(
+						segment("A1", "J", "1", 10.0, 0.0),
+						segment("B1", "J", "1", 20.0, 0.0),
+						segment("J", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		SprinklerFlowRow a = result.sprinklers().stream().filter(r -> r.nodeId().equals("A1")).findFirst().orElseThrow();
+		SprinklerFlowRow b = result.sprinklers().stream().filter(r -> r.nodeId().equals("B1")).findFirst().orElseThrow();
+		assertEquals(14.8162073, b.flowGpm(), 1e-6);
+		// 14.8162 * sqrt(8.495324 / 7.747662) = 15.514639 gpm, as in junctionBalancing above.
+		assertEquals(15.514639, a.flowGpm(), 1e-5);
+		assertEquals(a.flowGpm(), a.kFactor() * Math.sqrt(a.pressurePsi()), 1e-9);
+		assertEquals(result.totalDemandFlowGpm(), a.flowGpm() + b.flowGpm(), 1e-9);
+	}
 }

@@ -120,8 +120,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		for (SegmentFlowRow row : supply.rows()) {
 			if (row.velocityFps() > VELOCITY_WARNING_FPS) {
 				warnings.add("Velocity in segment " + row.fromNodeId() + "->" + row.toNodeId() + " is "
-						+ round(row.velocityFps()) + " fps, above the " + VELOCITY_WARNING_FPS
-						+ " fps that normally needs justification");
+						+ round(row.velocityFps()) + " fps (" + carrying(row) + "), above the "
+						+ VELOCITY_WARNING_FPS + " fps that normally needs justification");
 			}
 		}
 
@@ -132,7 +132,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					+ "compared against them, so there is no safety margin or pass/fail verdict");
 			return new SprinklerHydraulicResult(
 					List.copyOf(supply.rows()), demandGpm, requiredPsi, null, null, null, null, List.of(),
-					List.copyOf(warnings), identicalRows);
+					List.copyOf(warnings), identicalRows, List.copyOf(supply.sprinklers()));
 		}
 
 		EvaluatedSupply evaluated = evaluateSupply(input.waterSupply(), warnings);
@@ -156,7 +156,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				passes,
 				sampleSupplyCurve(evaluated, demandGpm),
 				List.copyOf(warnings),
-				identicalRows);
+				identicalRows,
+				List.copyOf(supply.sprinklers()));
 	}
 
 	/**
@@ -229,7 +230,12 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 							+ "must be a flowing sprinkler"));
 			double startPressurePsi = startingPressurePsi(remote, input);
 			double flowGpm = SprinklerMath.flowGpm(remote.kFactor(), startPressurePsi);
-			return new SolvedNode(startPressurePsi, flowGpm + hoseGpm, List.of(), 1);
+			return new SolvedNode(
+					startPressurePsi,
+					flowGpm + hoseGpm,
+					List.of(),
+					1,
+					List.of(sprinklerRow(remote, flowGpm, startPressurePsi, input)));
 		}
 
 		List<Branch> branches = new ArrayList<>();
@@ -238,7 +244,14 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			SegmentFlowRow row = computeRow(segment, upstream.flowGpm(), upstream.pressurePsi(), warnings);
 			List<SegmentFlowRow> rows = new ArrayList<>(upstream.rows());
 			rows.add(row);
-			branches.add(new Branch(upstream.flowGpm(), row.endPressurePsi(), rows, upstream.sprinklerCount(), null, null));
+			branches.add(new Branch(
+					upstream.flowGpm(),
+					row.endPressurePsi(),
+					rows,
+					upstream.sprinklerCount(),
+					upstream.sprinklers(),
+					null,
+					null));
 		}
 		for (IdenticalBranch copy : copies) {
 			branches.add(copyOf(copy, network, input, warnings, trace));
@@ -250,6 +263,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		}
 
 		List<SegmentFlowRow> rows = new ArrayList<>();
+		List<SprinklerFlowRow> sprinklerRows = new ArrayList<>();
 		double totalFlowGpm = hoseGpm;
 		int sprinklerCount = sprinkler.isPresent() ? 1 : 0;
 		for (Branch branch : branches) {
@@ -267,6 +281,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 			if (branch.copy() == null) {
 				rows.addAll(balanced);
+				sprinklerRows.addAll(factor == 1.0 ? branch.sprinklers() : scaleSprinklers(branch.sprinklers(), factor));
 			} else {
 				// A copy has no rows of its own -- its pipes were never listed. It is reported as the
 				// one line that scaled it, and its velocities are checked here, at the scaled flow.
@@ -274,8 +289,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					if (row.velocityFps() > VELOCITY_WARNING_FPS) {
 						warnings.add("Velocity in segment " + row.fromNodeId() + "->" + row.toNodeId()
 								+ " of the branch identical to it that joins at " + nodeId + " is "
-								+ round(row.velocityFps()) + " fps, above the " + VELOCITY_WARNING_FPS
-								+ " fps that normally needs justification");
+								+ round(row.velocityFps()) + " fps (" + carrying(row) + "), above the "
+								+ VELOCITY_WARNING_FPS + " fps that normally needs justification");
 					}
 				}
 				trace.identicalRows().add(new IdenticalBranchRow(
@@ -293,10 +308,12 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			sprinklerCount += branch.sprinklerCount();
 		}
 		if (sprinkler.isPresent()) {
-			totalFlowGpm += SprinklerMath.flowGpm(sprinkler.get().kFactor(), governingPsi);
+			double ownFlowGpm = SprinklerMath.flowGpm(sprinkler.get().kFactor(), governingPsi);
+			totalFlowGpm += ownFlowGpm;
+			sprinklerRows.add(sprinklerRow(sprinkler.get(), ownFlowGpm, governingPsi, input));
 		}
 
-		return new SolvedNode(governingPsi, totalFlowGpm, rows, sprinklerCount);
+		return new SolvedNode(governingPsi, totalFlowGpm, rows, sprinklerCount, sprinklerRows);
 	}
 
 	/**
@@ -327,8 +344,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			SegmentFlowRow row = computeRow(leaving, own.flowGpm(), own.pressurePsi(), warnings);
 			List<SegmentFlowRow> rows = new ArrayList<>(own.rows());
 			rows.add(row);
-			return new Branch(own.flowGpm(), row.endPressurePsi(), rows, own.sprinklerCount(), copy,
-					leaving.toNodeId());
+			return new Branch(own.flowGpm(), row.endPressurePsi(), rows, own.sprinklerCount(), own.sprinklers(),
+					copy, leaving.toNodeId());
 		} finally {
 			trace.activeReferences().remove(reference);
 		}
@@ -400,6 +417,35 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				elevationPsi,
 				endPressurePsi,
 				velocityFps(flowGpm, insideDiameterInch));
+	}
+
+	private static SprinklerFlowRow sprinklerRow(
+			RemoteAreaSprinkler sprinkler, double flowGpm, double pressurePsi, SprinklerHydraulicInput input) {
+		return new SprinklerFlowRow(
+				sprinkler.nodeId(),
+				sprinkler.kFactor(),
+				flowGpm,
+				pressurePsi,
+				input.densityGpmPerSqFt() * sprinkler.coverageAreaSqFt());
+	}
+
+	/**
+	 * A balanced branch's sprinklers at the scaled flow. The whole branch is scaled by one factor
+	 * (that is what makes it a fixed-K path), so each sprinkler's flow is scaled by it and its
+	 * pressure is the one that flow corresponds to, {@code (Q / K)^2}.
+	 */
+	private static List<SprinklerFlowRow> scaleSprinklers(List<SprinklerFlowRow> rows, double factor) {
+		List<SprinklerFlowRow> scaled = new ArrayList<>(rows.size());
+		for (SprinklerFlowRow row : rows) {
+			double flowGpm = row.flowGpm() * factor;
+			scaled.add(new SprinklerFlowRow(
+					row.nodeId(),
+					row.kFactor(),
+					flowGpm,
+					SprinklerMath.pressurePsi(row.kFactor(), flowGpm),
+					row.minimumFlowGpm()));
+		}
+		return scaled;
 	}
 
 	/**
@@ -528,6 +574,14 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				.toList();
 	}
 
+	/**
+	 * What a pipe is carrying and in what size, for a velocity warning: the speed alone says a pipe
+	 * is too small for its flow, but not which flow or which size, which is what the fix turns on.
+	 */
+	private static String carrying(SegmentFlowRow row) {
+		return round(row.flowGpm()) + " gpm in " + row.nominalSize() + "\" pipe";
+	}
+
 	private static double round(double value) {
 		return Math.round(value * 100.0) / 100.0;
 	}
@@ -543,7 +597,12 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * Pressure and flow at a node, with the calculation rows for everything upstream of it and the
 	 * number of flowing sprinklers that feed it.
 	 */
-	private record SolvedNode(double pressurePsi, double flowGpm, List<SegmentFlowRow> rows, int sprinklerCount) {
+	private record SolvedNode(
+			double pressurePsi,
+			double flowGpm,
+			List<SegmentFlowRow> rows,
+			int sprinklerCount,
+			List<SprinklerFlowRow> sprinklers) {
 	}
 
 	/**
@@ -556,6 +615,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			double arrivalPressurePsi,
 			List<SegmentFlowRow> rows,
 			int sprinklerCount,
+			List<SprinklerFlowRow> sprinklers,
 			IdenticalBranch copy,
 			String referenceJunctionNodeId) {
 	}

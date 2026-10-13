@@ -353,4 +353,22 @@ class IdenticalBranchTest {
 		assertThrows(CalculationException.class, () -> new IdenticalBranch("B", "B"));
 	}
 
+	@Test
+	void theListedSprinklersAreReported_theCopiesAreOnlyTheirBranchLine() {
+		SprinklerHydraulicResult result = workbookWithIdenticalBranches();
+
+		// BL-1's four sprinklers only: the ones BL-2 and BL-3 stand for are not listed.
+		assertEquals(
+				List.of("BL1-S1", "BL1-S2", "BL1-S3", "BL1-S4"),
+				result.sprinklers().stream().map(SprinklerFlowRow::nodeId).toList());
+
+		// Listed sprinklers + what the copies carry + the hose stream is the whole demand.
+		double listed = result.sprinklers().stream().mapToDouble(SprinklerFlowRow::flowGpm).sum();
+		double copies = result.identicalBranches().stream().mapToDouble(IdenticalBranchRow::flowGpm).sum();
+		assertEquals(result.totalDemandFlowGpm(), listed + copies + 200.0, 1e-9);
+
+		// The first sprinkler of the whole network is the one held at the minimum: 0.15 * 130.
+		assertEquals(19.5, result.sprinklers().get(0).flowGpm(), 1e-9);
+		assertEquals(19.5, result.sprinklers().get(0).minimumFlowGpm(), 1e-9);
+	}
 }

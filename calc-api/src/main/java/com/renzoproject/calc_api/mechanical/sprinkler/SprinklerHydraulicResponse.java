@@ -26,6 +26,9 @@ import java.util.List;
  * @param identicalBranches            one line for each branch declared identical to another: the
  *                                     reference it was scaled from and the factor. Empty when none
  *                                     were declared. Their flow is already in the demand
+ * @param sprinklers                   what each listed sprinkler discharges and at what pressure,
+ *                                     most remote first. Sprinklers an identical branch stands for
+ *                                     are not listed; the branch has its line above
  */
 public record SprinklerHydraulicResponse(
 		List<SegmentFlowRowDto> segments,
@@ -37,7 +40,8 @@ public record SprinklerHydraulicResponse(
 		Boolean passes,
 		List<SupplyCurvePointDto> supplyCurve,
 		List<String> warnings,
-		List<IdenticalBranchRowDto> identicalBranches) {
+		List<IdenticalBranchRowDto> identicalBranches,
+		List<SprinklerFlowRowDto> sprinklers) {
 
 	public static SprinklerHydraulicResponse from(SprinklerHydraulicResult result) {
 		return new SprinklerHydraulicResponse(
@@ -50,7 +54,8 @@ public record SprinklerHydraulicResponse(
 				result.passes(),
 				result.supplyCurve().stream().map(SupplyCurvePointDto::from).toList(),
 				result.warnings(),
-				result.identicalBranches().stream().map(IdenticalBranchRowDto::from).toList());
+				result.identicalBranches().stream().map(IdenticalBranchRowDto::from).toList(),
+				result.sprinklers().stream().map(SprinklerFlowRowDto::from).toList());
 	}
 
 }

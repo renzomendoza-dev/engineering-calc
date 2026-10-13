@@ -28,6 +28,10 @@ import java.util.List;
  *                                     it was scaled from and to. Empty when none were declared. Its
  *                                     flow is already in {@code totalDemandFlowGpm}; the pipes it
  *                                     stands for have no rows of their own in {@code segments}
+ * @param sprinklers                   what each listed sprinkler discharges and at what pressure,
+ *                                     most remote first. The sprinklers an identical branch stands
+ *                                     for are not listed here; the branch has its line in
+ *                                     {@code identicalBranches}
  */
 public record SprinklerHydraulicResult(
 		List<SegmentFlowRow> segments,
@@ -39,9 +43,10 @@ public record SprinklerHydraulicResult(
 		Boolean passes,
 		List<SupplyCurvePoint> supplyCurve,
 		List<String> warnings,
-		List<IdenticalBranchRow> identicalBranches) {
+		List<IdenticalBranchRow> identicalBranches,
+		List<SprinklerFlowRow> sprinklers) {
 
-	/** A result for a network with no identical branches. */
+	/** A result with no identical branches and no per-sprinkler rows. */
 	public SprinklerHydraulicResult(
 			List<SegmentFlowRow> segments,
 			double totalDemandFlowGpm,
@@ -53,7 +58,7 @@ public record SprinklerHydraulicResult(
 			List<SupplyCurvePoint> supplyCurve,
 			List<String> warnings) {
 		this(segments, totalDemandFlowGpm, requiredPressureAtSupplyPsi, availablePressureAtDemandPsi,
-				safetyMarginPsi, safetyMarginPercent, passes, supplyCurve, warnings, List.of());
+				safetyMarginPsi, safetyMarginPercent, passes, supplyCurve, warnings, List.of(), List.of());
 	}
 
 	/** True when a supply was given, so the margin and verdict carry an answer. */

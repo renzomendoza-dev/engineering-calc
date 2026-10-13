@@ -384,4 +384,17 @@ class SprinklerHydraulicControllerTest {
 		return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SprinklerHydraulicResponse.class);
 	}
 
+	@Test
+	void response_listsEachSprinklersOwnFlowAndPressure() throws Exception {
+		SprinklerHydraulicResponse response = postForResponse(handCalculatedRequest());
+
+		assertEquals(1, response.sprinklers().size());
+		SprinklerFlowRowDto sprinkler = response.sprinklers().get(0);
+		assertEquals("S1", sprinkler.nodeId());
+		assertEquals(5.6, sprinkler.kFactor(), 1e-12);
+		assertEquals(14.8162073, sprinkler.flowGpm(), 1e-6);
+		assertEquals(7.0, sprinkler.pressurePsi(), 1e-9);
+		// density 0.10 gpm/ft2 over its 130 ft2
+		assertEquals(13.0, sprinkler.minimumFlowGpm(), 1e-9);
+	}
 }
