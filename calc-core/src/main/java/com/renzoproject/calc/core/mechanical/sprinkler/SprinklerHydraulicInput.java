@@ -44,6 +44,9 @@ import java.util.Set;
  *                                empty or null
  * @param identicalBranches       branches declared as copies of another instead of listed segment
  *                                by segment (see {@link IdenticalBranch}); may be empty or null
+ * @param listedMinimumPressurePsi the minimum operating pressure the sprinkler's listing specifies
+ *                                (NFPA 13 27.2.4.11.2), applied to every sprinkler; {@code 0} for
+ *                                none. It can only raise the floor above the standard's own
  * @throws CalculationException if any rule above is violated
  */
 public record SprinklerHydraulicInput(
@@ -58,7 +61,26 @@ public record SprinklerHydraulicInput(
 		List<SprinklerPipeSegment> segments,
 		WaterSupply waterSupply,
 		List<DeviceLoss> deviceLosses,
-		List<IdenticalBranch> identicalBranches) {
+		List<IdenticalBranch> identicalBranches,
+		double listedMinimumPressurePsi) {
+
+	/** A network with identical branches declared and no listing-specific minimum pressure. */
+	public SprinklerHydraulicInput(
+			SprinklerSystemType systemType,
+			SprinklerHazard hazard,
+			double densityGpmPerSqFt,
+			double designAreaSqFt,
+			double hoseStreamGpm,
+			String hoseStreamNodeId,
+			double assumedStartPressurePsi,
+			List<RemoteAreaSprinkler> sprinklers,
+			List<SprinklerPipeSegment> segments,
+			WaterSupply waterSupply,
+			List<DeviceLoss> deviceLosses,
+			List<IdenticalBranch> identicalBranches) {
+		this(systemType, hazard, densityGpmPerSqFt, designAreaSqFt, hoseStreamGpm, hoseStreamNodeId,
+				assumedStartPressurePsi, sprinklers, segments, waterSupply, deviceLosses, identicalBranches, 0.0);
+	}
 
 	/** A network with every sprinkler and pipe listed -- no identical branches. */
 	public SprinklerHydraulicInput(
@@ -74,7 +96,7 @@ public record SprinklerHydraulicInput(
 			WaterSupply waterSupply,
 			List<DeviceLoss> deviceLosses) {
 		this(systemType, hazard, densityGpmPerSqFt, designAreaSqFt, hoseStreamGpm, hoseStreamNodeId,
-				assumedStartPressurePsi, sprinklers, segments, waterSupply, deviceLosses, List.of());
+				assumedStartPressurePsi, sprinklers, segments, waterSupply, deviceLosses, List.of(), 0.0);
 	}
 
 	public SprinklerHydraulicInput {
@@ -98,6 +120,9 @@ public record SprinklerHydraulicInput(
 		}
 		if (assumedStartPressurePsi < 0) {
 			throw new CalculationException("assumedStartPressurePsi must not be negative");
+		}
+		if (listedMinimumPressurePsi < 0) {
+			throw new CalculationException("listedMinimumPressurePsi must not be negative");
 		}
 		if (sprinklers == null || sprinklers.isEmpty()) {
 			throw new CalculationException("at least one sprinkler is required");

@@ -58,15 +58,12 @@ class JsonFittingEquivalentLengthResolverTest {
 	}
 
 	@Test
-	void everyRowExceptTheVaneFlowSwitchHasPassedItsSecondRead() {
-		// The transcription was checked cell-for-cell against two independent reproductions of
-		// the same NFPA chart and 91 of 102 values agreed. The 11 that did not are the vane type
-		// flow switch, which neither reproduction contains at all -- see fittingRowUnderReview
-		// in the JSON. That row stays 'verify' so the calculator keeps warning on it.
+	void everyRowHasPassedItsSecondRead_theVaneFlowSwitchIncluded() {
+		// Every row was checked cell-for-cell against the printed 2019 Table 27.2.3.1.1. The vane
+		// type flow switch was the last one outstanding: neither reproduction used as a second reader
+		// carries it, but the printed table does, with these values.
 		for (FittingEquivalentLengthRow row : resolver.allEntries()) {
-			String expected = "VANE_TYPE_FLOW_SWITCH".equals(row.fittingType()) ? "verify" : "verified";
-			assertEquals(expected, row.confidence(),
-					row.fittingType() + " should be tagged '" + expected + "'");
+			assertEquals("verified", row.confidence(), row.fittingType() + " should be tagged 'verified'");
 		}
 	}
 

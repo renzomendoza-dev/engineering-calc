@@ -74,11 +74,11 @@ class SprinklerReferenceControllerTest {
 		mockMvc.perform(get(BASE_URL + "/sprinkler-fitting-equivalent-lengths-table"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(8)))
-				// Seven rows passed a cell-for-cell second read; the vane type flow switch did
-				// not and stays 'verify' so a form can badge it.
-				.andExpect(jsonPath("$[?(@.confidence == 'verified')]", hasSize(7)))
+				// Every row has been checked cell-for-cell against the printed table, the vane type
+				// flow switch included.
+				.andExpect(jsonPath("$[?(@.confidence == 'verified')]", hasSize(8)))
 				.andExpect(jsonPath("$[?(@.fittingType == 'VANE_TYPE_FLOW_SWITCH')].confidence")
-						.value(contains("verify")))
+						.value(contains("verified")))
 				.andExpect(jsonPath("$[?(@.fittingType == 'ELBOW_90_STANDARD')].equivalentLengthFtByNominalSize['2']")
 						.value(contains(5.0)))
 				.andExpect(jsonPath("$[?(@.fittingType == 'TEE_OR_CROSS_FLOW_TURNED_90')].equivalentLengthFtByNominalSize['4']")

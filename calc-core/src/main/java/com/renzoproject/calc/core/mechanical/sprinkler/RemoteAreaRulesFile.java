@@ -11,7 +11,15 @@ record RemoteAreaRulesFile(
 		String note,
 		double remoteAreaLengthFactor,
 		String remoteAreaLengthNote,
+		String remoteAreaLengthConfidence,
+		String remoteAreaLengthSource,
 		double minimumOperatingPressurePsi,
-		String minimumOperatingPressureNote) {
+		String minimumOperatingPressureNote,
+		String minimumOperatingPressureConfidence,
+		String minimumOperatingPressureSource,
+		double maximumOperatingPressurePsi,
+		String maximumOperatingPressureConfidence,
+		String maximumOperatingPressureSource,
+		String maximumOperatingPressureNote) {
 
 }

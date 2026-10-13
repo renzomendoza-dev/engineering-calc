@@ -2,6 +2,7 @@ package com.renzoproject.calc_api.mechanical.sprinkler;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * HTTP request body for working out a sprinkler remote area. <b>Units:</b> ft2, feet, gpm/ft2.
@@ -21,6 +22,9 @@ import jakarta.validation.constraints.Positive;
  * @param ceilingHeightFt              ceiling height; required when quick-response is true
  * @param maxCoveragePerSprinklerSqFt  largest area one sprinkler may protect for this hazard; if
  *                                     given, the coverage is checked against it
+ * @param listedMinimumPressurePsi     <b>optional</b>. The minimum operating pressure the sprinkler's
+ *                                     listing specifies (NFPA 13 27.2.4.11.2). It can only raise the
+ *                                     7 psi the standard sets for any sprinkler, never lower it
  */
 public record RemoteAreaPlanRequest(
 		@NotNull @Positive Double designAreaSqFt,
@@ -30,6 +34,7 @@ public record RemoteAreaPlanRequest(
 		@Positive Double sprinklerSpacingFt,
 		@NotNull Boolean quickResponseSprinklers,
 		@Positive Double ceilingHeightFt,
-		@Positive Double maxCoveragePerSprinklerSqFt) {
+		@Positive Double maxCoveragePerSprinklerSqFt,
+		@PositiveOrZero Double listedMinimumPressurePsi) {
 
 }

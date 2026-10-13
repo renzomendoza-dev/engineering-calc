@@ -28,6 +28,9 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param maxCoveragePerSprinklerSqFt the largest area one sprinkler may protect for this hazard and
  *                                  construction, ft2; <b>may be null</b>, in which case coverage is
  *                                  not checked against it
+ * @param listedMinimumPressurePsi  the minimum operating pressure the sprinkler's listing specifies
+ *                                  (NFPA 13 27.2.4.11.2), psi; <b>may be null</b>. It can only raise
+ *                                  the floor above the standard's own, never lower it
  * @throws CalculationException if a rule above is violated
  */
 public record RemoteAreaPlanInput(
@@ -38,7 +41,22 @@ public record RemoteAreaPlanInput(
 		Double sprinklerSpacingFt,
 		boolean quickResponseSprinklers,
 		Double ceilingHeightFt,
-		Double maxCoveragePerSprinklerSqFt) {
+		Double maxCoveragePerSprinklerSqFt,
+		Double listedMinimumPressurePsi) {
+
+	/** A plan with no listing-specific minimum pressure. */
+	public RemoteAreaPlanInput(
+			double designAreaSqFt,
+			double densityGpmPerSqFt,
+			double kFactor,
+			double coveragePerSprinklerSqFt,
+			Double sprinklerSpacingFt,
+			boolean quickResponseSprinklers,
+			Double ceilingHeightFt,
+			Double maxCoveragePerSprinklerSqFt) {
+		this(designAreaSqFt, densityGpmPerSqFt, kFactor, coveragePerSprinklerSqFt, sprinklerSpacingFt,
+				quickResponseSprinklers, ceilingHeightFt, maxCoveragePerSprinklerSqFt, null);
+	}
 
 	public RemoteAreaPlanInput {
 		requirePositive(designAreaSqFt, "designAreaSqFt");
@@ -56,6 +74,10 @@ public record RemoteAreaPlanInput(
 		}
 		if (maxCoveragePerSprinklerSqFt != null && maxCoveragePerSprinklerSqFt <= 0) {
 			throw new CalculationException("maxCoveragePerSprinklerSqFt must be positive when given");
+		}
+		if (listedMinimumPressurePsi != null && listedMinimumPressurePsi < 0) {
+			throw new CalculationException("listedMinimumPressurePsi must not be negative when given (was "
+					+ listedMinimumPressurePsi + ")");
 		}
 	}
 

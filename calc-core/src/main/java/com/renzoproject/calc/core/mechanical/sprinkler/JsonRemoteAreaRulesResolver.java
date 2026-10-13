@@ -23,8 +23,15 @@ public class JsonRemoteAreaRulesResolver implements RemoteAreaRulesResolver {
 				file.confidence(),
 				file.remoteAreaLengthFactor(),
 				file.remoteAreaLengthNote(),
+				file.remoteAreaLengthConfidence(),
+				file.remoteAreaLengthSource(),
 				file.minimumOperatingPressurePsi(),
-				file.minimumOperatingPressureNote());
+				file.minimumOperatingPressureNote(),
+				file.minimumOperatingPressureConfidence(),
+				file.minimumOperatingPressureSource(),
+				file.maximumOperatingPressurePsi(),
+				file.maximumOperatingPressureSource(),
+				file.maximumOperatingPressureNote());
 	}
 
 	private static RemoteAreaRulesFile load() {

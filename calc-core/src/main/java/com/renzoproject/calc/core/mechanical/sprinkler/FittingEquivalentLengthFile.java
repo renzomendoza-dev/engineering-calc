@@ -14,7 +14,7 @@ record FittingEquivalentLengthFile(
 		String note,
 		String cFactorBasisNote,
 		String transcriptionNote,
-		String fittingRowUnderReview,
+		String vaneFlowSwitchResolution,
 		List<FittingEquivalentLengthRow> fittings) {
 
 }

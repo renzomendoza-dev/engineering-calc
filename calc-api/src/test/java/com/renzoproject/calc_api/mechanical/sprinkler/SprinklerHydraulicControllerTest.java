@@ -54,7 +54,7 @@ class SprinklerHydraulicControllerTest {
 				List.of(segment("S1", "B1", "1", 10.0, 0.0), segment("B1", "RISER", "2", 12.0, 10.0)),
 				supply(),
 				List.of(new DeviceLossDto("Alarm valve", 5.0)),
-				null);
+				null, null);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class SprinklerHydraulicControllerTest {
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null, null);
+				supply(), null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ class SprinklerHydraulicControllerTest {
 						segment("A1", "A2", "1", 10.0, 0.0),
 						segment("A2", "A1", "1", 10.0, 0.0),
 						segment("C1", "RISER", "2", 10.0, 0.0)),
-				supply(), null, null);
+				supply(), null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -135,7 +135,7 @@ class SprinklerHydraulicControllerTest {
 		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
-				List.of(withFitting), supply(), null, null);
+				List.of(withFitting), supply(), null, null, null);
 
 		SprinklerHydraulicResponse response = postForResponse(request);
 
@@ -153,7 +153,7 @@ class SprinklerHydraulicControllerTest {
 		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
-				List.of(withFitting), supply(), null, null);
+				List.of(withFitting), supply(), null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +171,7 @@ class SprinklerHydraulicControllerTest {
 				List.of(segment("S1", "B1", "1", 10.0, 0.0), segment("B1", "RISER", "2", 12.0, 10.0)),
 				supply,
 				List.of(new DeviceLossDto("Alarm valve", 5.0)),
-				null);
+				null, null);
 	}
 
 	@Test
@@ -257,12 +257,12 @@ class SprinklerHydraulicControllerTest {
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, null,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null, null);
+				supply(), null, null, null);
 		SprinklerHydraulicRequest withSeven = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null, null);
+				supply(), null, null, null);
 
 		SprinklerHydraulicResponse omitted = postForResponse(withoutIt);
 
@@ -296,7 +296,7 @@ class SprinklerHydraulicControllerTest {
 						withFittingsFt("R2", "BOR", "4", 50.0, 31.0, 0.0)),
 				new WaterSupplyDto(WaterSupplySourceDto.FLOW_TEST, new FlowTestSupplyDto(120.0, 100.0, 1000.0), null),
 				null,
-				copies);
+				copies, null);
 	}
 
 	private static SprinklerPipeSegmentDto withFittingsFt(

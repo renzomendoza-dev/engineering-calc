@@ -21,7 +21,8 @@ public final class RemoteAreaPlanMapper {
 				request.sprinklerSpacingFt(),
 				request.quickResponseSprinklers(),
 				request.ceilingHeightFt(),
-				request.maxCoveragePerSprinklerSqFt());
+				request.maxCoveragePerSprinklerSqFt(),
+				request.listedMinimumPressurePsi());
 	}
 
 	public static RemoteAreaPlanResponse toResponse(RemoteAreaPlanResult result) {

@@ -46,6 +46,9 @@ import java.util.List;
  * @param identicalBranches       branches declared a copy of another instead of listed; may be
  *                                omitted. Each is worked as the reference branch's own result and
  *                                balanced at its own junction, so only its cross main is listed
+ * @param listedMinimumPressurePsi <b>optional</b>. The minimum operating pressure the sprinkler's
+ *                                listing specifies (NFPA 13 27.2.4.11.2), applied to every sprinkler.
+ *                                It can only raise the 7 psi the standard sets, never lower it
  */
 public record SprinklerHydraulicRequest(
 		@NotNull SprinklerSystemTypeDto systemType,
@@ -59,6 +62,7 @@ public record SprinklerHydraulicRequest(
 		@NotEmpty @Valid List<SprinklerPipeSegmentDto> segments,
 		@Valid WaterSupplyDto waterSupply,
 		@Valid List<DeviceLossDto> deviceLosses,
-		@Valid List<IdenticalBranchDto> identicalBranches) {
+		@Valid List<IdenticalBranchDto> identicalBranches,
+		@PositiveOrZero Double listedMinimumPressurePsi) {
 
 }

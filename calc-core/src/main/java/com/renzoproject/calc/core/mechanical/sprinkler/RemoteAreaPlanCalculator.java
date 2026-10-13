@@ -75,7 +75,11 @@ public class RemoteAreaPlanCalculator implements Calculator<RemoteAreaPlanInput,
 
 		// 3. The first sprinkler: the pressure its flow needs, floored.
 		double pressureForFlow = SprinklerMath.pressurePsi(input.kFactor(), flowPerSprinkler);
-		double floor = rules.minimumOperatingPressurePsi();
+		double standardFloor = rules.minimumOperatingPressurePsi();
+		// A listing may specify more than the standard's minimum (27.2.4.11.2); it can only raise it.
+		double listedMinimum = input.listedMinimumPressurePsi() == null ? 0.0 : input.listedMinimumPressurePsi();
+		double floor = Math.max(standardFloor, listedMinimum);
+		boolean listingGoverns = listedMinimum > standardFloor;
 		boolean floorGoverned = pressureForFlow < floor;
 		double firstPressure = Math.max(pressureForFlow, floor);
 		double firstFlow = SprinklerMath.flowGpm(input.kFactor(), firstPressure);
@@ -104,6 +108,17 @@ public class RemoteAreaPlanCalculator implements Calculator<RemoteAreaPlanInput,
 					+ "design area.");
 		}
 
+		if (perBranch != null) {
+			notes.add("NFPA 13 27.2.4.2.1 asks for a rectangular area whose dimension along the branch lines is at "
+					+ "least " + format(rules.remoteAreaLengthFactor()) + " x the square root of the area, "
+					+ "laid out so that it permits sprinklers on both sides of the cross main.");
+		}
+		if (listingGoverns) {
+			notes.add("The sprinkler listing's minimum operating pressure of " + format(listedMinimum)
+					+ " psi applies instead of the " + format(standardFloor) + " psi NFPA 13 sets for any "
+					+ "sprinkler (27.2.4.11.2).");
+		}
+
 		if (floorGoverned) {
 			notes.add("The " + format(flowPerSprinkler) + " gpm needed over one sprinkler's coverage takes only "
 					+ format(pressureForFlow) + " psi at K " + format(input.kFactor()) + ", below the "
@@ -117,11 +132,17 @@ public class RemoteAreaPlanCalculator implements Calculator<RemoteAreaPlanInput,
 					+ format(input.maxCoveragePerSprinklerSqFt()) + " ft2 maximum for this hazard and construction "
 					+ "-- reduce the coverage.");
 		}
-		if (!rules.isVerified()) {
+		// Say only what is still open: a rule that has been checked against the printed standard is
+		// not asked to be checked again.
+		if (!rules.isRemoteAreaLengthVerified()) {
 			warnings.add("The remote area dimension (" + format(rules.remoteAreaLengthFactor()) + " x the square "
-					+ "root of the area) and the " + format(floor) + " psi minimum operating pressure are "
-					+ "reference data tagged '" + rules.confidence() + "' -- confirm both against the printed "
-					+ "NFPA 13 before relying on this plan.");
+					+ "root of the area) is reference data tagged '" + rules.remoteAreaLengthConfidence()
+					+ "' -- confirm it against the printed NFPA 13 before relying on this plan.");
+		}
+		if (!rules.isMinimumOperatingPressureVerified()) {
+			warnings.add("The " + format(standardFloor) + " psi minimum operating pressure is reference data "
+					+ "tagged '" + rules.minimumOperatingPressureConfidence() + "' -- confirm it against the "
+					+ "printed NFPA 13 before relying on this plan.");
 		}
 
 		return new RemoteAreaPlanResult(

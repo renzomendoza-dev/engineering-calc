@@ -42,7 +42,8 @@ public final class SprinklerHydraulicMapper {
 				toCoreSegments(request.segments()),
 				toCoreWaterSupply(request.waterSupply()),
 				toCoreDeviceLosses(request.deviceLosses()),
-				toCoreIdenticalBranches(request.identicalBranches()));
+				toCoreIdenticalBranches(request.identicalBranches()),
+				request.listedMinimumPressurePsi() == null ? 0.0 : request.listedMinimumPressurePsi());
 	}
 
 	public static SprinklerHydraulicResponse toResponse(SprinklerHydraulicResult result) {

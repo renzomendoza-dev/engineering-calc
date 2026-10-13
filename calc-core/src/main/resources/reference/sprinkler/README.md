@@ -15,9 +15,10 @@ Every file carries a file-level `confidence`, and most rows carry their own:
   throws instead of guessing.
 
 **Checked against the printed NFPA 13 2019 so far:** all five hazard presets,
-all thirteen K-factors, the whole C factor table, and seven of the eight
-fitting rows. Still outstanding: the **vane type flow switch** row, which may
-not belong in the standard's table at all, and the three added pipe sizes
+all thirteen K-factors, the whole C factor table, all eight fitting rows (the
+vane type flow switch included), and the three rules behind the remote area:
+the 1.2 x sqrt(A) dimension (27.2.4.2.1) and the minimum and maximum operating
+pressures (27.2.4.11, 27.2.4.12). Still outstanding: the three added pipe sizes
 (an ASME document, not an NFPA one).
 
 ### Cross-checking against a 2016-edition copy
@@ -30,7 +31,7 @@ used again:
 |---|---|
 | 91 of 102 fitting cells agreed | Seven rows promoted to `verified` |
 | Butterfly valve 12 ft @ 4 in. → 9 ft @ 5 in. | **Confirmed published**, not a slip |
-| No vane type flow switch row | Our 8th row called into question |
+| No vane type flow switch row | Called our 8th row into question; **the printed 2019 table has it**, with our values |
 | C values: all ten rows agreed | Already `verified`; 2019 adds "brass" to the copper/stainless row |
 | K-factors: 3 metric values differed | **Ours upheld** — see below |
 | Light hazard coverage prose | **Ours corrected** — it conflated two axes of the table |
@@ -50,8 +51,9 @@ exactly the three where that pattern picks our value. No data changed.
 | **Hazard presets** (all 5 fields) | ✅ `verified` | Figure 19.3.3.1.1, §19.3.3.1.4, Table 19.3.3.1.2, Table 10.2.4.2.1(a)(b)(c) |
 | **K-factors** (13 rows) | ✅ `verified` | Table 7.2.2.1 |
 | **C factors** (11 rows) | ✅ `verified` | Table 27.2.4.8.1 (normative) + Table A.27.2.4.8.2 (ε) |
-| **Fitting equivalent lengths** (7 of 8 rows) | ✅ `verified` | Table 27.2.3.1.1, second read done — 91 of 102 cells agreed across three sources |
-| Fitting: **vane type flow switch** | `verify` ×1 | Confirm the row exists in the printed 2019 table — two independent reproductions of the chart do not contain it |
+| **Fitting equivalent lengths** (all 8 rows) | ✅ `verified` | Table 27.2.3.1.1, checked cell-for-cell against the printed 2019 page; earlier also against two independent reproductions |
+| **Remote area dimension** (1.2 x sqrt(A)) | ✅ `verified` | 27.2.4.2.1 |
+| **Operating pressures** (7 psi min, 175 psi max) | ✅ `verified` | 27.2.4.11.1, 27.2.4.11.2, 27.2.4.12 |
 | Pipe 3-1/2" / 5" / 8" | `verify` | ASME B36.10M Sch 40 wall thicknesses (not an NFPA document). ID = OD − 2t checks out on every row, and the ODs are exact standard inch values, so only the three wall figures are unconfirmed |
 
 A row stays at `verify` while **any** of its fields is unconfirmed; per-field
@@ -213,7 +215,7 @@ keyed on. Its ε of 0.045 mm does match `reference/pipes/bi.json`'s
 The calculator takes C per pipe segment, so this table is a reference/default
 set only.
 
-### `fitting-equivalent-lengths.json` — `verify`
+### `fitting-equivalent-lengths.json` — `verified`
 
 NFPA 13 2019 **Table 27.2.3.1.1** (Equivalent Schedule 40 Steel Pipe Length
 Chart), in feet, keyed by the same `nominalSize` strings as
@@ -231,28 +233,19 @@ entered (102 values; the dashes in the table are omitted, not zeroed).
 | Vane type flow switch | — | — | 6 | 9 | 10 | 14 | 17 | 22 | — | 30 | — | 16 | 22 | 29 | 36 |
 | Swing check | — | — | 5 | 7 | 9 | 11 | 14 | 16 | 19 | 22 | 27 | 32 | 45 | 55 | 65 |
 
-**Second read complete for seven of the eight rows.** The transcription was
-checked cell-for-cell against two independent reproductions of the same NFPA
-chart — a 2016-edition copy (numbered 23.4.3.1.1 there) and a commercial
-sprinkler design program's NFPA table. **91 of the 102 values agree exactly
-across all three**, so those seven rows are now `verified` and the calculator
-no longer warns when it uses them.
+**Second read complete for all eight rows.** The transcription was checked
+cell-for-cell against the printed 2019 table, and earlier against two
+independent reproductions of the same chart — a 2016-edition copy (numbered
+23.4.3.1.1 there) and a commercial sprinkler design program's NFPA table. Those
+two agreed on 91 of the 102 values; the other 11 were the whole vane type flow
+switch row, which neither contains.
 
-The 11 values that remain are the whole vane type flow switch row.
-
-> ### ⚠ The vane type flow switch row is not confirmed
->
-> **Neither reproduction contains a vane type flow switch row at all.** The
-> 2016 chart has seven rows; the design program lists alarm valve, dry pipe
-> valve, strainer and mushroom valve as extras but no flow switch. Our row's
-> values are also the least plausible in the file — 30 ft at 4 in. then 16 ft
-> at 6 in., with 5 in. absent entirely.
->
-> Either the 2019 edition added the row, or it was transcribed in error.
-> **Check the printed 2019 Table 27.2.3.1.1.** If the row isn't there, delete
-> it rather than re-tagging it — a waterflow device's equivalent length then
-> comes from its own listing, not from NFPA 13, and callers should pass
-> `explicitEquivalentLengthFt`.
+**The vane type flow switch row is in the printed 2019 table**, and every one of
+its eleven values agrees (6, 9, 10, 14, 17, 22 ft for 1 to 3 in.; 30 ft at 4
+in.; 16, 22, 29, 36 ft for 6 to 12 in.; 1/2, 3/4, 3-1/2 and 5 in. not
+published). The two reproductions simply predate or omit it, and its odd shape —
+30 ft at 4 in. then 16 ft at 6 in. — is how the standard prints it. It is
+tagged `verified`, and the calculator no longer warns when it uses it.
 
 Published as printed, deliberately not "corrected":
 
@@ -340,35 +333,49 @@ of section 19.3.3.2.3 and have **not** been transcribed. The file says so in
 reduction says its conditions were not checked, because a reduction is the
 less conservative direction.
 
-### `remote-area-rules.json` — `verify`
+### `remote-area-rules.json` — `verified`
 
-Two rules, both entered from general knowledge of the standard and **not yet
-confirmed against the printed 2019 edition**. Their section numbers are
-deliberately not given, because they have not been looked up.
+Three rules, all confirmed against the printed NFPA 13 (2019 edition). The file
+carries a confidence and a source per rule.
 
-| Rule | Value | Used for |
-|---|---|---|
-| Remote area dimension parallel to the branch lines | at least `1.2 x sqrt(A)` | how many sprinklers sit on one branch line |
-| Minimum sprinkler operating pressure | 7 psi | the floor under the first sprinkler's pressure |
+| Rule | Value | Source | Used for |
+|---|---|---|---|
+| Remote area dimension parallel to the branch lines | at least `1.2 x sqrt(A)` | 27.2.4.2.1 | how many sprinklers sit on one branch line |
+| Minimum sprinkler operating pressure | 7 psi | 27.2.4.11.1 | the floor under every sprinkler's pressure |
+| Maximum sprinkler operating pressure | 175 psi | 27.2.4.12 | a warning where a sprinkler operates above it |
 
-**The `1.2 x sqrt(A)` rule** fixes the rectangle the remote area is laid out
-as. Sprinklers per branch is `ceil(1.2 * sqrt(A) / S)` with `S` the spacing
-along the branch, rounded **up** — 4.65 sprinklers is five — and branch lines
-are whatever number covers the area at that count. Rounding up everywhere is
-deliberate: a partial sprinkler is a whole one, so the plan can only equal or
-exceed the design area.
+**The `1.2 x sqrt(A)` rule** (27.2.4.2.1, density/area method) fixes the
+rectangle the remote area is laid out as: a dimension parallel to the branch
+lines of **at least** 1.2 times the square root of the area of sprinkler
+operation, which has to permit the inclusion of sprinklers on both sides of the
+cross main. Sprinklers per branch is `ceil(1.2 * sqrt(A) / S)` with `S` the
+spacing along the branch, rounded **up** — 4.65 sprinklers is five — and branch
+lines are whatever number covers the area at that count. Rounding up everywhere
+is deliberate: a partial sprinkler is a whole one, so the plan can only equal or
+exceed the design area. It is a *minimum* dimension, so a longer branch is
+allowed. The "both sides of the cross main" requirement is stated in the plan's
+notes; the layout does not model which side a branch is on.
 
-**The 7 psi minimum** is the lowest pressure any sprinkler is taken to
-operate at. Where the pressure for the design flow, `(density * coverage / K)^2`,
-comes out lower, 7 psi is used instead and the sprinkler discharges
-`K * sqrt(7)` — more than the minimum flow, which is the conservative
-direction. A listed sprinkler may require more than this; its listing governs.
+**The 7 psi minimum** (27.2.4.11.1) is the lowest pressure any sprinkler is
+taken to operate at. Where the pressure for the design flow,
+`(density * coverage / K)^2`, comes out lower, 7 psi is used instead and the
+sprinkler discharges `K * sqrt(7)` — more than the minimum flow, which is the
+conservative direction. Where the sprinkler's listing specifies a higher
+minimum for the application, that higher pressure is required (27.2.4.11.2):
+`listedMinimumPressurePsi` on the plan and hydraulic requests raises the floor
+to it, for every sprinkler, and can never lower it below 7 psi.
 
-`SprinklerHydraulicCalculator` applies this floor too. `assumedStartPressurePsi`
-used to be the only thing keeping the start at 7 psi, and a caller could lower
-it to 0; it can now only **raise** the start above the floor.
+**The 175 psi maximum** (27.2.4.12) is stated for extra hazard occupancies and
+for palletized, solid-piled, bin box, back-to-back shelf, shelf and rack
+storage. The calculation warns, naming the sprinkler and its pressure, where a
+sprinkler operates above it. Extra hazard is worded as a limit; for the other
+hazards the warning asks for the sprinkler's listing to be checked, because the
+form has no storage model and the section is not stated for them.
 
-Every plan warns that these two are unverified until the tag is changed.
+`SprinklerHydraulicCalculator` applies the floor to every sprinkler.
+`assumedStartPressurePsi` used to be the only thing keeping the start at 7 psi,
+and a caller could lower it to 0; it can now only **raise** the start above the
+floor.
 
 ## Related data outside this directory
 

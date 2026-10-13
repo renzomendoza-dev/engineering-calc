@@ -100,12 +100,13 @@ class RemoteAreaPlanControllerTest {
 	}
 
 	@Test
-	void unverifiedLayoutRules_areDisclosedInTheWarnings() throws Exception {
+	void confirmedLayoutRules_areNotFlagged() throws Exception {
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON)
 						.content(body("\"quickResponseSprinklers\":false")))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.rulesConfidence").value("verify"))
-				.andExpect(jsonPath("$.warnings[*]").value(hasItem(containsString("confirm both against"))));
+				.andExpect(jsonPath("$.rulesConfidence").value("verified"))
+				.andExpect(jsonPath("$.warnings").value(org.hamcrest.Matchers.not(
+						hasItem(containsString("reference data")))));
 	}
 
 	@Test
@@ -152,4 +153,13 @@ class RemoteAreaPlanControllerTest {
 				.andExpect(jsonPath("$.fieldErrors.sprinklerSpacingFt").exists());
 	}
 
+	@Test
+	void aListedMinimumPressure_raisesTheFloorAndIsNamedInTheNotes() throws Exception {
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON)
+						.content(body("\"quickResponseSprinklers\":false,\"listedMinimumPressurePsi\":10")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.minimumOperatingPressurePsi").value(10.0))
+				.andExpect(jsonPath("$.firstSprinklerPressurePsi").value(10.0))
+				.andExpect(jsonPath("$.notes").value(hasItem(containsString("listing's minimum operating pressure of 10 psi"))));
+	}
 }

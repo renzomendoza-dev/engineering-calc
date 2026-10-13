@@ -236,9 +236,47 @@ class SprinklerHydraulicCalculatorTest {
 
 	@Test
 	void unverifiedFittingRow_stillWarns() {
-		// The vane type flow switch is the one row that failed its second read -- neither
-		// independent reproduction of the NFPA chart contains it. Until that is settled, any
-		// calculation leaning on it has to say so.
+		// No row in the published chart is unverified any more, so the warning is exercised with a
+		// resolver that carries one: any calculation leaning on reference data not yet confirmed has
+		// to say so.
+		FittingEquivalentLengthResolver unconfirmed = new FittingEquivalentLengthResolver() {
+			private final FittingEquivalentLengthRow row = new FittingEquivalentLengthRow(
+					"DEVICE_X", "Device X", "verify", java.util.Map.of("2", 6.0));
+
+			@Override
+			public FittingEquivalentLengthRow resolve(String fittingType) {
+				return row;
+			}
+
+			@Override
+			public double cFactorBasis() {
+				return 120.0;
+			}
+
+			@Override
+			public List<FittingEquivalentLengthRow> allEntries() {
+				return List.of(row);
+			}
+		};
+		SprinklerHydraulicCalculator withUnconfirmed = new SprinklerHydraulicCalculator(
+				dimensionResolver, unconfirmed, new PipeVelocityCalculator(dimensionResolver));
+		SprinklerPipeSegment withDevice = new SprinklerPipeSegment(
+				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
+				List.of(new SegmentFitting("DEVICE_X", 1, null)));
+
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(withDevice), SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = withUnconfirmed.calculate(input);
+
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),
+				"expected a reference-data warning, got " + result.warnings());
+	}
+
+	@Test
+	void theVaneTypeFlowSwitch_isNowConfirmed_soUsingItIsSilent() {
 		SprinklerPipeSegment withFlowSwitch = new SprinklerPipeSegment(
 				"S1", "RISER", "BI", "SCH40", "2", 120.0, 10.0, 0.0,
 				List.of(new SegmentFitting("VANE_TYPE_FLOW_SWITCH", 1, null)));
@@ -250,8 +288,10 @@ class SprinklerHydraulicCalculatorTest {
 
 		SprinklerHydraulicResult result = calculator.calculate(input);
 
-		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("tagged 'verify'")),
-				"expected a reference-data warning, got " + result.warnings());
+		// Printed Table 27.2.3.1.1: 14 ft of 2 in. pipe.
+		assertEquals(14.0, result.segments().get(0).fittingEquivalentLengthFt(), 1e-9);
+		assertTrue(result.warnings().stream().noneMatch(warning -> warning.contains("tagged 'verify'")),
+				"a confirmed row should not warn, got " + result.warnings());
 	}
 
 	@Test
@@ -502,5 +542,85 @@ class SprinklerHydraulicCalculatorTest {
 		assertEquals(15.514639, a.flowGpm(), 1e-5);
 		assertEquals(a.flowGpm(), a.kFactor() * Math.sqrt(a.pressurePsi()), 1e-9);
 		assertEquals(result.totalDemandFlowGpm(), a.flowGpm() + b.flowGpm(), 1e-9);
+	}
+
+	@Test
+	void aListedMinimumPressure_raisesWhereTheMostRemoteSprinklerStarts() {
+		// Design flow 13 gpm needs 5.39 psi, so the standard's 7 psi floor would govern. A listing
+		// asking for 12 psi (27.2.4.11.2) takes the start to 12, and the sprinkler discharges
+		// 5.6 * sqrt(12) = 19.4 gpm.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 0.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of(), List.of(), 12.0);
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertEquals(5.6 * Math.sqrt(12.0), result.segments().get(0).flowGpm(), 1e-9);
+		assertEquals(12.0, result.sprinklers().get(0).pressurePsi(), 1e-9);
+	}
+
+	@Test
+	void aListedMinimumPressure_holdsForEverySprinkler_notOnlyTheMostRemote() {
+		// S2 sits 10 ft BELOW S1, so the pressure reaching it drops under S1's start (about 8.5 psi).
+		// The floor must hold at S2 too: 27.2.4.11 is about any sprinkler.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 0.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0), new RemoteAreaSprinkler("S2", 5.6, 130.0)),
+				List.of(segment("S1", "S2", "1", 10.0, -10.0), segment("S2", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of(), List.of(), 12.0);
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		for (SprinklerFlowRow row : result.sprinklers()) {
+			assertTrue(row.pressurePsi() >= 12.0 - 1e-9, row.nodeId() + " below the listed minimum");
+		}
+	}
+
+	@Test
+	void aSprinklerAboveTheMaximumOperatingPressure_isWarnedAbout_forExtraHazardAsALimit() {
+		// An assumed start of 180 psi puts the sprinkler above the 175 psi of 27.2.4.12.
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.EXTRA_GROUP_1, 0.30, 2500.0, 0.0, null, 180.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 100.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertTrue(
+				result.warnings().stream().anyMatch(w -> w.contains("Sprinkler S1 operates at 180")
+						&& w.contains("above the 175 psi maximum operating pressure NFPA 13 (27.2.4.12) sets for extra hazard")),
+				"expected a maximum-pressure warning, got " + result.warnings());
+	}
+
+	@Test
+	void aSprinklerAboveTheMaximum_inALighterHazard_asksForTheListingToBeChecked() {
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.LIGHT, 0.10, 1500.0, 0.0, null, 180.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 130.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertTrue(
+				result.warnings().stream().anyMatch(w -> w.contains("confirm what this sprinkler's listing allows")),
+				"expected the listing to be named, got " + result.warnings());
+	}
+
+	@Test
+	void aSprinklerAtOrBelowTheMaximum_isNotWarnedAbout() {
+		SprinklerHydraulicInput input = new SprinklerHydraulicInput(
+				SprinklerSystemType.WET, SprinklerHazard.EXTRA_GROUP_1, 0.30, 2500.0, 0.0, null, 175.0,
+				List.of(new RemoteAreaSprinkler("S1", 5.6, 100.0)),
+				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
+				SUPPLY, List.of());
+
+		SprinklerHydraulicResult result = calculator.calculate(input);
+
+		assertTrue(result.warnings().stream().noneMatch(w -> w.contains("27.2.4.12")),
+				"175 psi is the limit, not over it: " + result.warnings());
 	}
 }

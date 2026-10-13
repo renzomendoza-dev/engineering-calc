@@ -187,15 +187,24 @@ class RemoteAreaPlanCalculatorTest {
 	}
 
 	@Test
-	void unverifiedRules_areDisclosedOnEveryPlan() {
-		// remote-area-rules.json is tagged 'verify' until the 1.2 x sqrt(A) rule and the 7 psi minimum
-		// are checked against the printed standard; the plan must say so each time.
+	void confirmedRules_areNotFlagged() {
+		// The 1.2 x sqrt(A) rule (27.2.4.2.1) and the 7 psi minimum (27.2.4.11.1) have both been
+		// checked against the printed standard, so a plan no longer asks anyone to confirm them.
 		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, null, false, null, null));
 
-		assertEquals("verify", plan.rulesConfidence());
+		assertEquals("verified", plan.rulesConfidence());
 		assertTrue(
-				plan.warnings().stream().anyMatch(w -> w.contains("confirm both against the printed NFPA 13")),
-				"unverified rules should be flagged: " + plan.warnings());
+				plan.warnings().stream().noneMatch(w -> w.contains("reference data")),
+				"confirmed rules should not be flagged: " + plan.warnings());
+	}
+
+	@Test
+	void theLayoutNote_saysTheAreaHasToPermitSprinklersOnBothSidesOfTheCrossMain() {
+		RemoteAreaPlanResult plan = calculator.calculate(input(1500, 0.10, 5.6, 100, 10.0, false, null, null));
+
+		assertTrue(
+				plan.notes().stream().anyMatch(n -> n.contains("27.2.4.2.1") && n.contains("both sides of the cross main")),
+				"expected the rule to be named: " + plan.notes());
 	}
 
 	@Test
@@ -253,4 +262,38 @@ class RemoteAreaPlanCalculatorTest {
 		assertEquals(5.6 * Math.sqrt(10.0), firstSprinklerFlow(0.05, 130.0, 10.0), 1e-9);
 	}
 
+	@Test
+	void aListedMinimumAboveTheStandards_raisesTheFloorForTheFirstSprinkler() {
+		// 10 gpm over 100 ft2 needs 3.19 psi, so the floor governs. The standard's floor is 7 psi; a
+		// listing that asks for 10 psi (27.2.4.11.2) makes it 10, and the sprinkler discharges more.
+		RemoteAreaPlanResult plan = calculator.calculate(new RemoteAreaPlanInput(
+				1500, 0.10, 5.6, 100, null, false, null, null, 10.0));
+
+		assertTrue(plan.floorGoverned());
+		assertEquals(10.0, plan.minimumOperatingPressurePsi(), 1e-9);
+		assertEquals(10.0, plan.firstSprinklerPressurePsi(), 1e-9);
+		assertEquals(5.6 * Math.sqrt(10.0), plan.firstSprinklerFlowGpm(), 1e-9);
+		assertTrue(
+				plan.notes().stream().anyMatch(n -> n.contains("listing's minimum operating pressure of 10 psi")),
+				"the listing should be named: " + plan.notes());
+	}
+
+	@Test
+	void aListedMinimumBelowTheStandards_changesNothing() {
+		// The listing can only raise the floor; 5 psi under 7 is ignored, as is no listing at all.
+		RemoteAreaPlanResult withListing = calculator.calculate(new RemoteAreaPlanInput(
+				1500, 0.10, 5.6, 100, null, false, null, null, 5.0));
+		RemoteAreaPlanResult without = calculator.calculate(input(1500, 0.10, 5.6, 100, null, false, null, null));
+
+		assertEquals(7.0, withListing.minimumOperatingPressurePsi(), 1e-9);
+		assertEquals(without.firstSprinklerPressurePsi(), withListing.firstSprinklerPressurePsi(), 1e-9);
+		assertTrue(withListing.notes().stream().noneMatch(n -> n.contains("listing's minimum")));
+	}
+
+	@Test
+	void aNegativeListedMinimum_isRejected() {
+		assertThrows(
+				CalculationException.class,
+				() -> new RemoteAreaPlanInput(1500, 0.10, 5.6, 100, null, false, null, null, -1.0));
+	}
 }

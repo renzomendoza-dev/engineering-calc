@@ -116,6 +116,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		double deviceLossPsi = input.deviceLosses().stream().mapToDouble(DeviceLoss::pressureLossPsi).sum();
 		double requiredPsi = supply.pressurePsi() + deviceLossPsi;
 		double demandGpm = supply.flowGpm();
+		warnAboveMaximumPressure(supply.sprinklers(), input.hazard(), "", warnings);
 
 		for (SegmentFlowRow row : supply.rows()) {
 			if (row.velocityFps() > VELOCITY_WARNING_FPS) {
@@ -259,7 +260,9 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 		double governingPsi = branches.stream().mapToDouble(Branch::arrivalPressurePsi).max().orElseThrow();
 		if (sprinkler.isPresent()) {
-			governingPsi = Math.max(governingPsi, minimumFlowPressurePsi(sprinkler.get(), input));
+			// Never below what the design density needs of it, nor below the minimum operating pressure.
+			governingPsi = Math.max(
+					governingPsi, Math.max(minimumFlowPressurePsi(sprinkler.get(), input), floorPsi(input)));
 		}
 
 		List<SegmentFlowRow> rows = new ArrayList<>();
@@ -293,6 +296,11 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 								+ VELOCITY_WARNING_FPS + " fps that normally needs justification");
 					}
 				}
+				warnAboveMaximumPressure(
+						factor == 1.0 ? branch.sprinklers() : scaleSprinklers(branch.sprinklers(), factor),
+						input.hazard(),
+						" in the branch identical to it that joins at " + nodeId,
+						warnings);
 				trace.identicalRows().add(new IdenticalBranchRow(
 						nodeId,
 						branch.copy().referenceNodeId(),
@@ -366,9 +374,19 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * figure can still raise the start pressure; it can no longer take it below the floor.
 	 */
 	private double startingPressurePsi(RemoteAreaSprinkler sprinkler, SprinklerHydraulicInput input) {
-		double floor = remoteAreaRulesResolver.rules().minimumOperatingPressurePsi();
+		double floor = floorPsi(input);
 		return Math.max(
 				floor, Math.max(minimumFlowPressurePsi(sprinkler, input), input.assumedStartPressurePsi()));
+	}
+
+	/**
+	 * The lowest pressure any sprinkler is taken to operate at: the standard's minimum (27.2.4.11.1),
+	 * or the sprinkler listing's where that is higher (27.2.4.11.2). Applies to every sprinkler,
+	 * not only the most remote.
+	 */
+	private double floorPsi(SprinklerHydraulicInput input) {
+		return Math.max(
+				remoteAreaRulesResolver.rules().minimumOperatingPressurePsi(), input.listedMinimumPressurePsi());
 	}
 
 	private static double minimumFlowPressurePsi(RemoteAreaSprinkler sprinkler, SprinklerHydraulicInput input) {
@@ -575,11 +593,44 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	}
 
 	/**
+	 * Warns for each sprinkler operating above the maximum operating pressure (NFPA 13 27.2.4.12).
+	 *
+	 * <p>The section states the cap for extra hazard occupancies and for the storage arrangements it
+	 * lists; the form has no storage model. For extra hazard it is said as a limit, and for the other
+	 * hazards as a figure to check the sprinkler's listing against, because claiming a limit this
+	 * section does not state for them would be wrong in the other direction.
+	 */
+	private void warnAboveMaximumPressure(
+			List<SprinklerFlowRow> rows, SprinklerHazard hazard, String where, Set<String> warnings) {
+		RemoteAreaRules rules = remoteAreaRulesResolver.rules();
+		double maximum = rules.maximumOperatingPressurePsi();
+		if (maximum <= 0) {
+			return;
+		}
+		boolean extraHazard = hazard == SprinklerHazard.EXTRA_GROUP_1 || hazard == SprinklerHazard.EXTRA_GROUP_2;
+		for (SprinklerFlowRow row : rows) {
+			if (row.pressurePsi() > maximum + PRESSURE_EPSILON_PSI) {
+				warnings.add("Sprinkler " + row.nodeId() + where + " operates at " + plain(round(row.pressurePsi()))
+						+ " psi, above the " + plain(maximum) + " psi "
+						+ (extraHazard
+								? "maximum operating pressure NFPA 13 (27.2.4.12) sets for extra hazard occupancies"
+								: "NFPA 13 (27.2.4.12) sets as the maximum for extra hazard and storage occupancies "
+										+ "-- confirm what this sprinkler's listing allows"));
+			}
+		}
+	}
+
+	/**
 	 * What a pipe is carrying and in what size, for a velocity warning: the speed alone says a pipe
 	 * is too small for its flow, but not which flow or which size, which is what the fix turns on.
 	 */
 	private static String carrying(SegmentFlowRow row) {
 		return round(row.flowGpm()) + " gpm in " + row.nominalSize() + "\" pipe";
+	}
+
+	/** A figure without a trailing ".0": 175 reads as 175, 176.25 stays as it is. */
+	private static String plain(double value) {
+		return value == Math.rint(value) ? String.valueOf((long) value) : String.valueOf(value);
 	}
 
 	private static double round(double value) {

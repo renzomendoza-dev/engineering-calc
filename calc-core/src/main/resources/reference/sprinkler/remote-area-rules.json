@@ -1,10 +1,18 @@
 {
   "standard": "NFPA 13 (2019 edition) - design area of operation and minimum sprinkler operating pressure",
   "edition": "NFPA 13, 2019 edition",
-  "confidence": "verify",
-  "note": "Two rules the remote-area plan and the hydraulic calculation both rely on, entered from general knowledge of the standard and NOT yet confirmed against the printed 2019 edition. Their section numbers are deliberately not given here, because they have not been looked up. Confirm both, then re-tag as verified.",
+  "confidence": "verified",
+  "note": "Rules the remote-area plan and the hydraulic calculation both rely on, all confirmed against the printed NFPA 13 (2019 edition): the length factor against 27.2.4.2.1, and the minimum and maximum operating pressures against 27.2.4.11 and 27.2.4.12.",
   "remoteAreaLengthFactor": 1.2,
-  "remoteAreaLengthNote": "The area of sprinkler operation is taken as a rectangle whose dimension PARALLEL TO THE BRANCH LINES is at least 1.2 times the square root of the design area. It fixes how many sprinklers sit on one branch line: 1.2 * sqrt(A) / S, rounded up to a whole sprinkler, where S is the spacing along the branch. Rounding up is what keeps the plan from under-counting: 4.65 sprinklers is five.",
+  "remoteAreaLengthNote": "The area of sprinkler operation is a rectangle whose dimension PARALLEL TO THE BRANCH LINES is at least 1.2 times the square root of the design area, and it has to permit sprinklers on both sides of the cross main (27.2.4.2.1). It fixes how many sprinklers sit on one branch line: 1.2 * sqrt(A) / S, rounded up to a whole sprinkler, where S is the spacing along the branch. Rounding up is what keeps the plan from under-counting: 4.65 sprinklers is five. It is a minimum, so a longer branch is allowed.",
+  "remoteAreaLengthConfidence": "verified",
+  "remoteAreaLengthSource": "NFPA 13 (2019 edition) 27.2.4.2.1, density/area method: the design area is a rectangular area having a dimension parallel to the branch lines of at least 1.2 times the square root of the area of sprinkler operation (A) used, which shall permit the inclusion of sprinklers on both sides of the cross main.",
   "minimumOperatingPressurePsi": 7.0,
-  "minimumOperatingPressureNote": "No sprinkler is assumed to operate below this pressure. Where the pressure needed to deliver the design density over one sprinkler's coverage, (density * coverage / K)^2, falls below it, this pressure is used instead and the sprinkler discharges K * sqrt(7) -- more than the minimum required flow, which is the conservative direction. A specific listed sprinkler may require MORE than this; its listing governs, and the caller's assumedStartPressurePsi can only raise the figure, never lower it below this one."
+  "minimumOperatingPressureNote": "No sprinkler is assumed to operate below this pressure. Where the pressure needed to deliver the design density over one sprinkler's coverage, (density * coverage / K)^2, falls below it, this pressure is used instead and the sprinkler discharges K * sqrt(7) -- more than the minimum required flow, which is the conservative direction. A sprinkler's listing may require MORE than this (27.2.4.11.2); a request's listedMinimumPressurePsi raises the floor accordingly, for every sprinkler, and can never lower it below this one.",
+  "minimumOperatingPressureConfidence": "verified",
+  "minimumOperatingPressureSource": "NFPA 13 (2019 edition) 27.2.4.11.1: the minimum operating pressure of any sprinkler is 7 psi (0.5 bar). 27.2.4.11.2: where a higher minimum is specified in the listing for the application, that higher pressure is required.",
+  "maximumOperatingPressurePsi": 175.0,
+  "maximumOperatingPressureConfidence": "verified",
+  "maximumOperatingPressureSource": "NFPA 13 (2019 edition) 27.2.4.12: for extra hazard occupancies, palletized, solid-piled, bin box, back-to-back shelf storage, shelf storage, or rack storage, the maximum operating pressure of any sprinkler is 175 psi (12 bar).",
+  "maximumOperatingPressureNote": "The calculation warns where a listed sprinkler operates above this. The section states the cap for extra hazard and the storage arrangements named; the form has no storage model, so for the other hazards the warning asks for the sprinkler's listing to be checked rather than declaring a limit."
 }
