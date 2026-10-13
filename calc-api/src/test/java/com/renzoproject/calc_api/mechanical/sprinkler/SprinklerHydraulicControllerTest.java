@@ -53,7 +53,8 @@ class SprinklerHydraulicControllerTest {
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "B1", "1", 10.0, 0.0), segment("B1", "RISER", "2", 12.0, 10.0)),
 				supply(),
-				List.of(new DeviceLossDto("Alarm valve", 5.0)));
+				List.of(new DeviceLossDto("Alarm valve", 5.0)),
+				null);
 	}
 
 	@Test
@@ -97,7 +98,7 @@ class SprinklerHydraulicControllerTest {
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null);
+				supply(), null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +116,7 @@ class SprinklerHydraulicControllerTest {
 						segment("A1", "A2", "1", 10.0, 0.0),
 						segment("A2", "A1", "1", 10.0, 0.0),
 						segment("C1", "RISER", "2", 10.0, 0.0)),
-				supply(), null);
+				supply(), null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +135,7 @@ class SprinklerHydraulicControllerTest {
 		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
-				List.of(withFitting), supply(), null);
+				List.of(withFitting), supply(), null, null);
 
 		SprinklerHydraulicResponse response = postForResponse(request);
 
@@ -152,7 +153,7 @@ class SprinklerHydraulicControllerTest {
 		SprinklerHydraulicRequest request = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
-				List.of(withFitting), supply(), null);
+				List.of(withFitting), supply(), null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -169,7 +170,8 @@ class SprinklerHydraulicControllerTest {
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "B1", "1", 10.0, 0.0), segment("B1", "RISER", "2", 12.0, 10.0)),
 				supply,
-				List.of(new DeviceLossDto("Alarm valve", 5.0)));
+				List.of(new DeviceLossDto("Alarm valve", 5.0)),
+				null);
 	}
 
 	@Test
@@ -255,12 +257,12 @@ class SprinklerHydraulicControllerTest {
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, null,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null);
+				supply(), null, null);
 		SprinklerHydraulicRequest withSeven = new SprinklerHydraulicRequest(
 				SprinklerSystemTypeDto.WET, SprinklerHazardDto.LIGHT, 0.10, 1500.0, 0.0, null, 7.0,
 				List.of(new RemoteAreaSprinklerDto("S1", 5.6, 130.0)),
 				List.of(segment("S1", "RISER", "2", 10.0, 0.0)),
-				supply(), null);
+				supply(), null, null);
 
 		SprinklerHydraulicResponse omitted = postForResponse(withoutIt);
 
@@ -269,6 +271,96 @@ class SprinklerHydraulicControllerTest {
 				postForResponse(withSeven).requiredPressureAtSupplyPsi(),
 				omitted.requiredPressureAtSupplyPsi(),
 				0.0);
+	}
+
+	/** The Everstrong workbook's Production Office network: BL-1 listed, BL-2 and BL-3 declared identical. */
+	private static SprinklerHydraulicRequest workbookRequest(List<IdenticalBranchDto> copies) {
+		return new SprinklerHydraulicRequest(
+				SprinklerSystemTypeDto.WET, SprinklerHazardDto.ORDINARY_GROUP_1, 0.15, 1500.0, 200.0, "BOR", 7.0,
+				List.of(
+						new RemoteAreaSprinklerDto("BL1-S1", 5.6, 130.0),
+						new RemoteAreaSprinklerDto("BL1-S2", 5.6, 130.0),
+						new RemoteAreaSprinklerDto("BL1-S3", 5.6, 130.0),
+						new RemoteAreaSprinklerDto("BL1-S4", 5.6, 130.0)),
+				List.of(
+						withFittingsFt("BL1-S1", "BL1-S2", "1", 10.0, 2.0, 0.0),
+						withFittingsFt("BL1-S2", "BL1-S3", "1", 8.0, 5.0, 0.0),
+						withFittingsFt("BL1-S3", "BL1-S4", "1-1/4", 10.0, 2.0, 0.0),
+						withFittingsFt("BL1-S4", "A", "1-1/4", 10.0, 2.0, 0.0),
+						withFittingsFt("A", "B", "3", 10.0, 8.0, 0.0),
+						withFittingsFt("B", "C", "3", 10.0, 8.0, 0.0),
+						withFittingsFt("C", "TOR", "3", 100.0, 8.0, 0.0),
+						// The workbook totals "lgth 246 + ftg 13 + elev 20"; pipe length is the centerline,
+						// vertical run included, so 246 + 20 goes in as 266.
+						withFittingsFt("TOR", "R2", "3", 266.0, 13.0, 20.0),
+						withFittingsFt("R2", "BOR", "4", 50.0, 31.0, 0.0)),
+				new WaterSupplyDto(WaterSupplySourceDto.FLOW_TEST, new FlowTestSupplyDto(120.0, 100.0, 1000.0), null),
+				null,
+				copies);
+	}
+
+	private static SprinklerPipeSegmentDto withFittingsFt(
+			String from, String to, String size, double lengthFt, double fittingsFt, double elevationFt) {
+		return new SprinklerPipeSegmentDto(from, to, "BI", "SCH40", size, 120.0, lengthFt, elevationFt,
+				List.of(new SegmentFittingDto(null, 1, fittingsFt)));
+	}
+
+	@Test
+	void identicalBranches_matchTheWorkbook_andComeBackAsOneBranchLevelLineEach() throws Exception {
+		// BL-2 and BL-3 are never listed. Workbook: 92.416 gpm @ 30.499 psi, 93.568 gpm @ 31.264 psi,
+		// 278.08 gpm @ 41.07 psi at the top of the riser, 77.01 psi at the bottom, 478.08 gpm with the
+		// hose. The workbook rounds pipe bores to two decimals, so these agree to about a tenth of a
+		// percent rather than to the digit.
+		SprinklerHydraulicResponse response = postForResponse(workbookRequest(List.of(
+				new IdenticalBranchDto("B", "BL1-S4"), new IdenticalBranchDto("C", "BL1-S4"))));
+
+		assertEquals(2, response.identicalBranches().size());
+		IdenticalBranchRowDto bl2 = response.identicalBranches().get(0);
+		assertEquals("B", bl2.joinNodeId());
+		assertEquals("BL1-S4", bl2.referenceNodeId());
+		assertEquals("A", bl2.referenceJunctionNodeId());
+		assertEquals(4, bl2.sprinklerCount());
+		assertEquals(92.416, bl2.flowGpm(), 92.416 * 0.003);
+		assertEquals(30.499, bl2.junctionPressurePsi(), 30.499 * 0.003);
+		assertEquals(
+				bl2.referenceFlowGpm() * Math.sqrt(bl2.junctionPressurePsi() / bl2.referencePressurePsi()),
+				bl2.flowGpm(),
+				1e-9);
+		assertEquals(93.568, response.identicalBranches().get(1).flowGpm(), 93.568 * 0.003);
+
+		assertEquals(478.080, response.totalDemandFlowGpm(), 478.080 * 0.003);
+		assertEquals(77.011, response.requiredPressureAtSupplyPsi(), 77.011 * 0.003);
+		// Only BL-1's sprinkler pipes, the cross mains and the riser have rows.
+		assertEquals(9, response.segments().size());
+	}
+
+	@Test
+	void identicalBranch_pointingAtAnUnknownJunction_isCalcCoreValidation_returns400() throws Exception {
+		SprinklerHydraulicRequest request = workbookRequest(List.of(new IdenticalBranchDto("NOWHERE", "BL1-S4")));
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("NOWHERE")));
+	}
+
+	@Test
+	void identicalBranch_withABlankNode_isBeanValidation_returns400() throws Exception {
+		SprinklerHydraulicRequest request = workbookRequest(List.of(new IdenticalBranchDto("B", " ")));
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.fieldErrors['identicalBranches[0].referenceNodeId']").exists());
+	}
+
+	@Test
+	void withoutIdenticalBranches_theResponseCarriesAnEmptyList() throws Exception {
+		SprinklerHydraulicResponse response = postForResponse(handCalculatedRequest());
+
+		assertTrue(response.identicalBranches().isEmpty());
 	}
 
 	@Test

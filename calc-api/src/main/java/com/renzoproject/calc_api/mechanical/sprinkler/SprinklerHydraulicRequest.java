@@ -43,6 +43,9 @@ import java.util.List;
  *                                source yet (a cistern awaiting a pump) and the response carries
  *                                the demand figures with a null margin, verdict and supply curve
  * @param deviceLosses            fixed device losses; may be omitted
+ * @param identicalBranches       branches declared a copy of another instead of listed; may be
+ *                                omitted. Each is worked as the reference branch's own result and
+ *                                balanced at its own junction, so only its cross main is listed
  */
 public record SprinklerHydraulicRequest(
 		@NotNull SprinklerSystemTypeDto systemType,
@@ -55,6 +58,7 @@ public record SprinklerHydraulicRequest(
 		@NotEmpty @Valid List<RemoteAreaSprinklerDto> sprinklers,
 		@NotEmpty @Valid List<SprinklerPipeSegmentDto> segments,
 		@Valid WaterSupplyDto waterSupply,
-		@Valid List<DeviceLossDto> deviceLosses) {
+		@Valid List<DeviceLossDto> deviceLosses,
+		@Valid List<IdenticalBranchDto> identicalBranches) {
 
 }

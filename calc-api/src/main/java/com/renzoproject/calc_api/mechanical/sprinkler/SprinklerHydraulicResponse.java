@@ -23,6 +23,9 @@ import java.util.List;
  * @param supplyCurve                  sampled supply curve, including the demand point; empty
  *                                     when there is no supply
  * @param warnings                     advisory messages; never a substitute for {@code passes}
+ * @param identicalBranches            one line for each branch declared identical to another: the
+ *                                     reference it was scaled from and the factor. Empty when none
+ *                                     were declared. Their flow is already in the demand
  */
 public record SprinklerHydraulicResponse(
 		List<SegmentFlowRowDto> segments,
@@ -33,7 +36,8 @@ public record SprinklerHydraulicResponse(
 		Double safetyMarginPercent,
 		Boolean passes,
 		List<SupplyCurvePointDto> supplyCurve,
-		List<String> warnings) {
+		List<String> warnings,
+		List<IdenticalBranchRowDto> identicalBranches) {
 
 	public static SprinklerHydraulicResponse from(SprinklerHydraulicResult result) {
 		return new SprinklerHydraulicResponse(
@@ -45,7 +49,8 @@ public record SprinklerHydraulicResponse(
 				result.safetyMarginPercent(),
 				result.passes(),
 				result.supplyCurve().stream().map(SupplyCurvePointDto::from).toList(),
-				result.warnings());
+				result.warnings(),
+				result.identicalBranches().stream().map(IdenticalBranchRowDto::from).toList());
 	}
 
 }

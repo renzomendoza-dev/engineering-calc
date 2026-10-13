@@ -42,6 +42,8 @@ import java.util.Set;
  *                                back null rather than guessed
  * @param deviceLosses            fixed device losses added before comparing to the supply; may be
  *                                empty or null
+ * @param identicalBranches       branches declared as copies of another instead of listed segment
+ *                                by segment (see {@link IdenticalBranch}); may be empty or null
  * @throws CalculationException if any rule above is violated
  */
 public record SprinklerHydraulicInput(
@@ -55,7 +57,25 @@ public record SprinklerHydraulicInput(
 		List<RemoteAreaSprinkler> sprinklers,
 		List<SprinklerPipeSegment> segments,
 		WaterSupply waterSupply,
-		List<DeviceLoss> deviceLosses) {
+		List<DeviceLoss> deviceLosses,
+		List<IdenticalBranch> identicalBranches) {
+
+	/** A network with every sprinkler and pipe listed -- no identical branches. */
+	public SprinklerHydraulicInput(
+			SprinklerSystemType systemType,
+			SprinklerHazard hazard,
+			double densityGpmPerSqFt,
+			double designAreaSqFt,
+			double hoseStreamGpm,
+			String hoseStreamNodeId,
+			double assumedStartPressurePsi,
+			List<RemoteAreaSprinkler> sprinklers,
+			List<SprinklerPipeSegment> segments,
+			WaterSupply waterSupply,
+			List<DeviceLoss> deviceLosses) {
+		this(systemType, hazard, densityGpmPerSqFt, designAreaSqFt, hoseStreamGpm, hoseStreamNodeId,
+				assumedStartPressurePsi, sprinklers, segments, waterSupply, deviceLosses, List.of());
+	}
 
 	public SprinklerHydraulicInput {
 		if (systemType == null) {
@@ -106,6 +126,7 @@ public record SprinklerHydraulicInput(
 		sprinklers = List.copyOf(sprinklers);
 		segments = List.copyOf(segments);
 		deviceLosses = deviceLosses == null ? List.of() : List.copyOf(deviceLosses);
+		identicalBranches = identicalBranches == null ? List.of() : List.copyOf(identicalBranches);
 	}
 
 }

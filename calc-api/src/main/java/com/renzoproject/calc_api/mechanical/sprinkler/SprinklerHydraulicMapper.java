@@ -2,6 +2,7 @@ package com.renzoproject.calc_api.mechanical.sprinkler;
 
 import com.renzoproject.calc.core.mechanical.sprinkler.DeviceLoss;
 import com.renzoproject.calc.core.mechanical.sprinkler.GravityTankSupply;
+import com.renzoproject.calc.core.mechanical.sprinkler.IdenticalBranch;
 import com.renzoproject.calc.core.mechanical.sprinkler.RemoteAreaSprinkler;
 import com.renzoproject.calc.core.mechanical.sprinkler.SegmentFitting;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerHazard;
@@ -40,7 +41,8 @@ public final class SprinklerHydraulicMapper {
 				toCoreSprinklers(request.sprinklers()),
 				toCoreSegments(request.segments()),
 				toCoreWaterSupply(request.waterSupply()),
-				toCoreDeviceLosses(request.deviceLosses()));
+				toCoreDeviceLosses(request.deviceLosses()),
+				toCoreIdenticalBranches(request.identicalBranches()));
 	}
 
 	public static SprinklerHydraulicResponse toResponse(SprinklerHydraulicResult result) {
@@ -121,6 +123,15 @@ public final class SprinklerHydraulicMapper {
 		}
 		return deviceLosses.stream()
 				.map(dto -> new DeviceLoss(dto.name(), dto.pressureLossPsi()))
+				.toList();
+	}
+
+	private static List<IdenticalBranch> toCoreIdenticalBranches(List<IdenticalBranchDto> branches) {
+		if (branches == null) {
+			return List.of();
+		}
+		return branches.stream()
+				.map(dto -> new IdenticalBranch(dto.joinNodeId(), dto.referenceNodeId()))
 				.toList();
 	}
 

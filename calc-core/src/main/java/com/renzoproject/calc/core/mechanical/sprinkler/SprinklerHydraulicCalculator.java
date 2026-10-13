@@ -45,6 +45,13 @@ import java.util.function.DoubleUnaryOperator;
  * junction uses the governing pressure regardless. A fully consistent answer would need iteration;
  * NFPA 13 practice does not require it.
  *
+ * <p><b>Identical branches.</b> A branch may be declared a copy of another ({@link IdenticalBranch})
+ * instead of listed. It is solved as the reference branch's own result -- worked from its most
+ * remote sprinkler, before balancing -- arriving at its own junction and balanced there like any
+ * other branch: {@code Q = Q_reference * sqrt(P_junction / P_reference)}. Nothing about it is
+ * approximated beyond what listing it sprinkler by sprinkler would be, because that is exactly
+ * what it stands in for; it just isn't typed out.
+ *
  * <p><b>Units:</b> psi, US gpm, feet, inches, fps throughout -- see {@code package-info.java}.
  * Friction loss is Hazen-Williams ({@link HazenWilliams}), as NFPA 13 requires, not the
  * Darcy-Weisbach used by {@code mechanical.pipe.PipePressureLossCalculator}.
@@ -102,7 +109,9 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		Network network = Network.build(input);
 		Set<String> warnings = new LinkedHashSet<>();
 
-		SolvedNode supply = solve(network.supplyNodeId(), network, input, warnings);
+		Trace trace = new Trace(new ArrayList<>(), new LinkedHashSet<>());
+		SolvedNode supply = solve(network.supplyNodeId(), network, input, warnings, trace);
+		List<IdenticalBranchRow> identicalRows = List.copyOf(trace.identicalRows());
 
 		double deviceLossPsi = input.deviceLosses().stream().mapToDouble(DeviceLoss::pressureLossPsi).sum();
 		double requiredPsi = supply.pressurePsi() + deviceLossPsi;
@@ -123,7 +132,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					+ "compared against them, so there is no safety margin or pass/fail verdict");
 			return new SprinklerHydraulicResult(
 					List.copyOf(supply.rows()), demandGpm, requiredPsi, null, null, null, null, List.of(),
-					List.copyOf(warnings));
+					List.copyOf(warnings), identicalRows);
 		}
 
 		EvaluatedSupply evaluated = evaluateSupply(input.waterSupply(), warnings);
@@ -146,7 +155,8 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				marginPercent,
 				passes,
 				sampleSupplyCurve(evaluated, demandGpm),
-				List.copyOf(warnings));
+				List.copyOf(warnings),
+				identicalRows);
 	}
 
 	/**
@@ -206,27 +216,32 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * Solves the subtree feeding {@code nodeId} and returns the pressure at that node, the flow
 	 * arriving there, and the calculation rows for everything upstream of it (most remote first).
 	 */
-	private SolvedNode solve(String nodeId, Network network, SprinklerHydraulicInput input, Set<String> warnings) {
+	private SolvedNode solve(
+			String nodeId, Network network, SprinklerHydraulicInput input, Set<String> warnings, Trace trace) {
 		List<SprinklerPipeSegment> incoming = network.incoming(nodeId);
+		List<IdenticalBranch> copies = network.copiesJoiningAt(nodeId);
 		Optional<RemoteAreaSprinkler> sprinkler = network.sprinklerAt(nodeId);
 		double hoseGpm = Objects.equals(nodeId, input.hoseStreamNodeId()) ? input.hoseStreamGpm() : 0.0;
 
-		if (incoming.isEmpty()) {
+		if (incoming.isEmpty() && copies.isEmpty()) {
 			RemoteAreaSprinkler remote = sprinkler.orElseThrow(() -> new CalculationException(
 					"Node " + nodeId + " has nothing flowing into it and no sprinkler -- every end of the network "
 							+ "must be a flowing sprinkler"));
 			double startPressurePsi = startingPressurePsi(remote, input);
 			double flowGpm = SprinklerMath.flowGpm(remote.kFactor(), startPressurePsi);
-			return new SolvedNode(startPressurePsi, flowGpm + hoseGpm, List.of());
+			return new SolvedNode(startPressurePsi, flowGpm + hoseGpm, List.of(), 1);
 		}
 
 		List<Branch> branches = new ArrayList<>();
 		for (SprinklerPipeSegment segment : incoming) {
-			SolvedNode upstream = solve(segment.fromNodeId(), network, input, warnings);
+			SolvedNode upstream = solve(segment.fromNodeId(), network, input, warnings, trace);
 			SegmentFlowRow row = computeRow(segment, upstream.flowGpm(), upstream.pressurePsi(), warnings);
 			List<SegmentFlowRow> rows = new ArrayList<>(upstream.rows());
 			rows.add(row);
-			branches.add(new Branch(upstream.flowGpm(), row.endPressurePsi(), rows));
+			branches.add(new Branch(upstream.flowGpm(), row.endPressurePsi(), rows, upstream.sprinklerCount(), null, null));
+		}
+		for (IdenticalBranch copy : copies) {
+			branches.add(copyOf(copy, network, input, warnings, trace));
 		}
 
 		double governingPsi = branches.stream().mapToDouble(Branch::arrivalPressurePsi).max().orElseThrow();
@@ -236,26 +251,87 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 		List<SegmentFlowRow> rows = new ArrayList<>();
 		double totalFlowGpm = hoseGpm;
+		int sprinklerCount = sprinkler.isPresent() ? 1 : 0;
 		for (Branch branch : branches) {
+			double factor = 1.0;
 			if (branch.arrivalPressurePsi() < governingPsi - PRESSURE_EPSILON_PSI) {
 				if (branch.arrivalPressurePsi() <= 0) {
 					throw new CalculationException("Cannot balance the branch arriving at node " + nodeId
 							+ ": it arrives at " + round(branch.arrivalPressurePsi()) + " psi, so there is no "
 							+ "pressure to scale its flow against -- check the elevation changes on that branch");
 				}
-				double factor = Math.sqrt(governingPsi / branch.arrivalPressurePsi());
-				rows.addAll(rescale(branch.rows(), factor));
-				totalFlowGpm += branch.flowGpm() * factor;
-			} else {
-				rows.addAll(branch.rows());
-				totalFlowGpm += branch.flowGpm();
+				factor = Math.sqrt(governingPsi / branch.arrivalPressurePsi());
 			}
+			List<SegmentFlowRow> balanced = factor == 1.0 ? branch.rows() : rescale(branch.rows(), factor);
+			double flowGpm = branch.flowGpm() * factor;
+
+			if (branch.copy() == null) {
+				rows.addAll(balanced);
+			} else {
+				// A copy has no rows of its own -- its pipes were never listed. It is reported as the
+				// one line that scaled it, and its velocities are checked here, at the scaled flow.
+				for (SegmentFlowRow row : balanced) {
+					if (row.velocityFps() > VELOCITY_WARNING_FPS) {
+						warnings.add("Velocity in segment " + row.fromNodeId() + "->" + row.toNodeId()
+								+ " of the branch identical to it that joins at " + nodeId + " is "
+								+ round(row.velocityFps()) + " fps, above the " + VELOCITY_WARNING_FPS
+								+ " fps that normally needs justification");
+					}
+				}
+				trace.identicalRows().add(new IdenticalBranchRow(
+						nodeId,
+						branch.copy().referenceNodeId(),
+						branch.referenceJunctionNodeId(),
+						branch.sprinklerCount(),
+						branch.flowGpm(),
+						branch.arrivalPressurePsi(),
+						governingPsi,
+						factor,
+						flowGpm));
+			}
+			totalFlowGpm += flowGpm;
+			sprinklerCount += branch.sprinklerCount();
 		}
 		if (sprinkler.isPresent()) {
 			totalFlowGpm += SprinklerMath.flowGpm(sprinkler.get().kFactor(), governingPsi);
 		}
 
-		return new SolvedNode(governingPsi, totalFlowGpm, rows);
+		return new SolvedNode(governingPsi, totalFlowGpm, rows, sprinklerCount);
+	}
+
+	/**
+	 * The branch an {@link IdenticalBranch} stands for, as it would have been had it been listed: the
+	 * reference node solved from its own most remote sprinkler, then the one pipe leaving it.
+	 *
+	 * <p>The reference is solved afresh rather than looked up. That keeps it independent of
+	 * whichever order the tree happens to be walked in, and of any balancing the reference itself
+	 * got at its own junction -- which is exactly what the copy must not inherit.
+	 */
+	private Branch copyOf(
+			IdenticalBranch copy,
+			Network network,
+			SprinklerHydraulicInput input,
+			Set<String> warnings,
+			Trace trace) {
+		String reference = copy.referenceNodeId();
+		if (!trace.activeReferences().add(reference)) {
+			throw new CalculationException("Identical branches repeat each other in a circle through node "
+					+ reference + " -- an identical branch has to repeat a branch that is actually listed");
+		}
+		try {
+			SprinklerPipeSegment leaving = network.outgoing(reference);
+			// A throwaway trace for the rows: whatever the reference holds is already reported (or
+			// is internal to it) -- recording it again here would list it twice.
+			SolvedNode own = solve(reference, network, input, warnings,
+					new Trace(new ArrayList<>(), trace.activeReferences()));
+			SegmentFlowRow row = computeRow(leaving, own.flowGpm(), own.pressurePsi(), warnings);
+			List<SegmentFlowRow> rows = new ArrayList<>(own.rows());
+			rows.add(row);
+			return new Branch(own.flowGpm(), row.endPressurePsi(), rows, own.sprinklerCount(), copy,
+					leaving.toNodeId());
+		} finally {
+			trace.activeReferences().remove(reference);
+		}
 	}
 
 	/**
@@ -463,12 +539,33 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	private record FittingLengths(double totalFt, double cFactorAdjustment) {
 	}
 
-	/** Pressure and flow at a node, with the calculation rows for everything upstream of it. */
-	private record SolvedNode(double pressurePsi, double flowGpm, List<SegmentFlowRow> rows) {
+	/**
+	 * Pressure and flow at a node, with the calculation rows for everything upstream of it and the
+	 * number of flowing sprinklers that feed it.
+	 */
+	private record SolvedNode(double pressurePsi, double flowGpm, List<SegmentFlowRow> rows, int sprinklerCount) {
 	}
 
-	/** One already-solved branch arriving at a junction, before balancing. */
-	private record Branch(double flowGpm, double arrivalPressurePsi, List<SegmentFlowRow> rows) {
+	/**
+	 * One already-solved branch arriving at a junction, before balancing. {@code copy} is null for
+	 * a branch that was listed, and for a copy it is the declaration, with
+	 * {@code referenceJunctionNodeId} the node the reference's own final pipe lands on.
+	 */
+	private record Branch(
+			double flowGpm,
+			double arrivalPressurePsi,
+			List<SegmentFlowRow> rows,
+			int sprinklerCount,
+			IdenticalBranch copy,
+			String referenceJunctionNodeId) {
+	}
+
+	/**
+	 * What a solve accumulates beyond its return value: the line for each copy it balanced, and the
+	 * references currently being worked, so copies that repeat each other are caught rather than
+	 * recursing for ever.
+	 */
+	private record Trace(List<IdenticalBranchRow> identicalRows, Set<String> activeReferences) {
 	}
 
 	/**
@@ -478,7 +575,9 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	private record Network(
 			String supplyNodeId,
 			Map<String, List<SprinklerPipeSegment>> incomingByNode,
-			Map<String, RemoteAreaSprinkler> sprinklersByNode) {
+			Map<String, SprinklerPipeSegment> outgoingByNode,
+			Map<String, RemoteAreaSprinkler> sprinklersByNode,
+			Map<String, List<IdenticalBranch>> copiesByJoinNode) {
 
 		static Network build(SprinklerHydraulicInput input) {
 			Map<String, SprinklerPipeSegment> outgoingByNode = new LinkedHashMap<>();
@@ -534,7 +633,41 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 						+ "any pipe segment");
 			}
 
-			return new Network(supplyNodeId, incomingByNode, sprinklersByNode);
+			Map<String, List<IdenticalBranch>> copiesByJoinNode = new LinkedHashMap<>();
+			for (IdenticalBranch copy : input.identicalBranches()) {
+				if (!nodes.contains(copy.joinNodeId())) {
+					throw new CalculationException("An identical branch joins at node " + copy.joinNodeId()
+							+ ", which is not an end of any pipe segment -- it has to arrive at a junction of the "
+							+ "network");
+				}
+				if (!outgoingByNode.containsKey(copy.referenceNodeId())) {
+					throw new CalculationException("The identical branch joining at " + copy.joinNodeId()
+							+ " repeats node " + copy.referenceNodeId() + ", which has no pipe leaving it -- name "
+							+ "the last node of the branch to repeat, the one its final pipe leaves from");
+				}
+				if (isUpstreamOf(copy.joinNodeId(), copy.referenceNodeId(), incomingByNode)) {
+					throw new CalculationException("The identical branch joining at " + copy.joinNodeId()
+							+ " repeats " + copy.referenceNodeId() + ", which is fed through " + copy.joinNodeId()
+							+ " itself -- a branch cannot be a copy of something it is part of");
+				}
+				copiesByJoinNode.computeIfAbsent(copy.joinNodeId(), key -> new ArrayList<>()).add(copy);
+			}
+
+			return new Network(supplyNodeId, incomingByNode, outgoingByNode, sprinklersByNode, copiesByJoinNode);
+		}
+
+		/** Whether {@code candidate} is {@code node} or anything that feeds it, by the listed pipes. */
+		private static boolean isUpstreamOf(
+				String candidate, String node, Map<String, List<SprinklerPipeSegment>> incomingByNode) {
+			if (candidate.equals(node)) {
+				return true;
+			}
+			for (SprinklerPipeSegment segment : incomingByNode.getOrDefault(node, List.of())) {
+				if (isUpstreamOf(candidate, segment.fromNodeId(), incomingByNode)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		List<SprinklerPipeSegment> incoming(String nodeId) {
@@ -543,6 +676,15 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 		Optional<RemoteAreaSprinkler> sprinklerAt(String nodeId) {
 			return Optional.ofNullable(sprinklersByNode.get(nodeId));
+		}
+
+		/** The one pipe leaving a node; only asked of nodes already checked to have one. */
+		SprinklerPipeSegment outgoing(String nodeId) {
+			return outgoingByNode.get(nodeId);
+		}
+
+		List<IdenticalBranch> copiesJoiningAt(String nodeId) {
+			return copiesByJoinNode.getOrDefault(nodeId, List.of());
 		}
 
 	}
