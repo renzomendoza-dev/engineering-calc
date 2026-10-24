@@ -38,7 +38,11 @@ public class GeneratorSetReferenceService {
 				reference.defaultGeneratorPowerFactorNote(),
 				reference.defaultSubtransientReactancePercent(),
 				reference.defaultMaximumVoltageDipPercent(),
-				reference.motorStartingDefaultsNote());
+				reference.motorStartingDefaultsNote(),
+				reference.defaultFirePumpStartingPowerFactor(),
+				reference.defaultFirePumpRunningPowerFactor(),
+				reference.defaultCableStartingDropAllowancePercent(),
+				reference.firePumpDefaultsNote());
 	}
 
 }

@@ -44,6 +44,7 @@ import java.util.List;
  * @param startingSteps                    one entry per start step, in order; empty when the check was not run
  * @param startingBasis                    where the locked-rotor kVA and the dip formula come from, and that
  *                                          neither the formula nor its inputs are PEC; {@code null} when not run
+ * @param firePump                         the Article 6.95 results for the fire pump; {@code null} when none
  */
 public record GeneratorSetSizingResult(
 		List<LoadRow> loadRows,
@@ -74,7 +75,79 @@ public record GeneratorSetSizingResult(
 		Double startingRequiredKva,
 		String governingCase,
 		List<StartingStep> startingSteps,
-		String startingBasis) {
+		String startingBasis,
+		FirePumpResult firePump) {
+
+	/**
+	 * What Article 6.95 asks of a fire pump on this generator.
+	 *
+	 * @param pumpFullLoadAmps               the fire pump motor's full-load current at the system voltage
+	 * @param jockeyFullLoadAmps             the pressure maintenance pump's, or {@code null}
+	 * @param accessoryAmps                  the accessory equipment's, or {@code null}
+	 * @param pumpLockedRotorAmps            the fire pump motor's locked-rotor current at the system voltage;
+	 *                                       {@code null} when none was entered or published
+	 * @param minimumConductorAmpacityAmps   125% of the pump and jockey full-load currents plus 100% of the
+	 *                                       accessories
+	 * @param conductorBasis                 how that was built, with the section it comes from
+	 * @param conductor                      the conductors sized for it; {@code null} when no run was given or
+	 *                                       no size fits
+	 * @param cableStartingDropPercent       the drop in those conductors at starting; {@code null} without a
+	 *                                       run length
+	 * @param cableRunningDropPercent        the drop in them with the pump at 115% of full load
+	 * @param runningDropWithinLimit         whether that is within 5%
+	 * @param generatorStartingDropPercent   the dip the pump's step causes on the selected set; {@code null}
+	 *                                       when there is no selected set or no starting check
+	 * @param controllerStartingDropPercent  generator dip plus cable drop, as seen at the controller line
+	 *                                       terminals; {@code null} unless both are known
+	 * @param startingDropWithinLimit        whether that is within 15%
+	 * @param generatorCurrentPercentOfPumpFla the selected set's nameplate current as a percent of the pump's
+	 *                                       full-load current; {@code null} without a selected set
+	 * @param generatorExceedsExceptionLevel whether that is above 225%, which brings 6.95.1.6(C) Exception
+	 *                                       No. 2 into play; {@code null} without a selected set
+	 * @param voltageDropBasis               where the 15% and 5% come from and how the drops were worked out
+	 * @param requirements                   Article 6.95 requirements to check off
+	 */
+	public record FirePumpResult(
+			double pumpFullLoadAmps,
+			Double jockeyFullLoadAmps,
+			Double accessoryAmps,
+			Double pumpLockedRotorAmps,
+			double minimumConductorAmpacityAmps,
+			String conductorBasis,
+			FirePumpConductor conductor,
+			Double cableStartingDropPercent,
+			Double cableRunningDropPercent,
+			Boolean runningDropWithinLimit,
+			Double generatorStartingDropPercent,
+			Double controllerStartingDropPercent,
+			Boolean startingDropWithinLimit,
+			Double generatorCurrentPercentOfPumpFla,
+			Boolean generatorExceedsExceptionLevel,
+			String voltageDropBasis,
+			List<Requirement> requirements) {
+	}
+
+	/**
+	 * The conductors to a fire pump controller.
+	 *
+	 * @param sizeLabel                  the size chosen, one conductor of {@code numberOfParallelSets}
+	 * @param ampacitySizeLabel          the smallest size that carries the required ampacity alone
+	 * @param upsizedForVoltageDrop      whether {@code sizeLabel} is larger than {@code ampacitySizeLabel}
+	 *                                   because of the voltage drop limits
+	 * @param numberOfParallelSets       identical conductors in parallel
+	 * @param requiredAmpacityPerSetAmps what each conductor must carry
+	 * @param deratedAmpacityAmps        one conductor's ampacity after temperature and conductor count
+	 * @param meetsTerminationRating     whether it also satisfies the termination temperature rating
+	 */
+	public record FirePumpConductor(
+			String sizeLabel,
+			String ampacitySizeLabel,
+			boolean upsizedForVoltageDrop,
+			int numberOfParallelSets,
+			double requiredAmpacityPerSetAmps,
+			double deratedAmpacityAmps,
+			boolean meetsTerminationRating) {
+	}
 
 	/**
 	 * One step of motor starting.
@@ -87,8 +160,10 @@ public record GeneratorSetSizingResult(
 	 * @param requiredGeneratorKva   the set that holds the voltage dip within the limit for this step
 	 * @param voltageDipPercentAtSelected the dip this step causes on the selected set; {@code null} when there
 	 *                               is no selected set
-	 * @param withinDipLimit         whether that dip is within the limit entered; {@code null} when there is
-	 *                               no selected set
+	 * @param withinDipLimit         whether that dip is within {@code dipLimitPercent}; {@code null} when there
+	 *                               is no selected set
+	 * @param dipLimitPercent        the limit this step is held to: the one entered, or for a step with the fire
+	 *                               pump the 15% of Article 6.95 less what the cable takes, if that is smaller
 	 */
 	public record StartingStep(
 			int step,
@@ -97,7 +172,8 @@ public record GeneratorSetSizingResult(
 			double runningKvaBefore,
 			double requiredGeneratorKva,
 			Double voltageDipPercentAtSelected,
-			Boolean withinDipLimit) {
+			Boolean withinDipLimit,
+			double dipLimitPercent) {
 	}
 
 	/**

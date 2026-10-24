@@ -40,7 +40,8 @@ public record GeneratorSetSizingResponse(
 		Double startingRequiredKva,
 		String governingCase,
 		List<StartingStepDto> startingSteps,
-		String startingBasis) {
+		String startingBasis,
+		FirePumpResultDto firePump) {
 
 	public static GeneratorSetSizingResponse from(GeneratorSetSizingResult result) {
 		return new GeneratorSetSizingResponse(
@@ -74,7 +75,8 @@ public record GeneratorSetSizingResponse(
 				result.startingRequiredKva(),
 				result.governingCase(),
 				result.startingSteps().stream().map(StartingStepDto::from).toList(),
-				result.startingBasis());
+				result.startingBasis(),
+				result.firePump() == null ? null : FirePumpResultDto.from(result.firePump()));
 	}
 
 }

@@ -1,12 +1,16 @@
 package com.renzoproject.calc.core.electrical.generatorset;
 
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.DirectLoad;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.FirePump;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.PumpMotor;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.SupplyRun;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.LightingArea;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.MotorLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OtherLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OutputConductor;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.ReceptacleGroup;
 import com.renzoproject.calc.core.electrical.reference.ConductorMaterial;
+import com.renzoproject.calc.core.electrical.reference.ConduitMaterial;
 import com.renzoproject.calc.core.electrical.reference.InsulationType;
 import com.renzoproject.calc.core.electrical.reference.MotorPhaseType;
 import com.renzoproject.calc.core.exception.CalculationException;
@@ -449,11 +453,35 @@ class GeneratorSetSizingCalculatorTest {
 	}
 
 	private static DirectLoad building(String label, double amount, DirectLoadUnit unit, Double powerFactor) {
-		return new DirectLoad(label, LoadKind.BUILDING, amount, unit, powerFactor, true, null, 1, 100.0);
+		return new DirectLoad(label, amount, unit, powerFactor, true);
 	}
 
-	private static DirectLoad firePump(double amps, Double lockedRotorAmps, int step) {
-		return new DirectLoad("Fire pump", LoadKind.FIRE_PUMP, amps, DirectLoadUnit.AMPS, null, false, lockedRotorAmps, step, 100.0);
+	private static PumpMotor byAmps(double fullLoadAmps, Double lockedRotorAmps) {
+		return new PumpMotor(null, null, fullLoadAmps, lockedRotorAmps);
+	}
+
+	private static PumpMotor byHorsepower(String horsepower, int voltage) {
+		return new PumpMotor(horsepower, voltage, null, null);
+	}
+
+	private static final SupplyRun SIZE_ONLY = new SupplyRun(
+			30.0, 3, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, null, null, null, null);
+
+	private static SupplyRun runOf(double lengthMeters) {
+		return new SupplyRun(30.0, 3, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75,
+				lengthMeters, ConduitMaterial.PVC, 0.3, 0.85, 5.0);
+	}
+
+	private static GeneratorSetSizingInput withPump(
+			int voltage, List<DirectLoad> directLoads, List<MotorLoad> motors, FirePump pump,
+			Double selectedKva, Double reactance, Double dip) {
+		return new GeneratorSetSizingInput(StandbyClass.EMERGENCY, null, MotorPhaseType.THREE_PHASE, voltage,
+				List.of(), List.of(), true, List.of(), motors, 0.8, 0, selectedKva, false, null, reactance, dip,
+				directLoads, pump);
+	}
+
+	private static FirePump pumpOf(PumpMotor motor, PumpMotor jockey, Double accessoryAmps, SupplyRun run) {
+		return new FirePump(motor, jockey, accessoryAmps, 1, 100.0, run);
 	}
 
 	@Test
@@ -503,25 +531,17 @@ class GeneratorSetSizingCalculatorTest {
 	}
 
 	@Test
-	void directLoad_lockedRotorCurrentIsOnlyForAFirePump() {
-		assertThrows(CalculationException.class, () ->
-				new DirectLoad("x", LoadKind.BUILDING, 100, DirectLoadUnit.KVA, null, true, 300.0, 1, 100.0));
-		assertThrows(CalculationException.class, () ->
-				new DirectLoad("x", LoadKind.MOTOR, 100, DirectLoadUnit.KVA, null, true, null, 1, 100.0));
-	}
-
-	@Test
 	void aTotalLoadAloneIsEnoughToSize() {
 		assertNotNull(calculator.calculate(withDirect(List.of(), List.of(building(null, 10, DirectLoadUnit.KVA, null)), null, null)));
 	}
 
 	@Test
-	void firePump_startsAgainstTheBuildingLoadAlreadyRunning() {
+	void firePump_byAmps_startsAgainstTheBuildingLoadAlreadyRunning() {
 		// 20 kVA of building running, then a fire pump of 30 A (11.95 kVA) with 180 A locked rotor.
 		double pumpRunningKva = SQRT_3 * 230 * 30 / 1000;
 		double pumpStartingKva = SQRT_3 * 230 * 180 / 1000;
-		GeneratorSetSizingInput input = withDirect(List.of(),
-				List.of(building("Building", 20, DirectLoadUnit.KVA, null), firePump(30, 180.0, 1)), 20.0, 15.0);
+		GeneratorSetSizingInput input = withPump(230, List.of(building("Building", 20, DirectLoadUnit.KVA, null)), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, null), null, 20.0, 15.0);
 
 		GeneratorSetSizingResult result = calculator.calculate(input);
 
@@ -531,19 +551,150 @@ class GeneratorSetSizingCalculatorTest {
 		assertEquals(pumpStartingKva, result.startingSteps().get(0).startingKva(), DELTA);
 		// The pump is not running before its own step: only the building is.
 		assertEquals(20.0, result.startingSteps().get(0).runningKvaBefore(), DELTA);
+		// No run was given, so the generator has the whole 15% of Article 6.95.
+		assertEquals(15.0, result.startingSteps().get(0).dipLimitPercent(), DELTA);
 		assertEquals(0.20 * pumpStartingKva * (1 / 0.15 - 1), result.requiredKva(), DELTA);
 		assertEquals("MOTOR_STARTING", result.governingCase());
 		assertEquals(LoadKind.FIRE_PUMP, result.loadRows().get(1).kind());
 		assertTrue(result.loadRows().get(1).basis().contains("6.95.1.3(D)(1)"));
+		assertNotNull(result.firePump());
+		assertEquals(30.0, result.firePump().pumpFullLoadAmps(), DELTA);
+		assertEquals(180.0, result.firePump().pumpLockedRotorAmps(), DELTA);
+		assertEquals(37.5, result.firePump().minimumConductorAmpacityAmps(), DELTA);
+		assertTrue(result.firePump().conductorBasis().contains("6.95.1.6(B)(2)"));
+		assertNull(result.firePump().conductor());
+		assertTrue(result.firePump().requirements().stream().anyMatch(item -> item.citation().equals("6.95.1.4(B)(2)(b)")));
+	}
+
+	@Test
+	void firePump_byHorsepower_readsThePecTables() {
+		// 100 hp at 230 V three-phase: 248 A full load (Table 4.30.14.4), 1450 A locked rotor (4.30.14.5(B)).
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byHorsepower("100", 230), null, null, null), null, 20.0, 15.0));
+
+		assertEquals(248.0, result.firePump().pumpFullLoadAmps(), DELTA);
+		assertEquals(1450.0, result.firePump().pumpLockedRotorAmps(), DELTA);
+		assertEquals(SQRT_3 * 230 * 248 / 1000, result.demandKva(), DELTA);
+		assertTrue(result.loadRows().get(0).basis().contains("Table 4.30.14.4: 100 hp at 230 V draws 248 A"));
+		assertEquals(SQRT_3 * 230 * 1450 / 1000, result.startingSteps().get(0).startingKva(), DELTA);
+	}
+
+	@Test
+	void firePump_motorOnAnotherVoltage_isConvertedToTheSystemVoltage() {
+		// A 10 hp motor at 460 V draws 14 A and 81 A locked rotor: twice that at a 230 V system.
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byHorsepower("10", 460), null, null, null), null, 20.0, 15.0));
+
+		assertEquals(28.0, result.firePump().pumpFullLoadAmps(), DELTA);
+		assertEquals(162.0, result.firePump().pumpLockedRotorAmps(), DELTA);
+		assertEquals(SQRT_3 * 460 * 14 / 1000, result.demandKva(), DELTA);
+	}
+
+	@Test
+	void firePump_withAJockeyPumpAndAccessories_followsTheSumOfSection6_95_1_6_B_1() {
+		// 30 A pump + 3 hp jockey at 230 V (9.6 A): 125% of 39.6 A, plus 2 A of accessories at 100%.
+		GeneratorSetSizingInput input = withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), byHorsepower("3", 230), 2.0, null), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals(1.25 * 39.6 + 2.0, result.firePump().minimumConductorAmpacityAmps(), DELTA);
+		assertTrue(result.firePump().conductorBasis().contains("6.95.1.6(B)(1)"));
+		assertEquals(3, result.loadRows().size());
+		assertEquals("Pressure maintenance pump", result.loadRows().get(1).label());
+		assertEquals("Fire pump accessories", result.loadRows().get(2).label());
+		assertEquals(SQRT_3 * 230 * (30 + 9.6 + 2.0) / 1000, result.demandKva(), DELTA);
+		// The jockey and the accessories are already running when the fire pump starts.
+		assertEquals(SQRT_3 * 230 * (9.6 + 2.0) / 1000, result.startingSteps().get(0).runningKvaBefore(), DELTA);
+	}
+
+	@Test
+	void firePump_conductorsAreSizedForTheAmpacityWhenNoLengthIsGiven() {
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, SIZE_ONLY), null, 20.0, 15.0));
+
+		assertNotNull(result.firePump().conductor());
+		assertEquals(result.firePump().conductor().ampacitySizeLabel(), result.firePump().conductor().sizeLabel());
+		assertFalse(result.firePump().conductor().upsizedForVoltageDrop());
+		assertTrue(result.firePump().conductor().deratedAmpacityAmps() >= 37.5);
+		assertNull(result.firePump().cableStartingDropPercent());
+		assertNull(result.firePump().runningDropWithinLimit());
+		assertEquals(15.0, result.startingSteps().get(0).dipLimitPercent(), DELTA);
+	}
+
+	@Test
+	void firePump_aLongRunIsUpsizedForVoltageDrop_andTheCableTakesItsShareOfTheStartingDrop() {
+		GeneratorSetSizingResult result = calculator.calculate(withPump(400, List.of(), List.of(),
+				pumpOf(byAmps(40, 240.0), null, null, runOf(300)), null, 20.0, 15.0));
+
+		var pump = result.firePump();
+		assertNotNull(pump.conductor());
+		assertTrue(pump.conductor().upsizedForVoltageDrop());
+		assertTrue(pump.cableRunningDropPercent() <= 5.0);
+		assertTrue(pump.runningDropWithinLimit());
+		assertTrue(pump.cableStartingDropPercent() <= 5.0);
+		// The generator gets what the cable leaves of the 15%.
+		assertEquals(15.0 - pump.cableStartingDropPercent(), result.startingSteps().get(0).dipLimitPercent(), DELTA);
+		assertEquals(pump.generatorStartingDropPercent() + pump.cableStartingDropPercent(), pump.controllerStartingDropPercent(), DELTA);
+		assertTrue(pump.startingDropWithinLimit());
+	}
+
+	@Test
+	void firePump_aCableThatTakesTheWholeStartingDropIsFlagged_andTheSetIsStillSizedSensibly() {
+		// 100 hp at 400 V on 200 m of a single set: the cable alone drops more than the 15% allowed.
+		GeneratorSetSizingResult result = calculator.calculate(withPump(400, List.of(), List.of(),
+				pumpOf(byHorsepower("100", 400), null, null, runOf(200)), null, 20.0, 15.0));
+
+		var pump = result.firePump();
+		assertTrue(pump.cableStartingDropPercent() >= 14.0);
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("alone drops") && warning.contains("5% share")));
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("No conductor size keeps")));
+		// Sized as if the cable took its 5% share, so the generator keeps 10%: a sane figure, not thousands of kVA.
+		assertEquals(10.0, result.startingSteps().get(0).dipLimitPercent(), DELTA);
+		assertNotNull(result.recommendedStandardKva());
+		// ...while the result still shows the cable's real drop as over the limit.
+		assertFalse(pump.startingDropWithinLimit());
+	}
+
+	@Test
+	void firePump_aShortRunNeedsNoUpsizing() {
+		GeneratorSetSizingResult result = calculator.calculate(withPump(400, List.of(), List.of(),
+				pumpOf(byAmps(40, 240.0), null, null, runOf(10)), null, 20.0, 15.0));
+
+		assertFalse(result.firePump().conductor().upsizedForVoltageDrop());
+		assertTrue(result.firePump().cableRunningDropPercent() < 1.0);
+	}
+
+	@Test
+	void firePump_aTighterGeneralDipLimitStillGovernsItsStep() {
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, null), null, 20.0, 10.0));
+
+		assertEquals(10.0, result.startingSteps().get(0).dipLimitPercent(), DELTA);
+	}
+
+	@Test
+	void firePump_comparesTheSelectedSetWithThe225PercentOfTheGeneratorException() {
+		// A 100 kVA set at 230 V is 251 A: well above 225% of a 30 A pump.
+		GeneratorSetSizingResult large = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, null), 100.0, 20.0, 15.0));
+		// A 15 kVA set at 230 V is 37.7 A: only 126% of it.
+		GeneratorSetSizingResult small = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, null), 15.0, null, null));
+
+		assertEquals(100_000 / (SQRT_3 * 230) / 30 * 100, large.firePump().generatorCurrentPercentOfPumpFla(), DELTA);
+		assertTrue(large.firePump().generatorExceedsExceptionLevel());
+		assertFalse(small.firePump().generatorExceedsExceptionLevel());
 	}
 
 	@Test
 	void firePump_withoutALockedRotorCurrentIsLeftOutWithAWarning() {
-		GeneratorSetSizingResult result = calculator.calculate(
-				withDirect(List.of(), List.of(firePump(30, null, 1)), 20.0, 15.0));
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, null), null, null, null), null, 20.0, 15.0));
 
 		assertTrue(result.startingSteps().isEmpty());
-		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Fire pump is left out") && warning.contains("NOT included")));
+		assertNotNull(result.firePump());
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("fire pump is left out") && warning.contains("NOT included")));
 		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Motor starting is not checked")));
 	}
 
@@ -551,12 +702,43 @@ class GeneratorSetSizingCalculatorTest {
 	void firePump_sharesAStepWithMotorsAndStaysOutOfTheLoadFeeder() {
 		List<MotorLoad> motors = List.of(new MotorLoad(null, "10", 230, 1));
 		GeneratorSetSizingResult motorsOnly = calculator.calculate(withDirect(motors, List.of(), 20.0, 15.0));
-		GeneratorSetSizingResult withPump = calculator.calculate(withDirect(motors, List.of(firePump(30, 180.0, 1)), 20.0, 15.0));
+		GeneratorSetSizingResult withPump = calculator.calculate(withPump(230, List.of(), motors,
+				pumpOf(byAmps(30, 180.0), null, null, null), null, 20.0, 15.0));
 
 		assertEquals(motorsOnly.loadFeederMinimumAmpacityAmps(), withPump.loadFeederMinimumAmpacityAmps(), DELTA);
 		assertEquals(1, withPump.startingSteps().size());
 		assertEquals(SQRT_3 * 230 * (162 + 180) / 1000, withPump.startingSteps().get(0).startingKva(), DELTA);
 		assertEquals("10 hp motor, Fire pump", withPump.startingSteps().get(0).motors());
+		assertEquals(15.0, withPump.startingSteps().get(0).dipLimitPercent(), DELTA);
+	}
+
+	@Test
+	void aFirePumpAloneIsEnoughToSize_andNeedsNoReactanceForItsRunningLoad() {
+		GeneratorSetSizingResult result = calculator.calculate(withPump(230, List.of(), List.of(),
+				pumpOf(byAmps(30, 180.0), null, null, null), null, null, null));
+
+		assertEquals(SQRT_3 * 230 * 30 / 1000, result.demandKva(), DELTA);
+		assertTrue(result.startingSteps().isEmpty());
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Motor starting is not checked")));
+	}
+
+	@Test
+	void firePump_rejectsInconsistentPumpEntries() {
+		assertThrows(CalculationException.class, () -> new PumpMotor(null, null, null, null));
+		assertThrows(CalculationException.class, () -> new PumpMotor("10", 230, 28.0, null));
+		assertThrows(CalculationException.class, () -> new PumpMotor("10", null, null, null));
+		assertThrows(CalculationException.class, () -> new PumpMotor("10", 230, null, 162.0));
+		assertThrows(CalculationException.class, () -> pumpOf(byAmps(30, 180.0), byAmps(5, 30.0), null, null));
+		assertThrows(CalculationException.class, () -> new FirePump(byAmps(30, 180.0), null, null, 0, 100.0, null));
+		assertThrows(CalculationException.class, () -> new FirePump(byAmps(30, 180.0), null, null, 1, 120.0, null));
+	}
+
+	@Test
+	void firePump_aRunLengthNeedsTheDropInputs() {
+		assertThrows(CalculationException.class, () -> new SupplyRun(
+				30.0, 3, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, 50.0, null, 0.3, 0.85, 5.0));
+		assertThrows(CalculationException.class, () -> new SupplyRun(
+				30.0, 3, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, 50.0, ConduitMaterial.PVC, 0.3, 0.85, 15.0));
 	}
 
 	@Test

@@ -34,8 +34,9 @@ import java.util.List;
  *                                    starting check. Must be given with {@code maximumVoltageDipPercent}.
  * @param maximumVoltageDipPercent    the largest voltage dip accepted when a motor starts, in percent; blank skips
  *                                    the motor starting check
- * @param directLoads                 a building's total load or a fire pump entered as a figure, in place of
- *                                    (or as well as) the lists above
+ * @param directLoads                 a building's total load entered as a figure, in place of (or as well as)
+ *                                    the lists above
+ * @param firePump                    a fire pump the generator also carries, with its Article 6.95 checks
  */
 public record GeneratorSetSizingRequest(
 		@NotBlank String standbyClass,
@@ -54,6 +55,7 @@ public record GeneratorSetSizingRequest(
 		@Valid OutputConductorDto outputConductor,
 		@Positive Double subtransientReactancePercent,
 		@Positive Double maximumVoltageDipPercent,
-		@Size(max = 200) List<@Valid DirectLoadDto> directLoads) {
+		@Size(max = 200) List<@Valid DirectLoadDto> directLoads,
+		@Valid FirePumpDto firePump) {
 
 }

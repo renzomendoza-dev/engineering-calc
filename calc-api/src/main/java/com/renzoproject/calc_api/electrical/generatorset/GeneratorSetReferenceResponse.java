@@ -17,6 +17,10 @@ import java.util.List;
  * @param defaultSubtransientReactancePercent the generator reactance X"d to start the form with, in percent
  * @param defaultMaximumVoltageDipPercent the voltage dip limit to start the form with, in percent
  * @param motorStartingDefaultsNote       why those two defaults, and that neither is a PEC value for this use
+ * @param defaultFirePumpStartingPowerFactor power factor of a fire pump at locked rotor to start the form with
+ * @param defaultFirePumpRunningPowerFactor  power factor of a fire pump at 115% of full load to start the form with
+ * @param defaultCableStartingDropAllowancePercent the part of the 15% starting drop given to the cable, to start with
+ * @param firePumpDefaultsNote            why those three defaults, and that none is a PEC value
  */
 public record GeneratorSetReferenceResponse(
 		List<LightingOccupancyDto> lightingOccupancies,
@@ -29,6 +33,10 @@ public record GeneratorSetReferenceResponse(
 		String defaultGeneratorPowerFactorNote,
 		double defaultSubtransientReactancePercent,
 		double defaultMaximumVoltageDipPercent,
-		String motorStartingDefaultsNote) {
+		String motorStartingDefaultsNote,
+		double defaultFirePumpStartingPowerFactor,
+		double defaultFirePumpRunningPowerFactor,
+		double defaultCableStartingDropAllowancePercent,
+		String firePumpDefaultsNote) {
 
 }

@@ -1,6 +1,7 @@
 package com.renzoproject.calc.core.electrical.generatorset;
 
 import com.renzoproject.calc.core.electrical.reference.ConductorMaterial;
+import com.renzoproject.calc.core.electrical.reference.ConduitMaterial;
 import com.renzoproject.calc.core.electrical.reference.InsulationType;
 import com.renzoproject.calc.core.electrical.reference.MotorPhaseType;
 import com.renzoproject.calc.core.exception.CalculationException;
@@ -39,9 +40,10 @@ import java.util.List;
  * @param maximumVoltageDipPercent   the largest voltage dip you accept when a motor starts, in percent
  *                                    (above 0, below 100); {@code null} for no starting check. Your own
  *                                    criterion, not a PEC value (6.95.1.17's 15% is for fire pumps).
- * @param directLoads                a building's total load or a fire pump's load entered as a figure, in
- *                                    place of building it up from lighting, receptacles and motors (may be
- *                                    empty)
+ * @param directLoads                a building's total load entered as a figure, in place of building it
+ *                                    up from lighting, receptacles and motors (may be empty)
+ * @param firePump                   a fire pump the generator also carries, with its Article 6.95 checks;
+ *                                    {@code null} for none
  * @throws CalculationException if any validation rule above is violated, or there is no load at all
  */
 public record GeneratorSetSizingInput(
@@ -61,7 +63,33 @@ public record GeneratorSetSizingInput(
 		OutputConductor outputConductor,
 		Double subtransientReactancePercent,
 		Double maximumVoltageDipPercent,
-		List<DirectLoad> directLoads) {
+		List<DirectLoad> directLoads,
+		FirePump firePump) {
+
+	/** Without a fire pump. */
+	public GeneratorSetSizingInput(
+			StandbyClass standbyClass,
+			OptionalStandbyTransfer optionalTransfer,
+			MotorPhaseType phaseType,
+			int voltage,
+			List<LightingArea> lightingAreas,
+			List<ReceptacleGroup> receptacleGroups,
+			boolean applyReceptacleDemandFactor,
+			List<OtherLoad> otherLoads,
+			List<MotorLoad> motors,
+			double generatorPowerFactor,
+			double spareCapacityPercent,
+			Double selectedGeneratorKva,
+			boolean designPreventsOverload,
+			OutputConductor outputConductor,
+			Double subtransientReactancePercent,
+			Double maximumVoltageDipPercent,
+			List<DirectLoad> directLoads) {
+		this(standbyClass, optionalTransfer, phaseType, voltage, lightingAreas, receptacleGroups,
+				applyReceptacleDemandFactor, otherLoads, motors, generatorPowerFactor, spareCapacityPercent,
+				selectedGeneratorKva, designPreventsOverload, outputConductor,
+				subtransientReactancePercent, maximumVoltageDipPercent, directLoads, null);
+	}
 
 	/** Without loads entered as a total. */
 	public GeneratorSetSizingInput(
@@ -84,7 +112,7 @@ public record GeneratorSetSizingInput(
 		this(standbyClass, optionalTransfer, phaseType, voltage, lightingAreas, receptacleGroups,
 				applyReceptacleDemandFactor, otherLoads, motors, generatorPowerFactor, spareCapacityPercent,
 				selectedGeneratorKva, designPreventsOverload, outputConductor,
-				subtransientReactancePercent, maximumVoltageDipPercent, null);
+				subtransientReactancePercent, maximumVoltageDipPercent, null, null);
 	}
 
 	/** Without the motor starting check: the running-load sizing of the first slice. */
@@ -105,7 +133,7 @@ public record GeneratorSetSizingInput(
 			OutputConductor outputConductor) {
 		this(standbyClass, optionalTransfer, phaseType, voltage, lightingAreas, receptacleGroups,
 				applyReceptacleDemandFactor, otherLoads, motors, generatorPowerFactor, spareCapacityPercent,
-				selectedGeneratorKva, designPreventsOverload, outputConductor, null, null, null);
+				selectedGeneratorKva, designPreventsOverload, outputConductor, null, null, null, null);
 	}
 
 	public GeneratorSetSizingInput {
@@ -131,9 +159,9 @@ public record GeneratorSetSizingInput(
 		motors = motors == null ? List.of() : List.copyOf(motors);
 		directLoads = directLoads == null ? List.of() : List.copyOf(directLoads);
 		if (lightingAreas.isEmpty() && receptacleGroups.isEmpty() && otherLoads.isEmpty() && motors.isEmpty()
-				&& directLoads.isEmpty()) {
+				&& directLoads.isEmpty() && firePump == null) {
 			throw new CalculationException(
-					"Enter at least one load: lighting, receptacles, another load, a motor or a total load");
+					"Enter at least one load: lighting, receptacles, another load, a motor, a total load or a fire pump");
 		}
 		if (generatorPowerFactor <= 0 || generatorPowerFactor > 1) {
 			throw new CalculationException("generatorPowerFactor must be greater than 0 and at most 1");
@@ -268,37 +296,24 @@ public record GeneratorSetSizingInput(
 	}
 
 	/**
-	 * A load entered as a total rather than built up: a building's whole load, or a fire pump. The
-	 * figure is taken as the load to carry, at 100%: enter a building's load after your own demand
-	 * factors.
+	 * A building's whole load entered as a total rather than built up. The figure is taken as the
+	 * load to carry, at 100%: enter it after your own demand factors. (A fire pump is entered as a
+	 * {@link FirePump}, which also carries its Article 6.95 checks.)
 	 *
 	 * @param label                  name shown on the load schedule
-	 * @param kind                   {@link LoadKind#BUILDING} or {@link LoadKind#FIRE_PUMP}
 	 * @param amount                 the load, in {@code unit}; positive
 	 * @param unit                   kVA, kW (needs {@code powerFactor}) or amperes at the system voltage
 	 * @param powerFactor            power factor of the load, in (0, 1]; required for kW, ignored otherwise
 	 * @param continuous             whether the load runs three hours or more
-	 * @param lockedRotorAmps        a fire pump's locked-rotor current, from its controller or nameplate, in
-	 *                               amperes at the system voltage; {@code null} to leave its starting out of
-	 *                               the starting check. Not allowed for a building.
-	 * @param startStep              the start step of a fire pump, as for a motor; at least 1
-	 * @param startingCurrentPercent starting current as a percent of {@code lockedRotorAmps}, in (0, 100]
 	 */
 	public record DirectLoad(
 			String label,
-			LoadKind kind,
 			double amount,
 			DirectLoadUnit unit,
 			Double powerFactor,
-			boolean continuous,
-			Double lockedRotorAmps,
-			int startStep,
-			double startingCurrentPercent) {
+			boolean continuous) {
 
 		public DirectLoad {
-			if (kind != LoadKind.BUILDING && kind != LoadKind.FIRE_PUMP) {
-				throw new CalculationException("a total load must be a BUILDING or a FIRE_PUMP");
-			}
 			if (unit == null) {
 				throw new CalculationException("total load unit is required");
 			}
@@ -310,19 +325,150 @@ public record GeneratorSetSizingInput(
 					throw new CalculationException("a load in kW needs a power factor greater than 0 and at most 1");
 				}
 			}
-			if (lockedRotorAmps != null) {
-				if (kind != LoadKind.FIRE_PUMP) {
-					throw new CalculationException("lockedRotorAmps is only for a fire pump");
+		}
+	}
+
+	/**
+	 * A pump motor, entered either from the PEC horsepower tables or as the currents from its
+	 * controller or nameplate. Exactly one of the two ways must be given.
+	 *
+	 * @param horsepowerLabel horsepower as printed in the PEC tables, with {@code voltage}
+	 * @param voltage         motor voltage for the table lookup
+	 * @param fullLoadAmps    full-load current in amperes at the system voltage
+	 * @param lockedRotorAmps locked-rotor current in amperes at the system voltage; for the fire pump
+	 *                        motor only, and optional (without it its starting is left out of the check)
+	 */
+	public record PumpMotor(String horsepowerLabel, Integer voltage, Double fullLoadAmps, Double lockedRotorAmps) {
+
+		public PumpMotor {
+			boolean byHorsepower = horsepowerLabel != null && !horsepowerLabel.isBlank();
+			boolean byAmps = fullLoadAmps != null;
+			if (byHorsepower == byAmps) {
+				throw new CalculationException("Enter a pump either by horsepower and voltage or by its full-load current");
+			}
+			if (byHorsepower) {
+				if (voltage == null || voltage <= 0) {
+					throw new CalculationException("a pump entered by horsepower needs its voltage");
 				}
-				if (lockedRotorAmps <= 0) {
-					throw new CalculationException("lockedRotorAmps must be positive");
+				if (lockedRotorAmps != null) {
+					throw new CalculationException("lockedRotorAmps is only for a pump entered by its currents; a horsepower comes from the PEC tables");
 				}
+			} else {
+				if (fullLoadAmps <= 0) {
+					throw new CalculationException("a pump's fullLoadAmps must be positive");
+				}
+				if (lockedRotorAmps != null && lockedRotorAmps <= 0) {
+					throw new CalculationException("a pump's lockedRotorAmps must be positive");
+				}
+			}
+		}
+
+		boolean byHorsepower() {
+			return horsepowerLabel != null && !horsepowerLabel.isBlank();
+		}
+	}
+
+	/**
+	 * The run of conductors from the generator to the fire pump controller, sized to Article 6.95
+	 * and checked against its voltage drop limits.
+	 *
+	 * @param ambientTempCelsius                 ambient temperature the conductors run through
+	 * @param numberOfCurrentCarryingConductors  current-carrying conductors in the same raceway; at least 1
+	 * @param numberOfParallelSets               identical conductors in parallel; at least 1
+	 * @param insulationType                     conductor insulation type
+	 * @param conductorMaterial                  conductor material
+	 * @param terminationTempRatingCelsius       temperature rating of the terminations: 60, 75 or 90
+	 * @param oneWayLengthMeters                 length of the run from the generator to the controller;
+	 *                                           {@code null} skips the voltage drop checks
+	 * @param conduitMaterial                    conduit material, for the conductor reactance; required with
+	 *                                           the length
+	 * @param startingPowerFactor                power factor of the pump at locked rotor, in (0, 1]; required
+	 *                                           with the length. Not a PEC value.
+	 * @param runningPowerFactor                 power factor of the pump at 115% of full load, in (0, 1];
+	 *                                           required with the length. Not a PEC value.
+	 * @param cableStartingDropAllowancePercent  the part of the 15% starting drop given to the cable, in
+	 *                                           (0, 15); the conductor is sized so it stays within it, and the
+	 *                                           generator gets what the cable actually leaves. A design
+	 *                                           choice, not a PEC value; required with the length.
+	 */
+	public record SupplyRun(
+			double ambientTempCelsius,
+			int numberOfCurrentCarryingConductors,
+			int numberOfParallelSets,
+			InsulationType insulationType,
+			ConductorMaterial conductorMaterial,
+			int terminationTempRatingCelsius,
+			Double oneWayLengthMeters,
+			ConduitMaterial conduitMaterial,
+			Double startingPowerFactor,
+			Double runningPowerFactor,
+			Double cableStartingDropAllowancePercent) {
+
+		public SupplyRun {
+			if (numberOfCurrentCarryingConductors < 1) {
+				throw new CalculationException("fire pump numberOfCurrentCarryingConductors must be at least 1");
+			}
+			if (numberOfParallelSets < 1) {
+				throw new CalculationException("fire pump numberOfParallelSets must be at least 1");
+			}
+			if (terminationTempRatingCelsius != 60 && terminationTempRatingCelsius != 75 && terminationTempRatingCelsius != 90) {
+				throw new CalculationException("fire pump terminationTempRatingCelsius must be 60, 75, or 90");
+			}
+			if (oneWayLengthMeters != null) {
+				if (oneWayLengthMeters <= 0) {
+					throw new CalculationException("the fire pump run's oneWayLengthMeters must be positive");
+				}
+				if (conduitMaterial == null || startingPowerFactor == null || runningPowerFactor == null
+						|| cableStartingDropAllowancePercent == null) {
+					throw new CalculationException(
+							"A run length needs the conduit material, both power factors and the cable's share of the starting drop");
+				}
+				if (startingPowerFactor <= 0 || startingPowerFactor > 1 || runningPowerFactor <= 0 || runningPowerFactor > 1) {
+					throw new CalculationException("the fire pump power factors must be greater than 0 and at most 1");
+				}
+				if (cableStartingDropAllowancePercent <= 0 || cableStartingDropAllowancePercent >= 15) {
+					throw new CalculationException("the cable's share of the starting drop must be greater than 0 and less than 15 percent");
+				}
+			}
+		}
+	}
+
+	/**
+	 * A fire pump the generator carries as the alternate source (PEC Article 6.95): the pump, an
+	 * optional pressure maintenance (jockey) pump and accessories, and the run to its controller.
+	 *
+	 * @param motor                   the fire pump motor
+	 * @param jockey                  the pressure maintenance pump; {@code null} for none. Taken as running
+	 *                                before the fire pump starts; only its full-load current is used.
+	 * @param accessoryAmps           full-load current of the associated accessory equipment in amperes at
+	 *                                the system voltage; {@code null} for none
+	 * @param startStep               start step of the fire pump motor, as for other motors; at least 1
+	 * @param startingCurrentPercent  starting current as a percent of the locked-rotor current, in (0, 100]
+	 * @param supplyRun               conductors to the controller; {@code null} to skip their sizing
+	 */
+	public record FirePump(
+			PumpMotor motor,
+			PumpMotor jockey,
+			Double accessoryAmps,
+			int startStep,
+			double startingCurrentPercent,
+			SupplyRun supplyRun) {
+
+		public FirePump {
+			if (motor == null) {
+				throw new CalculationException("the fire pump motor is required");
+			}
+			if (jockey != null && jockey.lockedRotorAmps() != null) {
+				throw new CalculationException("the pressure maintenance pump takes no locked-rotor current");
+			}
+			if (accessoryAmps != null && accessoryAmps < 0) {
+				throw new CalculationException("accessoryAmps must not be negative");
 			}
 			if (startStep < 1) {
-				throw new CalculationException("total load startStep must be at least 1");
+				throw new CalculationException("fire pump startStep must be at least 1");
 			}
 			if (startingCurrentPercent <= 0 || startingCurrentPercent > 100) {
-				throw new CalculationException("total load startingCurrentPercent must be greater than 0 and at most 100");
+				throw new CalculationException("fire pump startingCurrentPercent must be greater than 0 and at most 100");
 			}
 		}
 	}

@@ -42,7 +42,7 @@ class GeneratorSetSizingControllerTest {
 				List.of(new MotorLoadDto(null, "10", 230, 1, null, null)),
 				0.8, 0, null, false,
 				new OutputConductorDto(30.0, 3, 1, "THHN", "COPPER", 75),
-				null, null, null);
+				null, null, null, null);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class GeneratorSetSizingControllerTest {
 		GeneratorSetSizingRequest bad = new GeneratorSetSizingRequest(
 				"EMERGENCY", null, "THREE_PHASE", 230,
 				List.of(new LightingAreaDto(null, "OFFICE_BUILDINGS", null, 0, null, false, true)),
-				List.of(), true, List.of(), List.of(), 0.8, 0, null, false, null, null, null, null);
+				List.of(), true, List.of(), List.of(), 0.8, 0, null, false, null, null, null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ class GeneratorSetSizingControllerTest {
 		GeneratorSetSizingRequest withStarting = new GeneratorSetSizingRequest(
 				base.standbyClass(), null, base.phaseType(), base.voltage(), List.of(), List.of(), true, List.of(),
 				List.of(new MotorLoadDto("Pump", "10", 230, 1, 1, 100.0)),
-				0.8, 0, null, false, null, 20.0, 15.0, null);
+				0.8, 0, null, false, null, 20.0, 15.0, null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -157,11 +157,10 @@ class GeneratorSetSizingControllerTest {
 
 	@Test
 	void totalBuildingLoadAndFirePump_canBeEnteredDirectly() throws Exception {
-		DirectLoadDto tower = new DirectLoadDto("Tower", "BUILDING", 250, "KW", 0.85, true, null, null, null);
-		DirectLoadDto pump = new DirectLoadDto(null, "FIRE_PUMP", 30, "AMPS", null, false, 180.0, 2, null);
+		DirectLoadDto tower = new DirectLoadDto("Tower", 250, "KW", 0.85, true);
 		GeneratorSetSizingRequest direct = new GeneratorSetSizingRequest(
 				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
-				0.8, 0, null, false, null, 20.0, 15.0, List.of(tower, pump));
+				0.8, 0, null, false, null, null, null, List.of(tower), null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -171,21 +170,65 @@ class GeneratorSetSizingControllerTest {
 		GeneratorSetSizingResponse response = objectMapper.readValue(
 				mvcResult.getResponse().getContentAsString(), GeneratorSetSizingResponse.class);
 
-		double pumpRunningKva = Math.sqrt(3.0) * 230 * 30 / 1000;
-		assertEquals(250 / 0.85 + pumpRunningKva, response.demandKva(), DELTA);
+		assertEquals(250 / 0.85, response.demandKva(), DELTA);
 		assertEquals("BUILDING", response.loadRows().get(0).kind());
-		assertEquals("FIRE_PUMP", response.loadRows().get(1).kind());
-		assertEquals(1, response.startingSteps().size());
-		assertEquals(2, response.startingSteps().get(0).step());
-		assertEquals(250 / 0.85, response.startingSteps().get(0).runningKvaBefore(), DELTA);
+		assertEquals(300.0, response.recommendedStandardKva(), DELTA);
+	}
+
+	@Test
+	void firePump_isSizedWithItsArticle6_95Checks() throws Exception {
+		DirectLoadDto tower = new DirectLoadDto("Tower", 20, "KVA", null, true);
+		FirePumpDto pump = new FirePumpDto(
+				new PumpMotorDto(null, null, 40.0, 240.0),
+				new PumpMotorDto("3", 400, null, null),
+				2.0, 1, null,
+				new SupplyRunDto(30.0, 3, 1, "THHN", "COPPER", 75, 300.0, "PVC", 0.3, 0.85, 5.0));
+		GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
+				"EMERGENCY", null, "THREE_PHASE", 400, List.of(), List.of(), true, List.of(), List.of(),
+				0.8, 0, null, false, null, 20.0, 15.0, List.of(tower), pump);
+
+		MvcResult mvcResult = mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andReturn();
+		GeneratorSetSizingResponse response = objectMapper.readValue(
+				mvcResult.getResponse().getContentAsString(), GeneratorSetSizingResponse.class);
+
+		FirePumpResultDto firePump = response.firePump();
+		assertNotNull(firePump);
+		assertEquals(40.0, firePump.pumpFullLoadAmps(), DELTA);
+		// The 3 hp jockey at 400 V draws 6.1 A (Table 4.30.14.4).
+		assertEquals(6.1, firePump.jockeyFullLoadAmps(), DELTA);
+		assertEquals(1.25 * (40.0 + 6.1) + 2.0, firePump.minimumConductorAmpacityAmps(), DELTA);
+		assertNotNull(firePump.conductor());
+		assertTrue(firePump.conductor().upsizedForVoltageDrop());
+		assertTrue(firePump.runningDropWithinLimit());
+		assertEquals(15.0 - firePump.cableStartingDropPercent(), response.startingSteps().get(0).dipLimitPercent(), DELTA);
+		assertTrue(firePump.requirements().stream().anyMatch(item -> item.citation().equals("6.95.1.4(B)(2)(b)")));
+		assertTrue(response.loadRows().stream().anyMatch(row -> row.kind().equals("FIRE_PUMP")));
+	}
+
+	@Test
+	void aPumpEnteredTwoWays_isABadRequest() throws Exception {
+		FirePumpDto pump = new FirePumpDto(new PumpMotorDto("10", 230, 28.0, null), null, null, null, null, null);
+		GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
+				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
+				0.8, 0, null, false, null, null, null, null, pump);
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Enter a pump either by horsepower and voltage or by its full-load current"));
 	}
 
 	@Test
 	void aTotalLoadInKwWithoutAPowerFactor_isABadRequest() throws Exception {
-		DirectLoadDto bad = new DirectLoadDto("Tower", "BUILDING", 250, "KW", null, true, null, null, null);
+		DirectLoadDto bad = new DirectLoadDto("Tower", 250, "KW", null, true);
 		GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
 				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
-				0.8, 0, null, false, null, null, null, List.of(bad));
+				0.8, 0, null, false, null, null, null, List.of(bad), null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -195,18 +238,17 @@ class GeneratorSetSizingControllerTest {
 	}
 
 	@Test
-	void unknownTotalLoadKindOrUnit_isABadRequest() throws Exception {
-		DirectLoadDto badKind = new DirectLoadDto("x", "HOUSE", 10, "KVA", null, true, null, null, null);
-		DirectLoadDto badUnit = new DirectLoadDto("x", "BUILDING", 10, "HP", null, true, null, null, null);
-		for (DirectLoadDto bad : List.of(badKind, badUnit)) {
-			GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
-					"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
-					0.8, 0, null, false, null, null, null, List.of(bad));
-			mockMvc.perform(post(URL)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(request)))
-					.andExpect(status().isBadRequest());
-		}
+	void unknownTotalLoadUnit_isABadRequest() throws Exception {
+		DirectLoadDto bad = new DirectLoadDto("x", 10, "HP", null, true);
+		GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
+				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
+				0.8, 0, null, false, null, null, null, List.of(bad), null);
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Unknown total load unit: HP"));
 	}
 
 	@Test
@@ -219,7 +261,10 @@ class GeneratorSetSizingControllerTest {
 				.andExpect(jsonPath("$.standardSizesKva[0]").value(10.0))
 				.andExpect(jsonPath("$.defaultGeneratorPowerFactor").value(0.8))
 				.andExpect(jsonPath("$.defaultSubtransientReactancePercent").value(20.0))
-				.andExpect(jsonPath("$.defaultMaximumVoltageDipPercent").value(15.0));
+				.andExpect(jsonPath("$.defaultMaximumVoltageDipPercent").value(15.0))
+				.andExpect(jsonPath("$.defaultFirePumpStartingPowerFactor").value(0.3))
+				.andExpect(jsonPath("$.defaultFirePumpRunningPowerFactor").value(0.85))
+				.andExpect(jsonPath("$.defaultCableStartingDropAllowancePercent").value(5.0));
 	}
 
 }

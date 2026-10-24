@@ -3,8 +3,10 @@ package com.renzoproject.calc_api.electrical.generatorset;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput;
 import com.renzoproject.calc.core.electrical.generatorset.DirectLoadUnit;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.DirectLoad;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.FirePump;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.LightingArea;
-import com.renzoproject.calc.core.electrical.generatorset.LoadKind;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.PumpMotor;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.SupplyRun;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.MotorLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OtherLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OutputConductor;
@@ -13,6 +15,7 @@ import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingResu
 import com.renzoproject.calc.core.electrical.generatorset.OptionalStandbyTransfer;
 import com.renzoproject.calc.core.electrical.generatorset.StandbyClass;
 import com.renzoproject.calc.core.electrical.reference.ConductorMaterial;
+import com.renzoproject.calc.core.electrical.reference.ConduitMaterial;
 import com.renzoproject.calc.core.electrical.reference.InsulationType;
 import com.renzoproject.calc.core.electrical.reference.MotorPhaseType;
 import com.renzoproject.calc_api.common.EnumParsing;
@@ -58,20 +61,49 @@ public final class GeneratorSetSizingMapper {
 				request.outputConductor() == null ? null : toOutputConductor(request.outputConductor()),
 				request.subtransientReactancePercent(),
 				request.maximumVoltageDipPercent(),
-				mapAll(request.directLoads(), GeneratorSetSizingMapper::toDirectLoad));
+				mapAll(request.directLoads(), GeneratorSetSizingMapper::toDirectLoad),
+				toFirePump(request.firePump()));
 	}
 
 	private static DirectLoad toDirectLoad(DirectLoadDto dto) {
 		return new DirectLoad(
 				dto.label(),
-				EnumParsing.parse(LoadKind.class, dto.kind(), "total load kind"),
 				dto.amount(),
 				EnumParsing.parse(DirectLoadUnit.class, dto.unit(), "total load unit"),
 				dto.powerFactor(),
-				dto.continuous(),
-				dto.lockedRotorAmps(),
+				dto.continuous());
+	}
+
+	private static PumpMotor toPumpMotor(PumpMotorDto dto) {
+		return dto == null ? null : new PumpMotor(dto.horsepowerLabel(), dto.voltage(), dto.fullLoadAmps(), dto.lockedRotorAmps());
+	}
+
+	private static FirePump toFirePump(FirePumpDto dto) {
+		if (dto == null) {
+			return null;
+		}
+		SupplyRunDto run = dto.supplyRun();
+		SupplyRun supplyRun = run == null ? null : new SupplyRun(
+				run.ambientTempCelsius(),
+				run.numberOfCurrentCarryingConductors(),
+				run.numberOfParallelSets(),
+				InsulationType.fromLabel(run.insulationType()),
+				EnumParsing.parse(ConductorMaterial.class, run.conductorMaterial(), "conductor material"),
+				run.terminationTempRatingCelsius(),
+				run.oneWayLengthMeters(),
+				run.conduitMaterial() == null || run.conduitMaterial().isBlank()
+						? null
+						: EnumParsing.parse(ConduitMaterial.class, run.conduitMaterial(), "conduit material"),
+				run.startingPowerFactor(),
+				run.runningPowerFactor(),
+				run.cableStartingDropAllowancePercent());
+		return new FirePump(
+				toPumpMotor(dto.motor()),
+				toPumpMotor(dto.jockey()),
+				dto.accessoryAmps(),
 				dto.startStep() == null ? 1 : dto.startStep(),
-				dto.startingCurrentPercent() == null ? 100.0 : dto.startingCurrentPercent());
+				dto.startingCurrentPercent() == null ? 100.0 : dto.startingCurrentPercent(),
+				supplyRun);
 	}
 
 	private static OutputConductor toOutputConductor(OutputConductorDto dto) {

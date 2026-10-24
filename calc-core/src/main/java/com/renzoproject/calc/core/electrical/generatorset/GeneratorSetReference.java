@@ -24,6 +24,7 @@ public class GeneratorSetReference {
 	private final RulesFile rules = load("generator-set-rules.json", RulesFile.class);
 	private final SizesFile sizes = load("standard-generator-sizes.json", SizesFile.class);
 	private final StandbyFile standby = load("standby-class-requirements.json", StandbyFile.class);
+	private final FirePumpFile firePump = load("fire-pump-requirements.json", FirePumpFile.class);
 
 	private static <T> T load(String name, Class<T> type) {
 		try (InputStream in = GeneratorSetReference.class.getResourceAsStream(BASE + name)) {
@@ -84,7 +85,23 @@ public class GeneratorSetReference {
 			double defaultMaximumVoltageDipPercent,
 			String motorStartingDefaultsNote,
 			String lockedRotorBasis,
-			String voltageDipBasis) {
+			String voltageDipBasis,
+			double firePumpConductorFactor,
+			String firePumpConductorSource,
+			double firePumpMaxStartingDropPercent,
+			double firePumpMaxRunningDropPercent,
+			double firePumpRunningCurrentFactor,
+			String firePumpVoltageDropSource,
+			double firePumpGeneratorExceptionPercent,
+			String firePumpGeneratorExceptionSource,
+			double defaultFirePumpStartingPowerFactor,
+			double defaultFirePumpRunningPowerFactor,
+			double defaultCableStartingDropAllowancePercent,
+			String firePumpDefaultsNote) {
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	record FirePumpFile(List<Requirement> requirements) {
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -182,6 +199,59 @@ public class GeneratorSetReference {
 
 	public String voltageDipBasis() {
 		return rules.voltageDipBasis();
+	}
+
+	public double firePumpConductorFactor() {
+		return rules.firePumpConductorFactor();
+	}
+
+	public String firePumpConductorSource() {
+		return rules.firePumpConductorSource();
+	}
+
+	public double firePumpMaxStartingDropPercent() {
+		return rules.firePumpMaxStartingDropPercent();
+	}
+
+	public double firePumpMaxRunningDropPercent() {
+		return rules.firePumpMaxRunningDropPercent();
+	}
+
+	public double firePumpRunningCurrentFactor() {
+		return rules.firePumpRunningCurrentFactor();
+	}
+
+	public String firePumpVoltageDropSource() {
+		return rules.firePumpVoltageDropSource();
+	}
+
+	public double firePumpGeneratorExceptionPercent() {
+		return rules.firePumpGeneratorExceptionPercent();
+	}
+
+	public String firePumpGeneratorExceptionSource() {
+		return rules.firePumpGeneratorExceptionSource();
+	}
+
+	public double defaultFirePumpStartingPowerFactor() {
+		return rules.defaultFirePumpStartingPowerFactor();
+	}
+
+	public double defaultFirePumpRunningPowerFactor() {
+		return rules.defaultFirePumpRunningPowerFactor();
+	}
+
+	public double defaultCableStartingDropAllowancePercent() {
+		return rules.defaultCableStartingDropAllowancePercent();
+	}
+
+	public String firePumpDefaultsNote() {
+		return rules.firePumpDefaultsNote();
+	}
+
+	/** Article 6.95 requirements to check off when a generator supplies a fire pump. */
+	public List<Requirement> firePumpRequirements() {
+		return firePump.requirements();
 	}
 
 	/** Standard generator set sizes in kVA, ascending. Not PEC data — see the file's own note. */

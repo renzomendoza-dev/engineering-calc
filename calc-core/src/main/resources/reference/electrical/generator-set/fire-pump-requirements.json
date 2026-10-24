@@ -1,0 +1,18 @@
+{
+  "standard": "PEC 2017, Article 6.95 Fire Pumps (pp. 689-695)",
+  "confidence": "verified",
+  "note": "Requirements that apply when an on-site standby generator supplies a fire pump, each from a section printed on a page that was read. The voltage drop section is printed 6.95.1.17 in the copy read and cross-referenced as 6.95.1.7 (verify the number).",
+  "requirements": [
+    { "citation": "6.95.1.3(D)(1)", "text": "The generator must have enough capacity for normal starting and running of the fire pump motor(s) while supplying all other loads that operate at the same time. Automatically shedding optional standby loads to meet this is permitted." },
+    { "citation": "6.95.1.3(B)", "text": "An on-site standby generator is one of the sources allowed when reliable power cannot be had from a utility service connection: a utility source together with the generator, or two or more sources." },
+    { "citation": "6.95.1.3(D)(2) and (3)", "text": "A tap ahead of the generator disconnecting means is not required, and the adjacent disconnect rule of 4.30.9.13 does not apply." },
+    { "citation": "6.95.1.3(E)", "text": "Locate and arrange every power source to protect against damage by fire from within the premises and exposing hazards, so that a fire at one source does not interrupt the other." },
+    { "citation": "6.95.1.3(F)", "text": "Transfer of power to the fire pump controller between the individual source and the alternate source takes place within the pump room, by a transfer switch listed for fire pump service (6.95.1.3(F)(1))." },
+    { "citation": "6.95.1.4(B)(2)(b)", "text": "The overcurrent protective devices between the generator and the fire pump controller are selected and sized to allow instantaneous pickup of the full pump room load, and are not larger than the value selected to comply with 4.30.5.2, for short-circuit protection only." },
+    { "citation": "6.95.1.4(B)(3)(b) and (c)", "text": "The generator disconnecting means is installed per 7.0.2.1(B)(5) for emergency circuits, is lockable in the closed position, and is marked \"Fire Pump Disconnecting Means\" in letters at least 25 mm high, visible without opening doors or covers." },
+    { "citation": "6.95.1.6(A)(2)", "text": "Fire pump supply conductors from the generator are kept entirely independent of all other wiring, supply only loads directly associated with the fire pump system, and are protected from damage by fire, structural failure or operational accident. Where routed through a building they are protected from fire for 2 hours: 50 mm of concrete, a listed fire-resistive cable system, or a listed circuit protective system with a 2-hour rating." },
+    { "citation": "6.95.1.6(C)", "text": "Fire pump power circuits have no overload protection; branch-circuit and feeder conductors are protected against short circuit only." },
+    { "citation": "6.95.1.6(G)", "text": "Ground-fault protection of equipment is not installed in any fire pump power circuit." },
+    { "citation": "6.95.1.10", "text": "Fire pump controllers, motors and power transfer switches are listed for fire pump service." }
+  ]
+}
