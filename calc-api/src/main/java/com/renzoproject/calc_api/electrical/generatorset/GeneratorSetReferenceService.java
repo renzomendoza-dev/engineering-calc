@@ -35,7 +35,10 @@ public class GeneratorSetReferenceService {
 				reference.standardSizesKva(),
 				reference.standardSizesNote(),
 				reference.defaultGeneratorPowerFactor(),
-				reference.defaultGeneratorPowerFactorNote());
+				reference.defaultGeneratorPowerFactorNote(),
+				reference.defaultSubtransientReactancePercent(),
+				reference.defaultMaximumVoltageDipPercent(),
+				reference.motorStartingDefaultsNote());
 	}
 
 }

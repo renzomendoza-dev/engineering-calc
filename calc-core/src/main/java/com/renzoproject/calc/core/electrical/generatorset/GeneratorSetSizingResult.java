@@ -36,6 +36,14 @@ import java.util.List;
  * @param requirements                     Chapter 7 requirements for this standby class, to check off
  * @param standardSizesNote                where the standard sizes come from (they are not PEC data)
  * @param warnings                         anything that needs the caller's attention
+ * @param runningRequiredKva               the demand load plus the spare capacity, before motor starting
+ * @param startingRequiredKva              the largest set any starting step needs to stay within the voltage
+ *                                          dip limit; {@code null} when the starting check was not run
+ * @param governingCase                    RUNNING_LOAD or MOTOR_STARTING: which of the two set
+ *                                          {@code requiredKva}, which is the larger of them
+ * @param startingSteps                    one entry per start step, in order; empty when the check was not run
+ * @param startingBasis                    where the locked-rotor kVA and the dip formula come from, and that
+ *                                          neither the formula nor its inputs are PEC; {@code null} when not run
  */
 public record GeneratorSetSizingResult(
 		List<LoadRow> loadRows,
@@ -61,7 +69,36 @@ public record GeneratorSetSizingResult(
 		String capacityBasis,
 		List<Requirement> requirements,
 		String standardSizesNote,
-		List<String> warnings) {
+		List<String> warnings,
+		double runningRequiredKva,
+		Double startingRequiredKva,
+		String governingCase,
+		List<StartingStep> startingSteps,
+		String startingBasis) {
+
+	/**
+	 * One step of motor starting.
+	 *
+	 * @param step                   the step number from the input
+	 * @param motors                 the motors that start in it, with quantities
+	 * @param startingKva            their locked-rotor kVA, after any starting current percentage
+	 * @param runningKvaBefore       the load already running when this step starts: every non-motor load and
+	 *                               the motors of the earlier steps, at demand
+	 * @param requiredGeneratorKva   the set that holds the voltage dip within the limit for this step
+	 * @param voltageDipPercentAtSelected the dip this step causes on the selected set; {@code null} when there
+	 *                               is no selected set
+	 * @param withinDipLimit         whether that dip is within the limit entered; {@code null} when there is
+	 *                               no selected set
+	 */
+	public record StartingStep(
+			int step,
+			String motors,
+			double startingKva,
+			double runningKvaBefore,
+			double requiredGeneratorKva,
+			Double voltageDipPercentAtSelected,
+			Boolean withinDipLimit) {
+	}
 
 	/**
 	 * @param kind                load type

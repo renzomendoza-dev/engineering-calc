@@ -18,5 +18,10 @@
   "generatorOutputFactorWhereOverloadPrevented": 1.0,
   "generatorOutputSource": "4.45.1.13: conductors from the generator terminals to the first distribution device(s) have an ampacity of not less than 115% of the nameplate current rating of the generator; 100% where the design of the generator does not permit overloading.",
   "defaultGeneratorPowerFactor": 0.8,
-  "defaultGeneratorPowerFactorNote": "Not from the PEC. 0.8 lagging is the usual rating basis of a standby generator set; use the nameplate value of the set you intend to buy."
+  "defaultGeneratorPowerFactorNote": "Not from the PEC. 0.8 lagging is the usual rating basis of a standby generator set; use the nameplate value of the set you intend to buy.",
+  "defaultSubtransientReactancePercent": 20,
+  "defaultMaximumVoltageDipPercent": 15,
+  "motorStartingDefaultsNote": "Not from the PEC, confidence verify. 20% is a typical subtransient reactance for a diesel standby set; use the data sheet of the set you intend to buy. 15% is the PEC's own limit for a fire pump motor at starting (6.95.1.17), used here only as a starting point; many designers allow less to keep lighting steady.",
+  "lockedRotorBasis": "Locked-rotor kVA comes from Table 4.30.14.5(B) (polyphase, Design B, C and D) and Table 4.30.14.5(A) (single-phase), the PEC's maximum locked-rotor currents by horsepower and voltage. The PEC publishes them for selecting disconnecting means and controllers (4.30.9.10, 4.40.1.2, 4.40.5.1, 4.55.1.8(C)), so they are upper values for starting; the nameplate code letter (Table 4.30.1.7(B)) or the maker's data gives the real figure, which the starting current percentage lets you use.",
+  "voltageDipBasis": "Voltage dip = X\"d x S / (Sgen + X\"d x S), with S the locked-rotor kVA of the motors that start together and Sgen the kVA of the set. The set needed for a dip of at most D% is X\"d x S x (100/D - 1). This is the usual engineering approximation, not a PEC formula, and the running load already on the set is not subtracted from its capacity."
 }

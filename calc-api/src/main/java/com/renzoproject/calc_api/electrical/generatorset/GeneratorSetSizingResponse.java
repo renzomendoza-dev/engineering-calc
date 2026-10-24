@@ -35,7 +35,12 @@ public record GeneratorSetSizingResponse(
 		String capacityBasis,
 		List<RequirementDto> requirements,
 		String standardSizesNote,
-		List<String> warnings) {
+		List<String> warnings,
+		double runningRequiredKva,
+		Double startingRequiredKva,
+		String governingCase,
+		List<StartingStepDto> startingSteps,
+		String startingBasis) {
 
 	public static GeneratorSetSizingResponse from(GeneratorSetSizingResult result) {
 		return new GeneratorSetSizingResponse(
@@ -64,7 +69,12 @@ public record GeneratorSetSizingResponse(
 						.map(requirement -> new RequirementDto(requirement.citation(), requirement.text()))
 						.toList(),
 				result.standardSizesNote(),
-				result.warnings());
+				result.warnings(),
+				result.runningRequiredKva(),
+				result.startingRequiredKva(),
+				result.governingCase(),
+				result.startingSteps().stream().map(StartingStepDto::from).toList(),
+				result.startingBasis());
 	}
 
 }

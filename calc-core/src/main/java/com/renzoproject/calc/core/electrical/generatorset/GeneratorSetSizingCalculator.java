@@ -6,6 +6,7 @@ import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetReference.
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetReference.DemandTier;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetReference.Occupancy;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetReference.StandbyClassEntry;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.DirectLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.LightingArea;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.MotorLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OtherLoad;
@@ -13,6 +14,9 @@ import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInpu
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.ReceptacleGroup;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingResult.LoadRow;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingResult.Requirement;
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingResult.StartingStep;
+import com.renzoproject.calc.core.electrical.motorflc.LockedRotorCalculator;
+import com.renzoproject.calc.core.electrical.motorflc.LockedRotorInput;
 import com.renzoproject.calc.core.electrical.motorflc.MotorFlcCalculator;
 import com.renzoproject.calc.core.electrical.motorflc.MotorFlcInput;
 import com.renzoproject.calc.core.electrical.reference.MotorClass;
@@ -27,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Sizes a standby generator set from the loads it will carry, following PEC 2017: the load is
@@ -47,6 +52,7 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 	private final GeneratorSetReference reference = new GeneratorSetReference();
 	private final MotorFlcCalculator motorFlcCalculator = new MotorFlcCalculator();
 	private final WireSizingCalculator wireSizingCalculator = new WireSizingCalculator();
+	private final LockedRotorCalculator lockedRotorCalculator = new LockedRotorCalculator();
 
 	@Override
 	public GeneratorSetSizingResult calculate(GeneratorSetSizingInput input) {
@@ -59,13 +65,30 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 		rows.addAll(otherRows(input.otherLoads()));
 		MotorRows motorRows = motorRows(input, phaseFactor);
 		rows.addAll(motorRows.rows());
+		rows.addAll(directRows(input.directLoads(), phaseFactor, input.voltage()));
+		boolean hasStartingLoads = !input.motors().isEmpty()
+				|| input.directLoads().stream().anyMatch(load -> load.kind() == LoadKind.FIRE_PUMP);
 
 		double connectedVa = rows.stream().mapToDouble(LoadRow::connectedVoltAmperes).sum();
 		double demandVa = rows.stream().mapToDouble(LoadRow::demandVoltAmperes).sum();
 		double connectedKva = connectedVa / 1000.0;
 		double demandKva = demandVa / 1000.0;
 		double demandCurrentAmps = demandVa / (phaseFactor * input.voltage());
-		double requiredKva = demandKva * (1.0 + input.spareCapacityPercent() / 100.0);
+		double runningRequiredKva = demandKva * (1.0 + input.spareCapacityPercent() / 100.0);
+
+		// What is already running before any motor or fire pump starts; those are added step by step.
+		double alwaysRunningDemandVa = rows.stream()
+				.filter(row -> row.kind() != LoadKind.MOTOR && row.kind() != LoadKind.FIRE_PUMP)
+				.mapToDouble(LoadRow::demandVoltAmperes)
+				.sum();
+		List<StartingStepDraft> startingDrafts = input.subtransientReactancePercent() == null || !hasStartingLoads
+				? List.of()
+				: startingSteps(input, phaseFactor, motorRows, alwaysRunningDemandVa, warnings);
+		Double startingRequiredKva = startingDrafts.isEmpty()
+				? null
+				: startingDrafts.stream().mapToDouble(StartingStepDraft::requiredGeneratorKva).max().getAsDouble();
+		boolean startingGoverns = startingRequiredKva != null && startingRequiredKva > runningRequiredKva;
+		double requiredKva = startingGoverns ? startingRequiredKva : runningRequiredKva;
 		double requiredKw = requiredKva * input.generatorPowerFactor();
 
 		Double loadFeederAmps = null;
@@ -76,7 +99,8 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 			double nonMotorContinuousVa = 0;
 			double nonMotorNoncontinuousVa = 0;
 			for (LoadRow row : rows) {
-				if (row.kind() == LoadKind.MOTOR) {
+				// A fire pump's supply conductors have their own rule (6.95.1.6(B)); it stays out of this one.
+				if (row.kind() == LoadKind.MOTOR || row.kind() == LoadKind.FIRE_PUMP) {
 					continue;
 				}
 				if (row.continuous()) {
@@ -132,9 +156,23 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 			}
 		}
 
-		if (!input.motors().isEmpty()) {
-			warnings.add("Motor starting is not checked here: starting current and the voltage dip it causes can call for a larger set than the running load does.");
+		if (hasStartingLoads && startingDrafts.isEmpty()) {
+			warnings.add("Motor starting is not checked: starting current and the voltage dip it causes can call for a larger set than the running load does. Enter the generator's subtransient reactance and a maximum voltage dip to check it.");
 		}
+		final Double selectedForDip = selectedKva;
+		List<StartingStep> startingStepResults = startingDrafts.stream()
+				.map(draft -> {
+					Double dip = selectedForDip == null
+							? null
+							: voltageDipPercent(input.subtransientReactancePercent(), draft.startingKva(), selectedForDip);
+					Boolean withinLimit = dip == null ? null : dip <= input.maximumVoltageDipPercent();
+					return new StartingStep(draft.step(), draft.motors(), draft.startingKva(), draft.runningKvaBefore(),
+							draft.requiredGeneratorKva(), dip, withinLimit);
+				})
+				.toList();
+		String startingBasis = startingDrafts.isEmpty()
+				? null
+				: reference.lockedRotorBasis() + " " + reference.voltageDipBasis();
 
 		StandbyClassEntry standbyClass = reference.standbyClass(input.standbyClass());
 		String capacityBasis = standbyClass.capacityBasis();
@@ -172,7 +210,124 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 				capacityBasis,
 				requirements,
 				reference.standardSizesNote(),
-				warnings);
+				warnings,
+				runningRequiredKva,
+				startingRequiredKva,
+				startingGoverns ? "MOTOR_STARTING" : "RUNNING_LOAD",
+				startingStepResults,
+				startingBasis);
+	}
+
+	private record StartingStepDraft(int step, String motors, double startingKva, double runningKvaBefore, double requiredGeneratorKva) {
+	}
+
+	/** A motor or fire pump that starts in a step: what it adds to the running load, and its locked-rotor VA if known. */
+	private record StartCandidate(String label, int step, double runningVa, Double startingVa) {
+	}
+
+	/**
+	 * Locked-rotor kVA of the motors and fire pumps that start together, step by step, and the set each
+	 * step needs to stay within the voltage dip limit. One with no locked-rotor current (a motor with no
+	 * published value, a fire pump entered without one) is left out of its step with a warning, never
+	 * silently.
+	 */
+	private List<StartingStepDraft> startingSteps(
+			GeneratorSetSizingInput input, double phaseFactor, MotorRows motorRows, double alwaysRunningVa, List<String> warnings) {
+		boolean polyphase = input.phaseType() == MotorPhaseType.THREE_PHASE;
+		double reactance = input.subtransientReactancePercent() / 100.0;
+		double dipLimit = input.maximumVoltageDipPercent() / 100.0;
+
+		List<StartCandidate> candidates = new ArrayList<>();
+		for (MotorEntry entry : motorRows.entries()) {
+			MotorLoad motor = entry.motor();
+			Double startingVa = null;
+			try {
+				double lockedRotorAmps = lockedRotorCalculator.calculate(
+						new LockedRotorInput(polyphase, motor.horsepowerLabel(), motor.voltage())).lockedRotorAmps();
+				startingVa = phaseFactor * motor.voltage() * lockedRotorAmps * motor.quantity() * motor.startingCurrentPercent() / 100.0;
+			} catch (CalculationException e) {
+				warnings.add(String.format(Locale.ROOT,
+						"%s is left out of the starting check: no locked-rotor current is published for %s hp at %d V, so its starting is NOT included.",
+						entry.label(), motor.horsepowerLabel(), motor.voltage()));
+			}
+			candidates.add(new StartCandidate(entry.label(), motor.startStep(), entry.runningVa(), startingVa));
+		}
+		for (DirectLoad load : input.directLoads()) {
+			if (load.kind() != LoadKind.FIRE_PUMP) {
+				continue;
+			}
+			String label = labelOf(load.label(), "Fire pump");
+			Double startingVa = null;
+			if (load.lockedRotorAmps() == null) {
+				warnings.add(String.format(Locale.ROOT,
+						"%s is left out of the starting check: no locked-rotor current was entered, so its starting is NOT included.", label));
+			} else {
+				startingVa = phaseFactor * input.voltage() * load.lockedRotorAmps() * load.startingCurrentPercent() / 100.0;
+			}
+			candidates.add(new StartCandidate(label, load.startStep(), directVoltAmperes(load, phaseFactor, input.voltage()), startingVa));
+		}
+
+		Map<Integer, List<StartCandidate>> byStep = new TreeMap<>();
+		for (StartCandidate candidate : candidates) {
+			byStep.computeIfAbsent(candidate.step(), step -> new ArrayList<>()).add(candidate);
+		}
+
+		List<StartingStepDraft> drafts = new ArrayList<>();
+		double runningBeforeVa = alwaysRunningVa;
+		for (Map.Entry<Integer, List<StartCandidate>> step : byStep.entrySet()) {
+			double startingVa = 0;
+			double stepRunningVa = 0;
+			List<String> labels = new ArrayList<>();
+			for (StartCandidate candidate : step.getValue()) {
+				stepRunningVa += candidate.runningVa();
+				if (candidate.startingVa() != null) {
+					startingVa += candidate.startingVa();
+					labels.add(candidate.label());
+				}
+			}
+			if (!labels.isEmpty()) {
+				double startingKva = startingVa / 1000.0;
+				drafts.add(new StartingStepDraft(step.getKey(), String.join(", ", labels), startingKva, runningBeforeVa / 1000.0,
+						reactance * startingKva * (1.0 / dipLimit - 1.0)));
+			}
+			runningBeforeVa += stepRunningVa;
+		}
+		return drafts;
+	}
+
+	/** The load in volt-amperes: kVA and kW (through the power factor) as given, amperes at the system voltage. */
+	private static double directVoltAmperes(DirectLoad load, double phaseFactor, int voltage) {
+		return switch (load.unit()) {
+			case KVA -> load.amount() * 1000.0;
+			case KW -> load.amount() * 1000.0 / load.powerFactor();
+			case AMPS -> phaseFactor * voltage * load.amount();
+		};
+	}
+
+	private List<LoadRow> directRows(List<DirectLoad> loads, double phaseFactor, int voltage) {
+		List<LoadRow> rows = new ArrayList<>();
+		for (DirectLoad load : loads) {
+			double va = directVoltAmperes(load, phaseFactor, voltage);
+			String entered = switch (load.unit()) {
+				case KVA -> String.format(Locale.ROOT, "%s kVA", num(load.amount()));
+				case KW -> String.format(Locale.ROOT, "%s kW at %.2f power factor = %s kVA", num(load.amount()),
+						load.powerFactor(), num(va / 1000.0));
+				case AMPS -> String.format(Locale.ROOT, "%s A at %d V = %s kVA", num(load.amount()), voltage, num(va / 1000.0));
+			};
+			boolean pump = load.kind() == LoadKind.FIRE_PUMP;
+			String basis = pump
+					? "Fire pump entered as a figure: " + entered + ", taken at 100%. The generator must carry it with every other load that runs at the same time (6.95.1.3(D)(1))."
+					: "Total building load entered as a figure: " + entered + ", taken at 100%. Enter it after your own demand factors; none is applied here.";
+			rows.add(new LoadRow(load.kind(), labelOf(load.label(), pump ? "Fire pump" : "Building load"),
+					va, 100.0, va, load.continuous(), basis));
+		}
+		return rows;
+	}
+
+	/** Voltage dip, in percent, when {@code startingKva} is applied to a set of {@code generatorKva}. */
+	private static double voltageDipPercent(double reactancePercent, double startingKva, double generatorKva) {
+		double x = reactancePercent / 100.0;
+		return x * startingKva / (generatorKva + x * startingKva) * 100.0;
 	}
 
 	private WireSizingResult sizeOutputConductor(OutputConductor conditions, double minimumAmpacity, List<String> warnings) {
@@ -302,12 +457,17 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 		return rows;
 	}
 
-	private record MotorRows(List<LoadRow> rows, double largestMotorVa, double totalMotorVa) {
+	/** A motor entry as the load schedule names it, with its running load, kept for the starting check. */
+	private record MotorEntry(MotorLoad motor, String label, double runningVa) {
+	}
+
+	private record MotorRows(List<LoadRow> rows, double largestMotorVa, double totalMotorVa, List<MotorEntry> entries) {
 	}
 
 	private MotorRows motorRows(GeneratorSetSizingInput input, double phaseFactor) {
 		boolean threePhase = input.phaseType() == MotorPhaseType.THREE_PHASE;
 		List<LoadRow> rows = new ArrayList<>();
+		List<MotorEntry> entries = new ArrayList<>();
 		double largestVa = 0;
 		double totalVa = 0;
 		for (MotorLoad motor : input.motors()) {
@@ -329,8 +489,9 @@ public class GeneratorSetSizingCalculator implements Calculator<GeneratorSetSizi
 			// Not "continuous": a motor's duty is not asked for, and the 4.30.2.4 feeder treats motors by
 			// their own rule (125% of the largest) rather than the continuous-load split of the others.
 			rows.add(new LoadRow(LoadKind.MOTOR, label, groupVa, 100.0, groupVa, false, basis));
+			entries.add(new MotorEntry(motor, label, groupVa));
 		}
-		return new MotorRows(rows, largestVa, totalVa);
+		return new MotorRows(rows, largestVa, totalVa, entries);
 	}
 
 	/** Walks a stepped demand factor: each tier's percent applies to the VA between the previous bound and its own. */

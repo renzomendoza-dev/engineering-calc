@@ -30,6 +30,12 @@ import java.util.List;
  * @param selectedGeneratorKva        a set to check instead of the suggested standard size; blank to use the suggestion
  * @param designPreventsOverload      whether the generator's design prevents overloading (100% instead of 115%)
  * @param outputConductor             conditions for sizing the output conductors; blank for the ampacity only
+ * @param subtransientReactancePercent the generator's subtransient reactance X"d, in percent; blank skips the motor
+ *                                    starting check. Must be given with {@code maximumVoltageDipPercent}.
+ * @param maximumVoltageDipPercent    the largest voltage dip accepted when a motor starts, in percent; blank skips
+ *                                    the motor starting check
+ * @param directLoads                 a building's total load or a fire pump entered as a figure, in place of
+ *                                    (or as well as) the lists above
  */
 public record GeneratorSetSizingRequest(
 		@NotBlank String standbyClass,
@@ -45,6 +51,9 @@ public record GeneratorSetSizingRequest(
 		@PositiveOrZero double spareCapacityPercent,
 		@Positive Double selectedGeneratorKva,
 		boolean designPreventsOverload,
-		@Valid OutputConductorDto outputConductor) {
+		@Valid OutputConductorDto outputConductor,
+		@Positive Double subtransientReactancePercent,
+		@Positive Double maximumVoltageDipPercent,
+		@Size(max = 200) List<@Valid DirectLoadDto> directLoads) {
 
 }

@@ -1,5 +1,6 @@
 package com.renzoproject.calc.core.electrical.generatorset;
 
+import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.DirectLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.LightingArea;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.MotorLoad;
 import com.renzoproject.calc.core.electrical.generatorset.GeneratorSetSizingInput.OtherLoad;
@@ -294,6 +295,268 @@ class GeneratorSetSizingCalculatorTest {
 				List.of(new MotorLoad(null, "10", 999, 1)), null, false, null);
 
 		assertThrows(CalculationException.class, () -> calculator.calculate(input));
+	}
+
+	private static GeneratorSetSizingInput withStarting(
+			MotorPhaseType phase, List<LightingArea> lighting, List<MotorLoad> motors, Double selectedKva, Double reactance, Double dip) {
+		return new GeneratorSetSizingInput(StandbyClass.EMERGENCY, null, phase, 230, lighting, List.of(), true,
+				List.of(), motors, 0.8, 0, selectedKva, false, null, reactance, dip);
+	}
+
+	@Test
+	void motorStarting_setsTheSizeFromTheLockedRotorKvaAndTheDipLimit() {
+		// 10 hp at 230 V three-phase: Table 4.30.14.5(B) locked-rotor current 162 A.
+		double startingKva = SQRT_3 * 230 * 162 / 1000;
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1)), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		// Set for a 15% dip at X"d 20%: X x S x (1/dip - 1).
+		double required = 0.20 * startingKva * (1 / 0.15 - 1);
+		assertEquals(1, result.startingSteps().size());
+		assertEquals(startingKva, result.startingSteps().get(0).startingKva(), DELTA);
+		assertEquals(required, result.startingRequiredKva(), DELTA);
+		assertEquals(required, result.requiredKva(), DELTA);
+		assertEquals("MOTOR_STARTING", result.governingCase());
+		assertEquals(SQRT_3 * 230 * 28 / 1000, result.runningRequiredKva(), DELTA);
+		// 73.1 kVA needs the 75 kVA size, which dips the voltage a little under 15%.
+		assertEquals(75.0, result.recommendedStandardKva(), DELTA);
+		double dip = 0.20 * startingKva / (75 + 0.20 * startingKva) * 100;
+		assertEquals(dip, result.startingSteps().get(0).voltageDipPercentAtSelected(), DELTA);
+		assertTrue(result.startingSteps().get(0).voltageDipPercentAtSelected() < 15.0);
+		assertTrue(result.startingSteps().get(0).withinDipLimit());
+		assertNotNull(result.startingBasis());
+		assertFalse(result.warnings().stream().anyMatch(warning -> warning.contains("Motor starting is not checked")));
+	}
+
+	@Test
+	void motorStarting_aSetEnteredBelowTheNeedDipsPastTheLimit() {
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1)), 40.0, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		double startingKva = SQRT_3 * 230 * 162 / 1000;
+		assertEquals(0.20 * startingKva / (40 + 0.20 * startingKva) * 100,
+				result.startingSteps().get(0).voltageDipPercentAtSelected(), DELTA);
+		assertFalse(result.startingSteps().get(0).withinDipLimit());
+		assertFalse(result.selectedMeetsRequired());
+	}
+
+	@Test
+	void motorStarting_runningLoadGovernsWhenItIsTheLargerNeed() {
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.THREE_PHASE, List.of(lighting("OFFICE_BUILDINGS", 10_000)),
+				List.of(new MotorLoad(null, "1", 230, 1)), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals("RUNNING_LOAD", result.governingCase());
+		assertEquals(result.runningRequiredKva(), result.requiredKva(), DELTA);
+		assertTrue(result.startingRequiredKva() < result.runningRequiredKva());
+	}
+
+	@Test
+	void motorStarting_motorsInTheSameStepStartTogether() {
+		double eachKva = SQRT_3 * 230 * 162 / 1000;
+		GeneratorSetSizingInput together = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 2)), null, 20.0, 15.0);
+		GeneratorSetSizingInput staggered = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad("First", "10", 230, 1, 1, 100.0), new MotorLoad("Second", "10", 230, 1, 2, 100.0)),
+				null, 20.0, 15.0);
+
+		GeneratorSetSizingResult allAtOnce = calculator.calculate(together);
+		GeneratorSetSizingResult oneByOne = calculator.calculate(staggered);
+
+		assertEquals(2 * eachKva, allAtOnce.startingSteps().get(0).startingKva(), DELTA);
+		assertEquals(2, oneByOne.startingSteps().size());
+		assertEquals(eachKva, oneByOne.startingSteps().get(1).startingKva(), DELTA);
+		// The second step starts with the first motor already running.
+		assertEquals(0.0, oneByOne.startingSteps().get(0).runningKvaBefore(), DELTA);
+		assertEquals(SQRT_3 * 230 * 28 / 1000, oneByOne.startingSteps().get(1).runningKvaBefore(), DELTA);
+		assertTrue(oneByOne.requiredKva() < allAtOnce.requiredKva());
+	}
+
+	@Test
+	void motorStarting_startingCurrentPercentScalesTheStartingKva() {
+		double fullKva = SQRT_3 * 230 * 162 / 1000;
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1, 1, 40.0)), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals(fullKva * 0.4, result.startingSteps().get(0).startingKva(), DELTA);
+	}
+
+	@Test
+	void motorStarting_singlePhaseUsesTheSinglePhaseTable() {
+		// 1 hp at 230 V single-phase: Table 4.30.14.5(A) locked-rotor current 48 A.
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.SINGLE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "1", 230, 1)), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals(230 * 48 / 1000.0, result.startingSteps().get(0).startingKva(), DELTA);
+	}
+
+	@Test
+	void motorStarting_aMotorWithNoPublishedLockedRotorCurrentIsLeftOutWithAWarning() {
+		// 200 V single-phase has a full-load current but no locked-rotor current in Table 4.30.14.5(A).
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.SINGLE_PHASE, List.of(),
+				List.of(new MotorLoad("Pump", "1", 200, 1)), null, 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertTrue(result.startingSteps().isEmpty());
+		assertNull(result.startingRequiredKva());
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Pump is left out") && warning.contains("NOT included")));
+	}
+
+	@Test
+	void motorStarting_isSkippedWithoutReactanceAndDip() {
+		GeneratorSetSizingInput input = withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1)), null, null, null);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertTrue(result.startingSteps().isEmpty());
+		assertNull(result.startingBasis());
+		assertEquals("RUNNING_LOAD", result.governingCase());
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Motor starting is not checked")));
+	}
+
+	@Test
+	void motorStarting_needsBothReactanceAndDip() {
+		assertThrows(CalculationException.class, () -> withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1)), null, 20.0, null));
+		assertThrows(CalculationException.class, () -> withStarting(MotorPhaseType.THREE_PHASE, List.of(),
+				List.of(new MotorLoad(null, "10", 230, 1)), null, null, 15.0));
+	}
+
+	@Test
+	void motorStarting_rejectsOutOfRangeInputs() {
+		List<MotorLoad> motors = List.of(new MotorLoad(null, "10", 230, 1));
+		assertThrows(CalculationException.class, () -> withStarting(MotorPhaseType.THREE_PHASE, List.of(), motors, null, 0.0, 15.0));
+		assertThrows(CalculationException.class, () -> withStarting(MotorPhaseType.THREE_PHASE, List.of(), motors, null, 20.0, 100.0));
+		assertThrows(CalculationException.class, () -> new MotorLoad(null, "10", 230, 1, 0, 100.0));
+		assertThrows(CalculationException.class, () -> new MotorLoad(null, "10", 230, 1, 1, 120.0));
+	}
+
+	private static GeneratorSetSizingInput withDirect(
+			List<MotorLoad> motors, List<DirectLoad> directLoads, Double reactance, Double dip) {
+		return new GeneratorSetSizingInput(StandbyClass.EMERGENCY, null, MotorPhaseType.THREE_PHASE, 230,
+				List.of(), List.of(), true, List.of(), motors, 0.8, 0, null, false, null, reactance, dip, directLoads);
+	}
+
+	private static DirectLoad building(String label, double amount, DirectLoadUnit unit, Double powerFactor) {
+		return new DirectLoad(label, LoadKind.BUILDING, amount, unit, powerFactor, true, null, 1, 100.0);
+	}
+
+	private static DirectLoad firePump(double amps, Double lockedRotorAmps, int step) {
+		return new DirectLoad("Fire pump", LoadKind.FIRE_PUMP, amps, DirectLoadUnit.AMPS, null, false, lockedRotorAmps, step, 100.0);
+	}
+
+	@Test
+	void directBuildingLoad_inKw_goesThroughThePowerFactor() {
+		GeneratorSetSizingResult result = calculator.calculate(
+				withDirect(List.of(), List.of(building("Tower", 250, DirectLoadUnit.KW, 0.85)), null, null));
+
+		assertEquals(250 / 0.85, result.demandKva(), DELTA);
+		assertEquals(LoadKind.BUILDING, result.loadRows().get(0).kind());
+		assertEquals("Tower", result.loadRows().get(0).label());
+		assertEquals(100.0, result.loadRows().get(0).demandFactorPercent(), DELTA);
+		assertEquals(300.0, result.recommendedStandardKva(), DELTA);
+		assertTrue(result.loadRows().get(0).basis().contains("none is applied here"));
+		assertTrue(result.loadRows().get(0).basis().contains("250 kW at 0.85 power factor"));
+		assertTrue(result.warnings().isEmpty());
+	}
+
+	@Test
+	void directBuildingLoad_inKvaAndAmps() {
+		GeneratorSetSizingResult kva = calculator.calculate(
+				withDirect(List.of(), List.of(building(null, 180, DirectLoadUnit.KVA, null)), null, null));
+		GeneratorSetSizingResult amps = calculator.calculate(
+				withDirect(List.of(), List.of(building(null, 400, DirectLoadUnit.AMPS, null)), null, null));
+
+		assertEquals(180.0, kva.demandKva(), DELTA);
+		assertEquals("Building load", kva.loadRows().get(0).label());
+		assertEquals(SQRT_3 * 230 * 400 / 1000, amps.demandKva(), DELTA);
+	}
+
+	@Test
+	void directLoads_areAddedToWhatIsBuiltUp() {
+		GeneratorSetSizingInput input = new GeneratorSetSizingInput(StandbyClass.EMERGENCY, null, MotorPhaseType.THREE_PHASE, 230,
+				List.of(lighting("OFFICE_BUILDINGS", 1000)), List.of(), true, List.of(), List.of(), 0.8, 0, null, false, null,
+				null, null, List.of(building("Annex", 50, DirectLoadUnit.KVA, null)));
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals(78.0, result.demandKva(), DELTA);
+		assertEquals(2, result.loadRows().size());
+	}
+
+	@Test
+	void directLoad_inKwNeedsAPowerFactor() {
+		assertThrows(CalculationException.class, () -> building("x", 100, DirectLoadUnit.KW, null));
+		assertThrows(CalculationException.class, () -> building("x", 100, DirectLoadUnit.KW, 1.2));
+		assertThrows(CalculationException.class, () -> building("x", 0, DirectLoadUnit.KVA, null));
+	}
+
+	@Test
+	void directLoad_lockedRotorCurrentIsOnlyForAFirePump() {
+		assertThrows(CalculationException.class, () ->
+				new DirectLoad("x", LoadKind.BUILDING, 100, DirectLoadUnit.KVA, null, true, 300.0, 1, 100.0));
+		assertThrows(CalculationException.class, () ->
+				new DirectLoad("x", LoadKind.MOTOR, 100, DirectLoadUnit.KVA, null, true, null, 1, 100.0));
+	}
+
+	@Test
+	void aTotalLoadAloneIsEnoughToSize() {
+		assertNotNull(calculator.calculate(withDirect(List.of(), List.of(building(null, 10, DirectLoadUnit.KVA, null)), null, null)));
+	}
+
+	@Test
+	void firePump_startsAgainstTheBuildingLoadAlreadyRunning() {
+		// 20 kVA of building running, then a fire pump of 30 A (11.95 kVA) with 180 A locked rotor.
+		double pumpRunningKva = SQRT_3 * 230 * 30 / 1000;
+		double pumpStartingKva = SQRT_3 * 230 * 180 / 1000;
+		GeneratorSetSizingInput input = withDirect(List.of(),
+				List.of(building("Building", 20, DirectLoadUnit.KVA, null), firePump(30, 180.0, 1)), 20.0, 15.0);
+
+		GeneratorSetSizingResult result = calculator.calculate(input);
+
+		assertEquals(20 + pumpRunningKva, result.demandKva(), DELTA);
+		assertEquals(1, result.startingSteps().size());
+		assertEquals("Fire pump", result.startingSteps().get(0).motors());
+		assertEquals(pumpStartingKva, result.startingSteps().get(0).startingKva(), DELTA);
+		// The pump is not running before its own step: only the building is.
+		assertEquals(20.0, result.startingSteps().get(0).runningKvaBefore(), DELTA);
+		assertEquals(0.20 * pumpStartingKva * (1 / 0.15 - 1), result.requiredKva(), DELTA);
+		assertEquals("MOTOR_STARTING", result.governingCase());
+		assertEquals(LoadKind.FIRE_PUMP, result.loadRows().get(1).kind());
+		assertTrue(result.loadRows().get(1).basis().contains("6.95.1.3(D)(1)"));
+	}
+
+	@Test
+	void firePump_withoutALockedRotorCurrentIsLeftOutWithAWarning() {
+		GeneratorSetSizingResult result = calculator.calculate(
+				withDirect(List.of(), List.of(firePump(30, null, 1)), 20.0, 15.0));
+
+		assertTrue(result.startingSteps().isEmpty());
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Fire pump is left out") && warning.contains("NOT included")));
+		assertTrue(result.warnings().stream().anyMatch(warning -> warning.contains("Motor starting is not checked")));
+	}
+
+	@Test
+	void firePump_sharesAStepWithMotorsAndStaysOutOfTheLoadFeeder() {
+		List<MotorLoad> motors = List.of(new MotorLoad(null, "10", 230, 1));
+		GeneratorSetSizingResult motorsOnly = calculator.calculate(withDirect(motors, List.of(), 20.0, 15.0));
+		GeneratorSetSizingResult withPump = calculator.calculate(withDirect(motors, List.of(firePump(30, 180.0, 1)), 20.0, 15.0));
+
+		assertEquals(motorsOnly.loadFeederMinimumAmpacityAmps(), withPump.loadFeederMinimumAmpacityAmps(), DELTA);
+		assertEquals(1, withPump.startingSteps().size());
+		assertEquals(SQRT_3 * 230 * (162 + 180) / 1000, withPump.startingSteps().get(0).startingKva(), DELTA);
+		assertEquals("10 hp motor, Fire pump", withPump.startingSteps().get(0).motors());
 	}
 
 	@Test

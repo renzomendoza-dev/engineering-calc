@@ -33,6 +33,15 @@ import java.util.List;
  *                                    which lets the output conductors be sized at 100% instead of 115%
  * @param outputConductor            conditions for sizing the output conductors; {@code null} to
  *                                    report the minimum ampacity only
+ * @param subtransientReactancePercent the generator's subtransient reactance X"d in percent, from its
+ *                                    data sheet; with {@code maximumVoltageDipPercent}, switches on the
+ *                                    motor starting check. {@code null} for neither. Not a PEC value.
+ * @param maximumVoltageDipPercent   the largest voltage dip you accept when a motor starts, in percent
+ *                                    (above 0, below 100); {@code null} for no starting check. Your own
+ *                                    criterion, not a PEC value (6.95.1.17's 15% is for fire pumps).
+ * @param directLoads                a building's total load or a fire pump's load entered as a figure, in
+ *                                    place of building it up from lighting, receptacles and motors (may be
+ *                                    empty)
  * @throws CalculationException if any validation rule above is violated, or there is no load at all
  */
 public record GeneratorSetSizingInput(
@@ -49,7 +58,55 @@ public record GeneratorSetSizingInput(
 		double spareCapacityPercent,
 		Double selectedGeneratorKva,
 		boolean designPreventsOverload,
-		OutputConductor outputConductor) {
+		OutputConductor outputConductor,
+		Double subtransientReactancePercent,
+		Double maximumVoltageDipPercent,
+		List<DirectLoad> directLoads) {
+
+	/** Without loads entered as a total. */
+	public GeneratorSetSizingInput(
+			StandbyClass standbyClass,
+			OptionalStandbyTransfer optionalTransfer,
+			MotorPhaseType phaseType,
+			int voltage,
+			List<LightingArea> lightingAreas,
+			List<ReceptacleGroup> receptacleGroups,
+			boolean applyReceptacleDemandFactor,
+			List<OtherLoad> otherLoads,
+			List<MotorLoad> motors,
+			double generatorPowerFactor,
+			double spareCapacityPercent,
+			Double selectedGeneratorKva,
+			boolean designPreventsOverload,
+			OutputConductor outputConductor,
+			Double subtransientReactancePercent,
+			Double maximumVoltageDipPercent) {
+		this(standbyClass, optionalTransfer, phaseType, voltage, lightingAreas, receptacleGroups,
+				applyReceptacleDemandFactor, otherLoads, motors, generatorPowerFactor, spareCapacityPercent,
+				selectedGeneratorKva, designPreventsOverload, outputConductor,
+				subtransientReactancePercent, maximumVoltageDipPercent, null);
+	}
+
+	/** Without the motor starting check: the running-load sizing of the first slice. */
+	public GeneratorSetSizingInput(
+			StandbyClass standbyClass,
+			OptionalStandbyTransfer optionalTransfer,
+			MotorPhaseType phaseType,
+			int voltage,
+			List<LightingArea> lightingAreas,
+			List<ReceptacleGroup> receptacleGroups,
+			boolean applyReceptacleDemandFactor,
+			List<OtherLoad> otherLoads,
+			List<MotorLoad> motors,
+			double generatorPowerFactor,
+			double spareCapacityPercent,
+			Double selectedGeneratorKva,
+			boolean designPreventsOverload,
+			OutputConductor outputConductor) {
+		this(standbyClass, optionalTransfer, phaseType, voltage, lightingAreas, receptacleGroups,
+				applyReceptacleDemandFactor, otherLoads, motors, generatorPowerFactor, spareCapacityPercent,
+				selectedGeneratorKva, designPreventsOverload, outputConductor, null, null, null);
+	}
 
 	public GeneratorSetSizingInput {
 		if (standbyClass == null) {
@@ -72,8 +129,11 @@ public record GeneratorSetSizingInput(
 		receptacleGroups = receptacleGroups == null ? List.of() : List.copyOf(receptacleGroups);
 		otherLoads = otherLoads == null ? List.of() : List.copyOf(otherLoads);
 		motors = motors == null ? List.of() : List.copyOf(motors);
-		if (lightingAreas.isEmpty() && receptacleGroups.isEmpty() && otherLoads.isEmpty() && motors.isEmpty()) {
-			throw new CalculationException("Enter at least one load: lighting, receptacles, another load or a motor");
+		directLoads = directLoads == null ? List.of() : List.copyOf(directLoads);
+		if (lightingAreas.isEmpty() && receptacleGroups.isEmpty() && otherLoads.isEmpty() && motors.isEmpty()
+				&& directLoads.isEmpty()) {
+			throw new CalculationException(
+					"Enter at least one load: lighting, receptacles, another load, a motor or a total load");
 		}
 		if (generatorPowerFactor <= 0 || generatorPowerFactor > 1) {
 			throw new CalculationException("generatorPowerFactor must be greater than 0 and at most 1");
@@ -83,6 +143,16 @@ public record GeneratorSetSizingInput(
 		}
 		if (selectedGeneratorKva != null && selectedGeneratorKva <= 0) {
 			throw new CalculationException("selectedGeneratorKva must be positive");
+		}
+		if ((subtransientReactancePercent == null) != (maximumVoltageDipPercent == null)) {
+			throw new CalculationException(
+					"Enter both the generator's subtransient reactance and the maximum voltage dip, or neither");
+		}
+		if (subtransientReactancePercent != null && (subtransientReactancePercent <= 0 || subtransientReactancePercent > 100)) {
+			throw new CalculationException("subtransientReactancePercent must be greater than 0 and at most 100");
+		}
+		if (maximumVoltageDipPercent != null && (maximumVoltageDipPercent <= 0 || maximumVoltageDipPercent >= 100)) {
+			throw new CalculationException("maximumVoltageDipPercent must be greater than 0 and less than 100");
 		}
 	}
 
@@ -164,10 +234,27 @@ public record GeneratorSetSizingInput(
 	 * @param horsepowerLabel horsepower label as in the PEC table, e.g. {@code "7 1/2"}
 	 * @param voltage         motor voltage; must have a published full-load current at that horsepower
 	 * @param quantity        number of identical motors running together; at least 1
+	 * @param startStep       when it starts: motors with the same step start together, a higher step starts
+	 *                        once the lower steps are running; at least 1
+	 * @param startingCurrentPercent starting current as a percent of the table's locked-rotor current, in
+	 *                        (0, 100]; 100 for across-the-line starting, less where a starter or drive holds
+	 *                        the current down. Not a PEC value.
 	 */
-	public record MotorLoad(String label, String horsepowerLabel, int voltage, int quantity) {
+	public record MotorLoad(
+			String label, String horsepowerLabel, int voltage, int quantity, int startStep, double startingCurrentPercent) {
+
+		/** Across the line, in the first step. */
+		public MotorLoad(String label, String horsepowerLabel, int voltage, int quantity) {
+			this(label, horsepowerLabel, voltage, quantity, 1, 100.0);
+		}
 
 		public MotorLoad {
+			if (startStep < 1) {
+				throw new CalculationException("motor startStep must be at least 1");
+			}
+			if (startingCurrentPercent <= 0 || startingCurrentPercent > 100) {
+				throw new CalculationException("motor startingCurrentPercent must be greater than 0 and at most 100");
+			}
 			if (horsepowerLabel == null || horsepowerLabel.isBlank()) {
 				throw new CalculationException("motor horsepowerLabel is required");
 			}
@@ -176,6 +263,66 @@ public record GeneratorSetSizingInput(
 			}
 			if (quantity < 1) {
 				throw new CalculationException("motor quantity must be at least 1");
+			}
+		}
+	}
+
+	/**
+	 * A load entered as a total rather than built up: a building's whole load, or a fire pump. The
+	 * figure is taken as the load to carry, at 100%: enter a building's load after your own demand
+	 * factors.
+	 *
+	 * @param label                  name shown on the load schedule
+	 * @param kind                   {@link LoadKind#BUILDING} or {@link LoadKind#FIRE_PUMP}
+	 * @param amount                 the load, in {@code unit}; positive
+	 * @param unit                   kVA, kW (needs {@code powerFactor}) or amperes at the system voltage
+	 * @param powerFactor            power factor of the load, in (0, 1]; required for kW, ignored otherwise
+	 * @param continuous             whether the load runs three hours or more
+	 * @param lockedRotorAmps        a fire pump's locked-rotor current, from its controller or nameplate, in
+	 *                               amperes at the system voltage; {@code null} to leave its starting out of
+	 *                               the starting check. Not allowed for a building.
+	 * @param startStep              the start step of a fire pump, as for a motor; at least 1
+	 * @param startingCurrentPercent starting current as a percent of {@code lockedRotorAmps}, in (0, 100]
+	 */
+	public record DirectLoad(
+			String label,
+			LoadKind kind,
+			double amount,
+			DirectLoadUnit unit,
+			Double powerFactor,
+			boolean continuous,
+			Double lockedRotorAmps,
+			int startStep,
+			double startingCurrentPercent) {
+
+		public DirectLoad {
+			if (kind != LoadKind.BUILDING && kind != LoadKind.FIRE_PUMP) {
+				throw new CalculationException("a total load must be a BUILDING or a FIRE_PUMP");
+			}
+			if (unit == null) {
+				throw new CalculationException("total load unit is required");
+			}
+			if (amount <= 0) {
+				throw new CalculationException("total load amount must be positive");
+			}
+			if (unit == DirectLoadUnit.KW) {
+				if (powerFactor == null || powerFactor <= 0 || powerFactor > 1) {
+					throw new CalculationException("a load in kW needs a power factor greater than 0 and at most 1");
+				}
+			}
+			if (lockedRotorAmps != null) {
+				if (kind != LoadKind.FIRE_PUMP) {
+					throw new CalculationException("lockedRotorAmps is only for a fire pump");
+				}
+				if (lockedRotorAmps <= 0) {
+					throw new CalculationException("lockedRotorAmps must be positive");
+				}
+			}
+			if (startStep < 1) {
+				throw new CalculationException("total load startStep must be at least 1");
+			}
+			if (startingCurrentPercent <= 0 || startingCurrentPercent > 100) {
+				throw new CalculationException("total load startingCurrentPercent must be greater than 0 and at most 100");
 			}
 		}
 	}

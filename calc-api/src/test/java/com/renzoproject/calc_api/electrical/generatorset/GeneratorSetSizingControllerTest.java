@@ -39,9 +39,10 @@ class GeneratorSetSizingControllerTest {
 				List.of(new ReceptacleGroupDto(null, 100, 1000.0, false)),
 				true,
 				List.of(),
-				List.of(new MotorLoadDto(null, "10", 230, 1)),
+				List.of(new MotorLoadDto(null, "10", 230, 1, null, null)),
 				0.8, 0, null, false,
-				new OutputConductorDto(30.0, 3, 1, "THHN", "COPPER", 75));
+				new OutputConductorDto(30.0, 3, 1, "THHN", "COPPER", 75),
+				null, null, null);
 	}
 
 	@Test
@@ -96,13 +97,116 @@ class GeneratorSetSizingControllerTest {
 		GeneratorSetSizingRequest bad = new GeneratorSetSizingRequest(
 				"EMERGENCY", null, "THREE_PHASE", 230,
 				List.of(new LightingAreaDto(null, "OFFICE_BUILDINGS", null, 0, null, false, true)),
-				List.of(), true, List.of(), List.of(), 0.8, 0, null, false, null);
+				List.of(), true, List.of(), List.of(), 0.8, 0, null, false, null, null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(bad)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.fieldErrors['lightingAreas[0].floorAreaM2']").exists());
+	}
+
+	@Test
+	void motorStartingCheck_runsWhenReactanceAndDipAreGiven() throws Exception {
+		GeneratorSetSizingRequest base = request("EMERGENCY", null, "OFFICE_BUILDINGS");
+		GeneratorSetSizingRequest withStarting = new GeneratorSetSizingRequest(
+				base.standbyClass(), null, base.phaseType(), base.voltage(), List.of(), List.of(), true, List.of(),
+				List.of(new MotorLoadDto("Pump", "10", 230, 1, 1, 100.0)),
+				0.8, 0, null, false, null, 20.0, 15.0, null);
+
+		MvcResult mvcResult = mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(withStarting)))
+				.andExpect(status().isOk())
+				.andReturn();
+		GeneratorSetSizingResponse response = objectMapper.readValue(
+				mvcResult.getResponse().getContentAsString(), GeneratorSetSizingResponse.class);
+
+		double startingKva = Math.sqrt(3.0) * 230 * 162 / 1000;
+		assertEquals(1, response.startingSteps().size());
+		assertEquals(startingKva, response.startingSteps().get(0).startingKva(), DELTA);
+		assertEquals(0.20 * startingKva * (1 / 0.15 - 1), response.requiredKva(), DELTA);
+		assertEquals("MOTOR_STARTING", response.governingCase());
+		assertNotNull(response.startingBasis());
+	}
+
+	@Test
+	void startStepAndStartingCurrentCanBeLeftBlank() throws Exception {
+		// The first slice's request shape: no step, no percentage, no reactance, no dip.
+		String body = "{\"standbyClass\":\"EMERGENCY\",\"phaseType\":\"THREE_PHASE\",\"voltage\":230,"
+				+ "\"applyReceptacleDemandFactor\":true,\"designPreventsOverload\":false,"
+				+ "\"motors\":[{\"horsepowerLabel\":\"10\",\"voltage\":230,\"quantity\":1}],"
+				+ "\"generatorPowerFactor\":0.8,\"spareCapacityPercent\":0}";
+
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.governingCase").value("RUNNING_LOAD"))
+				.andExpect(jsonPath("$.startingSteps.length()").value(0));
+	}
+
+	@Test
+	void reactanceWithoutADipLimit_isABadRequest() throws Exception {
+		String body = "{\"standbyClass\":\"EMERGENCY\",\"phaseType\":\"THREE_PHASE\",\"voltage\":230,"
+				+ "\"applyReceptacleDemandFactor\":true,\"designPreventsOverload\":false,"
+				+ "\"motors\":[{\"horsepowerLabel\":\"10\",\"voltage\":230,\"quantity\":1}],"
+				+ "\"generatorPowerFactor\":0.8,\"spareCapacityPercent\":0,\"subtransientReactancePercent\":20}";
+
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void totalBuildingLoadAndFirePump_canBeEnteredDirectly() throws Exception {
+		DirectLoadDto tower = new DirectLoadDto("Tower", "BUILDING", 250, "KW", 0.85, true, null, null, null);
+		DirectLoadDto pump = new DirectLoadDto(null, "FIRE_PUMP", 30, "AMPS", null, false, 180.0, 2, null);
+		GeneratorSetSizingRequest direct = new GeneratorSetSizingRequest(
+				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
+				0.8, 0, null, false, null, 20.0, 15.0, List.of(tower, pump));
+
+		MvcResult mvcResult = mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(direct)))
+				.andExpect(status().isOk())
+				.andReturn();
+		GeneratorSetSizingResponse response = objectMapper.readValue(
+				mvcResult.getResponse().getContentAsString(), GeneratorSetSizingResponse.class);
+
+		double pumpRunningKva = Math.sqrt(3.0) * 230 * 30 / 1000;
+		assertEquals(250 / 0.85 + pumpRunningKva, response.demandKva(), DELTA);
+		assertEquals("BUILDING", response.loadRows().get(0).kind());
+		assertEquals("FIRE_PUMP", response.loadRows().get(1).kind());
+		assertEquals(1, response.startingSteps().size());
+		assertEquals(2, response.startingSteps().get(0).step());
+		assertEquals(250 / 0.85, response.startingSteps().get(0).runningKvaBefore(), DELTA);
+	}
+
+	@Test
+	void aTotalLoadInKwWithoutAPowerFactor_isABadRequest() throws Exception {
+		DirectLoadDto bad = new DirectLoadDto("Tower", "BUILDING", 250, "KW", null, true, null, null, null);
+		GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
+				"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
+				0.8, 0, null, false, null, null, null, List.of(bad));
+
+		mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("a load in kW needs a power factor greater than 0 and at most 1"));
+	}
+
+	@Test
+	void unknownTotalLoadKindOrUnit_isABadRequest() throws Exception {
+		DirectLoadDto badKind = new DirectLoadDto("x", "HOUSE", 10, "KVA", null, true, null, null, null);
+		DirectLoadDto badUnit = new DirectLoadDto("x", "BUILDING", 10, "HP", null, true, null, null, null);
+		for (DirectLoadDto bad : List.of(badKind, badUnit)) {
+			GeneratorSetSizingRequest request = new GeneratorSetSizingRequest(
+					"EMERGENCY", null, "THREE_PHASE", 230, List.of(), List.of(), true, List.of(), List.of(),
+					0.8, 0, null, false, null, null, null, List.of(bad));
+			mockMvc.perform(post(URL)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(request)))
+					.andExpect(status().isBadRequest());
+		}
 	}
 
 	@Test
@@ -113,7 +217,9 @@ class GeneratorSetSizingControllerTest {
 				.andExpect(jsonPath("$.standbyClasses.length()").value(3))
 				.andExpect(jsonPath("$.optionalTransfers.length()").value(3))
 				.andExpect(jsonPath("$.standardSizesKva[0]").value(10.0))
-				.andExpect(jsonPath("$.defaultGeneratorPowerFactor").value(0.8));
+				.andExpect(jsonPath("$.defaultGeneratorPowerFactor").value(0.8))
+				.andExpect(jsonPath("$.defaultSubtransientReactancePercent").value(20.0))
+				.andExpect(jsonPath("$.defaultMaximumVoltageDipPercent").value(15.0));
 	}
 
 }

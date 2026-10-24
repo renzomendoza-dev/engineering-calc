@@ -79,7 +79,12 @@ public class GeneratorSetReference {
 			double generatorOutputFactor,
 			double generatorOutputFactorWhereOverloadPrevented,
 			double defaultGeneratorPowerFactor,
-			String defaultGeneratorPowerFactorNote) {
+			String defaultGeneratorPowerFactorNote,
+			double defaultSubtransientReactancePercent,
+			double defaultMaximumVoltageDipPercent,
+			String motorStartingDefaultsNote,
+			String lockedRotorBasis,
+			String voltageDipBasis) {
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -157,6 +162,26 @@ public class GeneratorSetReference {
 
 	public String defaultGeneratorPowerFactorNote() {
 		return rules.defaultGeneratorPowerFactorNote();
+	}
+
+	public double defaultSubtransientReactancePercent() {
+		return rules.defaultSubtransientReactancePercent();
+	}
+
+	public double defaultMaximumVoltageDipPercent() {
+		return rules.defaultMaximumVoltageDipPercent();
+	}
+
+	public String motorStartingDefaultsNote() {
+		return rules.motorStartingDefaultsNote();
+	}
+
+	public String lockedRotorBasis() {
+		return rules.lockedRotorBasis();
+	}
+
+	public String voltageDipBasis() {
+		return rules.voltageDipBasis();
 	}
 
 	/** Standard generator set sizes in kVA, ascending. Not PEC data — see the file's own note. */

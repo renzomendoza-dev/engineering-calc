@@ -14,6 +14,9 @@ import java.util.List;
  * @param standardSizesNote            where those sizes come from
  * @param defaultGeneratorPowerFactor  rating power factor to start the form with
  * @param defaultGeneratorPowerFactorNote why that default, and that it is not a PEC value
+ * @param defaultSubtransientReactancePercent the generator reactance X"d to start the form with, in percent
+ * @param defaultMaximumVoltageDipPercent the voltage dip limit to start the form with, in percent
+ * @param motorStartingDefaultsNote       why those two defaults, and that neither is a PEC value for this use
  */
 public record GeneratorSetReferenceResponse(
 		List<LightingOccupancyDto> lightingOccupancies,
@@ -23,6 +26,9 @@ public record GeneratorSetReferenceResponse(
 		List<Double> standardSizesKva,
 		String standardSizesNote,
 		double defaultGeneratorPowerFactor,
-		String defaultGeneratorPowerFactorNote) {
+		String defaultGeneratorPowerFactorNote,
+		double defaultSubtransientReactancePercent,
+		double defaultMaximumVoltageDipPercent,
+		String motorStartingDefaultsNote) {
 
 }
