@@ -1,0 +1,79 @@
+{
+  "standard": "PEC 2017, Article 2.20 - Table 2.20.2.3 General Lighting Loads by Occupancy, Table 2.20.3.3 Lighting Load Demand Factors",
+  "confidence": "verified",
+  "note": "Transcribed from the printed PEC 2017 pages 54 and 56. Table 2.20.2.3 gives the MINIMUM lighting unit load; a design may use more. The demand factor tiers are applied to the total general lighting load of one occupancy type (2.20.3.3).",
+  "demandGroups": [
+    {
+      "key": "DWELLING_UNITS",
+      "label": "Dwelling units",
+      "fullDemandWhenAllLightingInUse": false,
+      "tiers": [
+        { "upToVoltAmperes": 3000, "percent": 100 },
+        { "upToVoltAmperes": 120000, "percent": 35 },
+        { "upToVoltAmperes": null, "percent": 25 }
+      ]
+    },
+    {
+      "key": "HOSPITALS",
+      "label": "Hospitals",
+      "fullDemandWhenAllLightingInUse": true,
+      "tiers": [
+        { "upToVoltAmperes": 50000, "percent": 40 },
+        { "upToVoltAmperes": null, "percent": 20 }
+      ]
+    },
+    {
+      "key": "HOTELS_MOTELS",
+      "label": "Hotels and motels, including apartment houses without provision for cooking by tenants",
+      "fullDemandWhenAllLightingInUse": true,
+      "tiers": [
+        { "upToVoltAmperes": 20000, "percent": 50 },
+        { "upToVoltAmperes": 100000, "percent": 40 },
+        { "upToVoltAmperes": null, "percent": 30 }
+      ]
+    },
+    {
+      "key": "WAREHOUSES",
+      "label": "Warehouses (storage)",
+      "fullDemandWhenAllLightingInUse": false,
+      "tiers": [
+        { "upToVoltAmperes": 12500, "percent": 100 },
+        { "upToVoltAmperes": null, "percent": 50 }
+      ]
+    },
+    {
+      "key": "ALL_OTHERS",
+      "label": "All other occupancies",
+      "fullDemandWhenAllLightingInUse": false,
+      "tiers": [
+        { "upToVoltAmperes": null, "percent": 100 }
+      ]
+    }
+  ],
+  "occupancies": [
+    { "key": "ARMORIES_AUDITORIUMS", "label": "Armories and auditoriums", "voltAmperesPerM2": 8, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "BANKS", "label": "Banks", "voltAmperesPerM2": 28, "demandGroup": "ALL_OTHERS", "note": "Receptacle load is the larger of 180 VA per outlet or 11 VA/m2 (2.20.2.5(K))." },
+    { "key": "BARBER_SHOPS_BEAUTY_PARLORS", "label": "Barber shops and beauty parlors", "voltAmperesPerM2": 24, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "CHURCHES", "label": "Churches", "voltAmperesPerM2": 8, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "CLUBS", "label": "Clubs", "voltAmperesPerM2": 16, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "COURT_ROOMS", "label": "Court rooms", "voltAmperesPerM2": 16, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "DWELLING_UNITS", "label": "Dwelling units", "voltAmperesPerM2": 24, "demandGroup": "DWELLING_UNITS", "note": "General-use receptacles are already included in this load (2.20.2.5(J)); do not add them again." },
+    { "key": "GARAGES_COMMERCIAL", "label": "Garages - commercial (storage)", "voltAmperesPerM2": 4, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "HOSPITALS", "label": "Hospitals", "voltAmperesPerM2": 16, "demandGroup": "HOSPITALS", "note": "The demand factors do not apply where the entire lighting is likely to be used at one time, as in operating rooms (2.20.3.3 note)." },
+    { "key": "HOTELS_MOTELS", "label": "Hotels and motels, including apartment houses without provision for cooking by tenants", "voltAmperesPerM2": 16, "demandGroup": "HOTELS_MOTELS", "note": "Guest-room receptacles are already included in this load (2.20.2.5(J)). The demand factors do not apply where the entire lighting is likely to be used at one time, as in ballrooms or dining rooms (2.20.3.3 note)." },
+    { "key": "INDUSTRIAL_COMMERCIAL_LOFT", "label": "Industrial commercial (loft) buildings", "voltAmperesPerM2": 16, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "LODGE_ROOMS", "label": "Lodge rooms", "voltAmperesPerM2": 12, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "OFFICE_BUILDINGS", "label": "Office buildings", "voltAmperesPerM2": 28, "demandGroup": "ALL_OTHERS", "note": "Receptacle load is the larger of 180 VA per outlet or 11 VA/m2 (2.20.2.5(K))." },
+    { "key": "RESTAURANTS", "label": "Restaurants", "voltAmperesPerM2": 16, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "SCHOOLS", "label": "Schools", "voltAmperesPerM2": 24, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "STORES", "label": "Stores", "voltAmperesPerM2": 24, "demandGroup": "ALL_OTHERS", "note": null },
+    { "key": "WAREHOUSES", "label": "Warehouses (storage)", "voltAmperesPerM2": 2, "demandGroup": "WAREHOUSES", "note": null }
+  ],
+  "areaTypes": [
+    { "key": "GENERAL", "label": "General area of the occupancy", "voltAmperesPerM2": null },
+    { "key": "ASSEMBLY_HALLS_AUDITORIUMS", "label": "Assembly halls and auditoriums", "voltAmperesPerM2": 8 },
+    { "key": "HALLS_CORRIDORS_CLOSETS_STAIRWAYS", "label": "Halls, corridors, closets, stairways", "voltAmperesPerM2": 4 },
+    { "key": "STORAGE_SPACES", "label": "Storage spaces", "voltAmperesPerM2": 2 }
+  ],
+  "areaTypesNote": "Table 2.20.2.3 lists these three area types under 'in any of the preceding occupancies except one-family dwellings and individual dwelling units of two-family and multifamily dwellings'. An area of one of these types takes its own unit load but stays in the demand group of the occupancy it belongs to."
+}

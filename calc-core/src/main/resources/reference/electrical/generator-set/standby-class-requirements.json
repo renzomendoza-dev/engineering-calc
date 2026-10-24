@@ -1,0 +1,71 @@
+{
+  "standard": "PEC 2017, Chapter 7 - Article 7.0 Emergency Systems, Article 7.1 Legally Required Standby Systems, Article 7.2 Optional Standby Systems",
+  "confidence": "verified",
+  "note": "Transcribed from the printed PEC 2017 pages 697-709. Each citation is a section printed on a page that was read.",
+  "classes": [
+    {
+      "key": "EMERGENCY",
+      "label": "Emergency system",
+      "capacityCitation": "7.0.1.4(A)",
+      "capacityBasis": "An emergency system must have adequate capacity and rating for all loads to be operated simultaneously. The alternate source may also carry legally required and optional standby loads if it has the capacity for all of them, or if automatic selective load pickup and load shedding protects the emergency circuits first, then the legally required standby circuits, then the optional ones (7.0.1.4(B)).",
+      "requirements": [
+        { "citation": "7.0.1.4(A)", "text": "The emergency system equipment must be suitable for the maximum available fault current at its terminals." },
+        { "citation": "7.0.3.1", "text": "Emergency supply must be available within the time required for the application, but not more than 10 seconds." },
+        { "citation": "7.0.3.1(B)(1)", "text": "An engine-driven set starts automatically on failure of the normal supply; provide a time delay with a 15-minute setting to avoid retransfer on a short restoration of the normal source." },
+        { "citation": "7.0.3.1(B)(2)", "text": "With an internal combustion engine, keep an on-premises fuel supply sufficient for not less than 2 hours of full-demand operation; fuel transfer pumps are on the emergency system." },
+        { "citation": "7.0.3.1(B)(5)", "text": "A set that needs more than 10 seconds to develop power needs an auxiliary supply that carries the system until the generator can pick up the load." },
+        { "citation": "7.0.1.5", "text": "Transfer equipment is automatic, listed for emergency use, supplies emergency loads only, and its short-circuit rating is field marked on its exterior." },
+        { "citation": "7.0.1.7(A)", "text": "Place a sign at the service-entrance equipment showing the type and location of the on-site emergency power source." },
+        { "citation": "7.0.1.8", "text": "A listed surge protective device is installed in or on all emergency system switchboards and panelboards." },
+        { "citation": "7.0.1.6(D) and 7.0.6.2", "text": "Ground-fault protection of equipment is not required on the alternate source; where it is not provided, give ground-fault indication for solidly grounded wye systems above 150 volts to ground with devices rated 1000 A or more." }
+      ]
+    },
+    {
+      "key": "LEGALLY_REQUIRED",
+      "label": "Legally required standby system",
+      "capacityCitation": "7.1.1.4",
+      "capacityBasis": "A legally required standby system must have adequate capacity and rating for the supply of all equipment intended to be operated at one time. The source may also carry optional standby loads if it has the capacity for all connected loads, or if automatic selective load pickup and load shedding keeps adequate power on the legally required circuits (7.1.1.4).",
+      "requirements": [
+        { "citation": "7.1.1.4", "text": "The legally required standby equipment must be suitable for the maximum available fault current at its terminals." },
+        { "citation": "7.1.3.1", "text": "Legally required standby power must be available within the time required for the application, but not more than 60 seconds." },
+        { "citation": "7.1.3.1(B)(1)", "text": "An engine-driven set starts automatically on failure of the normal supply; provide a time delay with a 15-minute setting to avoid retransfer on a short restoration of the normal source." },
+        { "citation": "7.1.3.1(B)(2)", "text": "With an internal combustion engine, keep an on-premises fuel supply sufficient for not less than 2 hours of full-demand operation; fuel transfer pumps are on the legally required standby system." },
+        { "citation": "7.1.1.5", "text": "Transfer equipment is automatic, listed for emergency use, and its short-circuit rating is field marked on its exterior." },
+        { "citation": "7.1.1.7(A)", "text": "Place a sign at the service entrance showing the type and location of the on-site legally required standby power source." },
+        { "citation": "7.1.1.6(D) and 7.1.4.2", "text": "Ground-fault protection of equipment is not required on the alternate source; where it is not provided, give ground-fault indication for solidly grounded wye systems above 150 volts to ground with devices rated 1000 A or more." }
+      ]
+    },
+    {
+      "key": "OPTIONAL",
+      "label": "Optional standby system",
+      "capacityCitation": "7.2.1.4(B)",
+      "capacityBasis": "The load on an optional standby source is calculated in accordance with Article 2.20 or by another approved method (7.2.1.4(B)).",
+      "requirements": [
+        { "citation": "7.2.1.4(A)", "text": "Optional standby equipment must be suitable for the maximum available short-circuit current at its terminals." },
+        { "citation": "7.2.1.5", "text": "Transfer equipment is required for all standby systems where a utility supply is the normal or standby source, is designed to prevent inadvertent interconnection of the sources, and its short-circuit rating is field marked on its exterior." },
+        { "citation": "7.2.1.7(A)", "text": "Place a sign at the service-entrance equipment showing the type and location of each on-site optional standby power source." },
+        { "citation": "7.2.2.3", "text": "For an outdoor housed set, the disconnecting means follows 4.45.1.18; where the supply conductors terminate at a building disconnect, that disconnect follows 2.25.2.7." }
+      ]
+    }
+  ],
+  "optionalTransfer": [
+    {
+      "key": "MANUAL",
+      "label": "Manual transfer",
+      "citation": "7.2.1.4(B)(1)",
+      "text": "With manual transfer equipment the optional standby system must have adequate capacity and rating for all equipment intended to be operated at one time; the user may choose which load is connected to the system."
+    },
+    {
+      "key": "AUTOMATIC_FULL_LOAD",
+      "label": "Automatic transfer, full load",
+      "citation": "7.2.1.4(B)(2)(a)",
+      "text": "With automatic transfer equipment the standby source must be capable of supplying the full load that the automatic transfer equipment transfers."
+    },
+    {
+      "key": "AUTOMATIC_LOAD_MANAGEMENT",
+      "label": "Automatic transfer, load management",
+      "citation": "7.2.1.4(B)(2)(b)",
+      "text": "Where a system automatically manages the connected load, the standby source must have a capacity sufficient to supply the maximum load that the load management system will connect."
+    }
+  ]
+}

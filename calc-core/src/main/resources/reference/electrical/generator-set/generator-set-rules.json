@@ -1,0 +1,22 @@
+{
+  "standard": "PEC 2017 - Article 2.20 receptacle and motor loads, Article 4.30, Article 4.45",
+  "confidence": "verified",
+  "note": "Scalar rules the generator set sizing relies on, each from a printed PEC 2017 page.",
+  "receptacleVoltAmperesPerOutlet": 180,
+  "receptacleVoltAmperesPerOutletSource": "2.20.2.5(I) and (L): receptacle outlets at not less than 180 volt-amperes for each single or each multiple receptacle on one yoke.",
+  "bankOfficeReceptacleVoltAmperesPerM2": 11,
+  "bankOfficeReceptacleSource": "2.20.2.5(K): in banks or office buildings the receptacle load is the larger of 2.20.2.5(I) or 11 volt-amperes/m2.",
+  "receptacleDemandTiers": [
+    { "upToVoltAmperes": 10000, "percent": 100 },
+    { "upToVoltAmperes": null, "percent": 50 }
+  ],
+  "receptacleDemandSource": "2.20.3.5 and Table 2.20.3.5: first 10 kVA or less at 100%, remainder over 10 kVA at 50% (non-dwelling receptacle loads).",
+  "largestMotorFactor": 1.25,
+  "continuousLoadFactor": 1.25,
+  "motorFeederSource": "4.30.2.4: conductor ampacity of not less than 125% of the highest-rated motor full-load current plus the sum of the other motors' full-load currents plus 100% of the noncontinuous non-motor load plus 125% of the continuous non-motor load.",
+  "generatorOutputFactor": 1.15,
+  "generatorOutputFactorWhereOverloadPrevented": 1.0,
+  "generatorOutputSource": "4.45.1.13: conductors from the generator terminals to the first distribution device(s) have an ampacity of not less than 115% of the nameplate current rating of the generator; 100% where the design of the generator does not permit overloading.",
+  "defaultGeneratorPowerFactor": 0.8,
+  "defaultGeneratorPowerFactorNote": "Not from the PEC. 0.8 lagging is the usual rating basis of a standby generator set; use the nameplate value of the set you intend to buy."
+}
