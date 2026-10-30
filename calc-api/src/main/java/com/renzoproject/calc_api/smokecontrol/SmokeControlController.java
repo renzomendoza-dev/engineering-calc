@@ -1,5 +1,8 @@
 package com.renzoproject.calc_api.smokecontrol;
 
+import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingRequest;
+import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingResponse;
+import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,14 +22,17 @@ public class SmokeControlController {
 	private final SmokeProductionService smokeProductionService;
 	private final TSquaredSmokeProductionService tSquaredSmokeProductionService;
 	private final VentAreaService ventAreaService;
+	private final NaturalVentingService naturalVentingService;
 
 	public SmokeControlController(
 			SmokeProductionService smokeProductionService,
 			TSquaredSmokeProductionService tSquaredSmokeProductionService,
-			VentAreaService ventAreaService) {
+			VentAreaService ventAreaService,
+			NaturalVentingService naturalVentingService) {
 		this.smokeProductionService = smokeProductionService;
 		this.tSquaredSmokeProductionService = tSquaredSmokeProductionService;
 		this.ventAreaService = ventAreaService;
+		this.naturalVentingService = naturalVentingService;
 	}
 
 	@PostMapping("/plume")
@@ -42,6 +48,12 @@ public class SmokeControlController {
 	@PostMapping("/vent-area")
 	public VentAreaResponse calculateVentArea(@Valid @RequestBody VentAreaRequest request) {
 		return ventAreaService.calculate(request);
+	}
+
+	/** NFPA 204 natural smoke and heat venting; unlike the NFPA 92 endpoints above, this one takes any number of zones and fire cases. */
+	@PostMapping("/natural-venting")
+	public NaturalVentingResponse calculateNaturalVenting(@Valid @RequestBody NaturalVentingRequest request) {
+		return naturalVentingService.calculate(request);
 	}
 
 }
