@@ -129,8 +129,10 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		// No supply: the demand half of the answer is complete and correct on its own, and the
 		// comparison half is left unanswered rather than filled in against a supply nobody gave.
 		if (input.waterSupply() == null) {
-			warnings.add("No water supply given -- the demand figures below are complete, but nothing has been "
-					+ "compared against them, so there is no safety margin or pass/fail verdict");
+			// The web page recognises this note by its opening words ("No water supply given") to show it
+			// on the results only; keep them if this is reworded.
+			warnings.add("No water supply given -- the demand figures are complete, but with nothing to "
+					+ "compare against there is no safety margin or pass/fail verdict");
 			return new SprinklerHydraulicResult(
 					List.copyOf(supply.rows()), demandGpm, requiredPsi, null, null, null, null, List.of(),
 					List.copyOf(warnings), identicalRows, List.copyOf(supply.sprinklers()));
