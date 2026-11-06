@@ -29,6 +29,8 @@ import com.renzoproject.calc.core.mechanical.storage.JsonFixtureUnitDemandResolv
 import com.renzoproject.calc.core.mechanical.storage.JsonPerCapitaConsumptionResolver;
 import com.renzoproject.calc.core.mechanical.storage.PerCapitaConsumptionResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.CFactorResolver;
+import com.renzoproject.calc.core.mechanical.standpipe.JsonStandpipeReferenceResolver;
+import com.renzoproject.calc.core.mechanical.standpipe.StandpipeReferenceResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.FittingEquivalentLengthResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.HazardPresetResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.JsonCFactorResolver;
@@ -153,6 +155,11 @@ public class ResolverConfig {
 	@Bean
 	public CFactorResolver cFactorResolver() {
 		return new JsonCFactorResolver();
+	}
+
+	@Bean
+	public StandpipeReferenceResolver standpipeReferenceResolver() {
+		return new JsonStandpipeReferenceResolver();
 	}
 
 	@Bean
