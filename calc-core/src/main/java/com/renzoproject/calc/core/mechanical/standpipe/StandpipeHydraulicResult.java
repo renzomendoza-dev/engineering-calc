@@ -6,8 +6,8 @@ import java.util.List;
  * Result of {@link StandpipeHydraulicCalculator}. Units: psi, US gpm, feet, inches, ft/s, US gallons.
  *
  * @param demandLines           how the required flow was built up, in order
- * @param requiredFlowGpm       the flow the system must be able to deliver (7.10)
- * @param requiredFlowCapped    whether the standpipe flow was limited to the maximum for the building (7.10.1.1.5)
+ * @param requiredFlowGpm       the flow the system must be able to deliver (10.6)
+ * @param requiredFlowCapped    whether the standpipe flow was limited to the maximum for the building (10.6.1.1.6)
  * @param mostRemoteStandpipeFlowGpm the flow required of the most remote standpipe alone
  * @param flowAtSupplyGpm       flow the path delivers at the supply: the segment flows plus the flow added at the supply
  * @param flowAddedAtSupplyGpm  the part of that flow that joins at the supply with no friction of its own
@@ -15,7 +15,7 @@ import java.util.List;
  * @param pressureAtSupplyPsi   pressure required at the supply end of the path, at that flow
  * @param totalFrictionLossPsi  friction over the whole path
  * @param totalElevationPsi     elevation pressure over the whole path
- * @param requiredFdcInlets     2.5 in. fire department connection inlets, one per 250 gpm (7.12.3)
+ * @param requiredFdcInlets     2.5 in. fire department connection inlets, one per 250 gpm (10.7.3)
  * @param supplyDurationMinutes duration used for the volume
  * @param waterSupplyVolumeGal  {@code flowAtSupply x duration}
  * @param segments              one row per input segment, in input order

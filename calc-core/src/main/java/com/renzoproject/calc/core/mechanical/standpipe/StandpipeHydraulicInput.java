@@ -9,18 +9,17 @@ import java.util.Set;
  * Input for {@link StandpipeHydraulicCalculator}: the demand rules of NFPA 14 for a class of
  * system, and the pipe path from the most remote hose connection back to the supply.
  *
- * <p>Units: psi, US gpm, feet, inches. Rule values come from the 2019 edition's printed pages
- * and are flagged {@code verify} until checked against the 2024 edition.
+ * <p>Units: psi, US gpm, feet, inches. Rule values come from the printed pages of the 2024 edition (Chapters 5, 8, 10 and 11).
  *
  * @param standpipeClass                       class of system
  * @param sprinklerProtection                  how much of the building is sprinklered
  * @param sprinklerHazard                      light or ordinary; required when partly sprinklered and a sprinkler demand is given
  * @param sprinklerDemandGpm                   hydraulically calculated sprinkler demand, including its hose stream, gpm; nullable
  * @param additionalStandpipes                 standpipes in the building besides the hydraulically most remote one
- * @param floorAreaOver80000SqFt               whether the floors exceed 80,000 sq ft each (7.10.1.1.3.1)
- * @param horizontalStandpipeOnThreeConnections whether a horizontal standpipe serves three or more connections on a floor (7.10.1.1.2)
+ * @param floorAreaOver80000SqFt               whether the floors exceed 80,000 sq ft each (10.6.1.1.4.1)
+ * @param horizontalStandpipeOnThreeConnections whether a horizontal standpipe serves three or more connections on a floor (10.6.1.1.3)
  * @param fireDepartmentConnectionInlets       2.5 in. inlets provided on the fire department connections; nullable
- * @param supplyDurationMinutes                duration the supply is sized for, minutes; nullable, defaults to 30 (9.2)
+ * @param supplyDurationMinutes                duration the supply is sized for, minutes; nullable, defaults to 30 (5.2)
  * @param flowAddedAtSupplyGpm                 flow that joins at the supply end of the path with no friction of its own
  *                                             (other standpipes, the sprinkler allowance), gpm; nullable. When omitted for
  *                                             Class I and III it is worked out as the required flow less the flow on the

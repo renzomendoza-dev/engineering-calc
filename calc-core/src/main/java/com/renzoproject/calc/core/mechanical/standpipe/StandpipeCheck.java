@@ -3,7 +3,7 @@ package com.renzoproject.calc.core.mechanical.standpipe;
 /**
  * One line of the compliance table.
  *
- * @param clause      NFPA 14 (2019 edition) clause, e.g. {@code "7.8.1"}; must be re-checked against the 2024 edition
+ * @param clause      NFPA 14 (2024 edition) clause, e.g. {@code "10.2.6.1"}
  * @param description what is checked
  * @param status      outcome
  * @param actual      the design value; nullable

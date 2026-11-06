@@ -14,7 +14,7 @@ import java.util.List;
  * @param flowAddedGpm       flow entering at the remote end of this segment, gpm; nullable (none)
  * @param hoseConnectionSize when not null, {@code flowAddedGpm} is the discharge of a hose connection
  *                           of this size at the remote end of the segment, which must then also be
- *                           given. Its residual pressure is the minimum for that size (7.8.1)
+ *                           given. Its residual pressure is the minimum for that size (10.2.6.1)
  * @param pipeMaterial       material code for {@code PipeDimensionResolver} (e.g. {@code BI})
  * @param schedule           schedule code (e.g. {@code SCH40})
  * @param nominalSize        nominal size as published in {@code reference/pipes/*.json}; the inside

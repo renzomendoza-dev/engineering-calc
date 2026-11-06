@@ -10,7 +10,7 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param quantity                   how many; must be positive
  * @param explicitEquivalentLengthFt equivalent length per fitting, ft, used as given (never
  *                                   rescaled); for a hose valve whose manufacturer publishes its loss
- *                                   (7.8.1.1). Must be positive when given
+ *                                   (10.2.6.1.1). Must be positive when given
  */
 public record StandpipeFitting(
 		String fittingType,

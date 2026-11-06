@@ -53,7 +53,7 @@ class StandpipeHydraulicControllerTest {
 		assertEquals(2, response.segments().size());
 		assertEquals("ONE_AND_HALF_INCH", response.segments().get(0).hoseConnectionSize());
 		assertEquals(31.0, response.segments().get(1).fittingsLengthFt(), 1e-9);
-		assertTrue(response.checks().stream().anyMatch(c -> c.clause().equals("7.8.1") && c.status().equals("PASS")));
+		assertTrue(response.checks().stream().anyMatch(c -> c.clause().equals("10.2.6.1") && c.status().equals("PASS")));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class StandpipeHydraulicControllerTest {
 		MvcResult result = mockMvc.perform(get("/api/mechanical/standpipe/reference")).andExpect(status().isOk()).andReturn();
 		StandpipeReferenceResponse reference = objectMapper.readValue(result.getResponse().getContentAsString(), StandpipeReferenceResponse.class);
 
-		assertTrue(reference.edition().contains("2019"));
+		assertTrue(reference.edition().contains("2024"));
 		assertEquals(9, reference.fittings().size());
 		assertEquals(7.0, reference.fittings().stream().filter(f -> f.fittingType().equals("ELBOW_90_STANDARD")).findFirst().orElseThrow()
 				.equivalentLengthFtByNominalSize().get("3"), 1e-9);

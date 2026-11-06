@@ -1,8 +1,8 @@
 package com.renzoproject.calc.core.mechanical.standpipe;
 
 /**
- * Size of a hose connection, which fixes its minimum residual pressure (7.8.1), its maximum flow
- * (7.10.3) and its pressure limit (7.2.3).
+ * Size of a hose connection, which fixes its minimum residual pressure (10.2.6.1), its maximum flow
+ * (10.6.3) and its pressure limit (10.2.4).
  */
 public enum HoseConnectionSize {
 
@@ -17,12 +17,12 @@ public enum HoseConnectionSize {
 		this.maximumFlowGpm = maximumFlowGpm;
 	}
 
-	/** Residual pressure required at the outlet of the hydraulically most remote connection of this size, psi (7.8.1). */
+	/** Residual pressure required at the outlet of the hydraulically most remote connection of this size, psi (10.2.6.1). */
 	public double minimumResidualPsi() {
 		return minimumResidualPsi;
 	}
 
-	/** The most a single connection of this size is required to deliver, gpm (7.10.3). */
+	/** The most a single connection of this size is required to deliver, gpm (10.6.3). */
 	public double maximumFlowGpm() {
 		return maximumFlowGpm;
 	}
