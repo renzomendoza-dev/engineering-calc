@@ -54,7 +54,7 @@ public record NaturalVentingResult(
 	 * @param inletAreaForVelocityLimit inlet area giving 1 m/s at the plume mass flow, m2 (6.6.3)
 	 * @param inletVelocity             mp / (rho_o Ai), m/s; null when no inlet area is known
 	 * @param floorRadiantFlux          sigma T^4 at floor level, kW/m2 (Annex D)
-	 * @param feasibleHeatReleaseRate   23,200 zs^(5/2), kW (Annex D, D.7h)
+	 * @param feasibleHeatReleaseRate   12,000 zs^(5/2), kW (Equation 1.3.5), the fire above which the standard is not valid
 	 * @param minimumAisleWidth         0.042 Q^(1/2), m (8.2.3), steady fires only; else null
 	 * @param checks                    compliance lines for this case
 	 */

@@ -81,8 +81,47 @@ class NaturalVentingCalculatorTest {
 		assertEquals(10.04, c.aerodynamicVentArea(), 0.02);
 		// D.5: flux at 458 K is 2.5 kW/m2; the layer here is at 851 K.
 		assertEquals(29.7, c.floorRadiantFlux(), 0.5);
-		// D.7h: 23,200 (H - d)^(5/2) = 229,265 kW.
-		assertEquals(229_265, c.feasibleHeatReleaseRate(), 5);
+		// Equation 1.3.5: 12,000 zs^(5/2) = 118,585 kW at zs = 2.5 m. Annex D (D.7h) prints 23,200 and gets 229,265 kW.
+		assertEquals(118_585, c.feasibleHeatReleaseRate(), 5);
+		var annexD = c.checks().stream().filter(ch -> ch.clause().equals("Annex D.7h")).findFirst().orElseThrow();
+		assertEquals(229_265, annexD.limit(), 5);
+		assertEquals(CheckBasis.SUPPLEMENTARY, annexD.basis());
+		assertEquals(CheckStatus.PASS, c.checks().stream().filter(ch -> ch.clause().equals("1.3.5")).findFirst().orElseThrow().status());
+		assertEquals(CheckStatus.PASS, c.checks().stream().filter(ch -> ch.clause().equals("1.3.4")).findFirst().orElseThrow().status());
+	}
+
+	private static CheckStatus clauseStatus(FireCaseResult result, String clause) {
+		return result.checks().stream().filter(ch -> ch.clause().equals(clause)).findFirst().orElseThrow().status();
+	}
+
+	@Test
+	void validityLimits_1_3_4And1_3_5_holdForEveryAnnexDCase() {
+		List<FireCase> cases = new java.util.ArrayList<>();
+		for (int i = 0; i < TABLE_D8.size(); i++) {
+			cases.add(annexDFire("Case " + (i + 1), TABLE_D8.get(i).q(), TABLE_D8.get(i).layerHeight()));
+		}
+
+		var result = calculator.calculate(annexDInput(cases));
+
+		for (FireCaseResult c : result.fireCases()) {
+			assertEquals(CheckStatus.PASS, clauseStatus(c, "1.3.4"), c.name() + " 1.3.4");
+			assertEquals(CheckStatus.PASS, clauseStatus(c, "1.3.5"), c.name() + " 1.3.5");
+			assertEquals(12_000 * Math.pow(c.layerHeightAboveFire(), 2.5), c.feasibleHeatReleaseRate(), 1e-6);
+		}
+	}
+
+	@Test
+	void aLargeFireUnderALowLayer_failsBoth1_3_4And1_3_5() {
+		// 100 MW with the layer 1.5 m above the fire base: the layer is far above 600 C and Qfeasible is only 33.1 MW.
+		var c = calculator.calculate(annexDInput(List.of(annexDFire("Hot", 100_000, 2.0)))).fireCases().get(0);
+
+		assertEquals(1.5, c.layerHeightAboveFire(), 1e-9);
+		assertEquals(CheckStatus.FAIL, clauseStatus(c, "1.3.4"));
+		assertEquals(CheckStatus.FAIL, clauseStatus(c, "1.3.5"));
+		assertTrue(c.layerTemperature() > 873.15);
+		assertEquals(12_000 * Math.pow(1.5, 2.5), c.feasibleHeatReleaseRate(), 1e-6);
+		// Annex D's looser coefficient is reported beside it, as information only.
+		assertEquals(CheckStatus.INFO, clauseStatus(c, "Annex D.7h"));
 	}
 
 	@Test

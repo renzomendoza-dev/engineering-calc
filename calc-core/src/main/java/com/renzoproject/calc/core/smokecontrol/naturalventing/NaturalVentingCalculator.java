@@ -29,7 +29,12 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	private static final double CONVECTIVE_FRACTION = 0.7;
 	private static final double STEFAN_BOLTZMANN_KW = 5.67e-11;
 	private static final double INLET_VELOCITY_LIMIT = 1.0;
-	private static final double FEASIBLE_FIRE_COEFFICIENT = 23_200.0;
+	/** Equation 1.3.5: the standard is not valid for a fire above 12,000 zs^(5/2) kW. */
+	private static final double FEASIBLE_FIRE_COEFFICIENT = 12_000.0;
+	/** The coefficient the Annex D sample problem prints for the same check (D.7h); the standard's own equation 1.3.5 prints 12,000. */
+	private static final double ANNEX_D_FEASIBLE_FIRE_COEFFICIENT = 23_200.0;
+	/** 1.3.4: a vent design is not valid while the smoke layer is above 600 C. */
+	private static final double MAXIMUM_LAYER_TEMPERATURE_C = 600.0;
 	private static final double AISLE_COEFFICIENT = 0.042;
 
 	@Override
@@ -236,9 +241,22 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 					CheckBasis.SUPPLEMENTARY, floorFlux <= zone.maxFloorRadiantFlux() ? CheckStatus.PASS : CheckStatus.FAIL,
 					floorFlux, zone.maxFloorRadiantFlux(), "kW/m2", "sigma T^4 with emissivity and configuration factor 1."));
 		}
+
+		// 1.3.4: the standard is not valid while the smoke layer is above 600 C.
+		double maximumLayerK = MAXIMUM_LAYER_TEMPERATURE_C + KELVIN_OFFSET;
+		checks.add(new VentingCheck("1.3.4", "Smoke layer temperature not above 600 C, above which a vent design is not valid", CheckBasis.NFPA_204,
+				layerTemperature <= maximumLayerK ? CheckStatus.PASS : CheckStatus.FAIL, layerTemperature, maximumLayerK, "K",
+				"Above 600 C the radiation from the layer can ignite the combustibles under the curtained area (A.1.3.4)."));
+
+		// 1.3.5: the standard is not valid for a fire above Qfeasible. Annex D prints a different coefficient for the same check.
 		double feasibleQ = FEASIBLE_FIRE_COEFFICIENT * Math.pow(zs, 2.5);
-		checks.add(new VentingCheck("Annex D.7", "Design fire not above the feasible fire for this layer height, 23,200 zs^(5/2)",
-				CheckBasis.SUPPLEMENTARY, q <= feasibleQ ? CheckStatus.PASS : CheckStatus.CONFIRM, q, feasibleQ, "kW", null));
+		checks.add(new VentingCheck("1.3.5", "Design fire not above the feasible fire for this layer height, 12,000 zs^(5/2), above which the "
+				+ "standard is not valid", CheckBasis.NFPA_204, q <= feasibleQ ? CheckStatus.PASS : CheckStatus.FAIL, q, feasibleQ, "kW",
+				"Venting a larger fire needs more vent area than this calculation gives, and a fire near ventilation control may not support a "
+						+ "clear layer (A.1.3.5)."));
+		double annexDFeasibleQ = ANNEX_D_FEASIBLE_FIRE_COEFFICIENT * Math.pow(zs, 2.5);
+		checks.add(new VentingCheck("Annex D.7h", "Annex D checks the same limit with 23,200 zs^(5/2); equation 1.3.5 prints 12,000, which governs",
+				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, q, annexDFeasibleQ, "kW", null));
 
 		Double minimumAisle = null;
 		if (fireCase.kind() == FireCaseKind.STEADY) {
