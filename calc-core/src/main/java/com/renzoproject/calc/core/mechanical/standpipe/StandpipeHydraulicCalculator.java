@@ -4,6 +4,7 @@ import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.DemandLine;
+import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.FdcLineRow;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.SegmentRow;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,29 +101,107 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		InletSize inletSize = input.fireDepartmentConnectionInletSize();
 		int requiredInlets = (int) Math.ceil(flowAtSupply / inletSize.flowPerInletGpm() - 1e-9);
 		fdcCheck(input, inletSize, requiredInlets, checks);
+		List<FdcLineRow> fdcLines = fdcLines(input, inletSize, flowAtSupply, pressure, checks);
+		Double highestFdcPressure = fdcLines.stream().map(FdcLineRow::pressureAtFdcPsi).max(Double::compare).orElse(null);
 		if (input.manualSystem()) {
-			manualChecks(pressure, flowAtSupply, checks);
+			manualChecks(highestFdcPressure != null ? highestFdcPressure : pressure, flowAtSupply, fdcLines.isEmpty(), checks);
 		}
 
 		return new StandpipeHydraulicResult(demand.lines(), demand.totalGpm(), demand.capped(), demand.mostRemoteGpm(), flowAtSupply, flowAdded,
 				automatic, pressure,
 				totalFriction, totalElevation, requiredInlets, inletSize, input.manualSystem(), input.supplyDurationMinutes(),
-				flowAtSupply * input.supplyDurationMinutes(), List.copyOf(rows), List.copyOf(checks));
+				flowAtSupply * input.supplyDurationMinutes(), fdcLines, highestFdcPressure, List.copyOf(rows), List.copyOf(checks));
+	}
+
+	/**
+	 * 10.4.1 and A.10.4.1: the pressure the fire department must deliver at each fire department
+	 * connection for it to supply the system demand. Each connection's pipes are worked from the
+	 * system end, where the pressure is that required at the supply end of the main path, out to the
+	 * connection, with the flow the connection carries (the whole flow at the supply unless a share
+	 * is given, as 10.7.3.2 allows for several connections).
+	 */
+	private List<FdcLineRow> fdcLines(StandpipeHydraulicInput input, InletSize inletSize, double flowAtSupply, double pressureAtSystem,
+			List<StandpipeCheck> checks) {
+		if (input.fireDepartmentConnections().isEmpty()) {
+			if (input.standpipeClass() != StandpipeClass.CLASS_II) {
+				checks.add(new StandpipeCheck("10.4.1", "Each fire department connection shown able to supply the system demand",
+						CheckStatus.OPEN, null, flowAtSupply, "gpm",
+						"Give the piping of each fire department connection to find the pressure the fire department must deliver at it (A.10.4.1)."));
+			}
+			return List.of();
+		}
+
+		List<FdcLineRow> lines = new ArrayList<>();
+		boolean sharedFlow = false;
+		double carried = 0;
+		for (StandpipeFdcLine line : input.fireDepartmentConnections()) {
+			double flow = line.flowGpm() != null ? line.flowGpm() : flowAtSupply;
+			sharedFlow |= line.flowGpm() != null;
+			carried += flow;
+
+			List<SegmentRow> rows = new ArrayList<>();
+			double pressure = pressureAtSystem;
+			double friction = 0;
+			double elevation = 0;
+			for (StandpipeSegment segment : line.segments()) {
+				double insideDiameter = insideDiameterInch(segment);
+				double fittingsLength = fittingsLengthFt(segment, insideDiameter);
+				double perFoot = 4.52 * Math.pow(flow, 1.85) / (Math.pow(segment.cFactor(), 1.85) * Math.pow(insideDiameter, 4.87));
+				double segmentFriction = perFoot * (segment.pipeLengthFt() + fittingsLength);
+				double segmentElevation = PSI_PER_FOOT * segment.elevationRiseFt();
+				double systemEnd = pressure;
+				pressure = systemEnd + segmentFriction + segmentElevation;
+				friction += segmentFriction;
+				elevation += segmentElevation;
+				rows.add(new SegmentRow(segment.label(), segment.role(), null, segment.nominalSize(), insideDiameter, segment.cFactor(), 0.0,
+						flow, VELOCITY_COEFFICIENT * flow / (insideDiameter * insideDiameter), segment.pipeLengthFt(), fittingsLength, perFoot,
+						segmentFriction, segment.elevationRiseFt(), segmentElevation, systemEnd, pressure, false));
+			}
+			lines.add(new FdcLineRow(line.label(), flow, line.inlets(), List.copyOf(rows), friction, elevation, pressureAtSystem, pressure));
+
+			checks.add(new StandpipeCheck("10.4.1", line.label() + ": pressure required at the connection to supply " + Math.round(flow) + " gpm",
+					CheckStatus.INFO, pressure, null, "psi",
+					"Starts from " + Math.round(pressureAtSystem) + " psi at the system end. The fire department pumper must be able to deliver "
+							+ "this (10.4.4)."));
+			checks.add(new StandpipeCheck("10.2.1", line.label() + ": pressure at the connection not above 400 psi",
+					pressure <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS : CheckStatus.FAIL, pressure, MAXIMUM_PRESSURE_PSI, "psi", null));
+			checks.add(new StandpipeCheck("10.2.2", line.label() + ": pressure required at the connection not above the working pressure of the components",
+					CheckStatus.CONFIRM, pressure, null, "psi", "Compare with the working pressure of the piping, valves and the connection."));
+			if (line.inlets() != null) {
+				double capacity = line.inlets() * inletSize.flowPerInletGpm();
+				checks.add(new StandpipeCheck(inletSize.clause(), line.label() + ": " + inletSize.label() + " inlets, one per "
+						+ (long) inletSize.flowPerInletGpm() + " gpm, carry the flow of the connection",
+						capacity >= flow ? CheckStatus.PASS : CheckStatus.FAIL, flow, capacity, "gpm", null));
+			}
+		}
+
+		if (sharedFlow) {
+			checks.add(new StandpipeCheck("10.7.3.2", "The fire department connections together carry the system demand",
+					carried >= flowAtSupply - 1e-9 ? CheckStatus.PASS : CheckStatus.FAIL, carried, flowAtSupply, "gpm",
+					"Where several connections share the demand, 10.7.3.2 and 10.7.3.3 allow the inlets to be on more than one connection or "
+							+ "location, as the AHJ allows."));
+		}
+		return List.copyOf(lines);
 	}
 
 	/**
 	 * A manual system has no attached supply: the calculation ends at the fire department connection and the
 	 * pressure found is what the fire department must pump in (10.2.6.1.2).
 	 */
-	private void manualChecks(double pressureAtFdc, double flowAtSupply, List<StandpipeCheck> checks) {
+	private void manualChecks(double pressureAtFdc, double flowAtSupply, boolean checkComponents, List<StandpipeCheck> checks) {
 		checks.add(new StandpipeCheck("10.2.6.1.2", "Manual system: 100 psi at the most remote 2.5 in. hose connection, calculated back to the fire department connection",
 				CheckStatus.INFO, pressureAtFdc, null, "psi",
-				"The pressure at the supply is the pressure required at the fire department connection, at " + Math.round(flowAtSupply) + " gpm."));
+				checkComponents
+						? "The pressure at the supply is the pressure required at the fire department connection, at " + Math.round(flowAtSupply) + " gpm."
+						: "The highest pressure required at any fire department connection given, at " + Math.round(flowAtSupply) + " gpm."));
 		checks.add(new StandpipeCheck("10.4.4", "The local fire department is consulted on the water supply its apparatus can deliver",
 				CheckStatus.CONFIRM, pressureAtFdc, null, "psi",
 				"Confirm the pumpers can deliver " + Math.round(flowAtSupply) + " gpm at this pressure."));
-		checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
-				CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
+		// With the connections' own piping given, each already has this check.
+		if (checkComponents) {
+			checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
+					CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
+		}
 	}
 
 	private record Demand(List<DemandLine> lines, double totalGpm, double mostRemoteGpm, boolean capped) {

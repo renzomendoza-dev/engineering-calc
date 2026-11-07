@@ -22,6 +22,8 @@ public record StandpipeHydraulicResponse(
 		boolean manualSystem,
 		double supplyDurationMinutes,
 		double waterSupplyVolumeGal,
+		List<FdcLineRowDto> fdcLines,
+		Double highestFdcPressurePsi,
 		List<StandpipeSegmentRowDto> segments,
 		List<StandpipeCheckDto> checks) {
 

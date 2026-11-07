@@ -33,6 +33,9 @@ import java.util.Set;
  *                                             Class I and III it is worked out as the required flow less the flow on the
  *                                             path; for Class II, which has no combining rule on the pages read, it is zero.
  *                                             A figure given is used as it is
+ * @param fireDepartmentConnections            the piping of each fire department connection, from the system to the connection,
+ *                                             to show that each can supply the system demand (10.4.1, A.10.4.1); nullable. Class I
+ *                                             and III only
  * @param segments                             the path, remote connection first; at least one
  */
 public record StandpipeHydraulicInput(
@@ -50,6 +53,7 @@ public record StandpipeHydraulicInput(
 		Integer fireDepartmentConnectionInlets,
 		Double supplyDurationMinutes,
 		Double flowAddedAtSupplyGpm,
+		List<StandpipeFdcLine> fireDepartmentConnections,
 		List<StandpipeSegment> segments) {
 
 	public static final double DEFAULT_SUPPLY_DURATION_MINUTES = 30.0;
@@ -90,6 +94,16 @@ public record StandpipeHydraulicInput(
 		}
 		if (flowAddedAtSupplyGpm != null && flowAddedAtSupplyGpm < 0) {
 			throw new CalculationException("flowAddedAtSupplyGpm must not be negative");
+		}
+		fireDepartmentConnections = fireDepartmentConnections == null ? List.of() : List.copyOf(fireDepartmentConnections);
+		if (!fireDepartmentConnections.isEmpty() && standpipeClass == StandpipeClass.CLASS_II) {
+			throw new CalculationException("fire department connection piping is for Class I and Class III systems (10.4.1)");
+		}
+		Set<String> connectionLabels = new HashSet<>();
+		for (StandpipeFdcLine line : fireDepartmentConnections) {
+			if (!connectionLabels.add(line.label())) {
+				throw new CalculationException("fire department connection label used twice: " + line.label());
+			}
 		}
 		if (segments == null || segments.isEmpty()) {
 			throw new CalculationException("at least one pipe segment is required");

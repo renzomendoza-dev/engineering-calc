@@ -6,10 +6,12 @@ import com.renzoproject.calc.core.mechanical.standpipe.InletSize;
 import com.renzoproject.calc.core.mechanical.standpipe.PipeRole;
 import com.renzoproject.calc.core.mechanical.standpipe.SprinklerProtection;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeClass;
+import com.renzoproject.calc.core.mechanical.standpipe.StandpipeFdcLine;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeFitting;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicInput;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.DemandLine;
+import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.FdcLineRow;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.SegmentRow;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeSegment;
 import com.renzoproject.calc_api.common.EnumParsing;
@@ -41,6 +43,10 @@ public final class StandpipeHydraulicMapper {
 				request.fireDepartmentConnectionInlets(),
 				request.supplyDurationMinutes(),
 				request.flowAddedAtSupplyGpm(),
+				request.fireDepartmentConnections() == null ? null : request.fireDepartmentConnections().stream()
+						.map(line -> new StandpipeFdcLine(line.label(), line.flowGpm(), line.inlets(),
+								line.segments().stream().map(StandpipeHydraulicMapper::toCoreSegment).toList()))
+						.toList(),
 				request.segments().stream().map(StandpipeHydraulicMapper::toCoreSegment).toList());
 	}
 
@@ -83,12 +89,20 @@ public final class StandpipeHydraulicMapper {
 				result.manualSystem(),
 				result.supplyDurationMinutes(),
 				result.waterSupplyVolumeGal(),
+				result.fdcLines().stream().map(StandpipeHydraulicMapper::toDto).toList(),
+				result.highestFdcPressurePsi(),
 				result.segments().stream().map(StandpipeHydraulicMapper::toDto).toList(),
 				result.checks().stream().map(StandpipeCheckDto::from).toList());
 	}
 
 	private static DemandLineDto toDto(DemandLine line) {
 		return new DemandLineDto(line.clause(), line.description(), line.flowGpm());
+	}
+
+	private static FdcLineRowDto toDto(FdcLineRow line) {
+		return new FdcLineRowDto(line.label(), line.flowGpm(), line.inlets(),
+				line.segments().stream().map(StandpipeHydraulicMapper::toDto).toList(), line.totalFrictionLossPsi(), line.totalElevationPsi(),
+				line.pressureAtSystemPsi(), line.pressureAtFdcPsi());
 	}
 
 	private static StandpipeSegmentRowDto toDto(SegmentRow row) {

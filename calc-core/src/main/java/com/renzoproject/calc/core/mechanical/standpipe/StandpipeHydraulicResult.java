@@ -22,6 +22,8 @@ import java.util.List;
  *                              department connection (10.2.6.1.2)
  * @param supplyDurationMinutes duration used for the volume
  * @param waterSupplyVolumeGal  {@code flowAtSupply x duration}
+ * @param fdcLines              one entry per fire department connection given, in input order; empty when none
+ * @param highestFdcPressurePsi the highest pressure required at any of those connections; null when none
  * @param segments              one row per input segment, in input order
  * @param checks                compliance lines
  */
@@ -41,6 +43,8 @@ public record StandpipeHydraulicResult(
 		boolean manualSystem,
 		double supplyDurationMinutes,
 		double waterSupplyVolumeGal,
+		List<FdcLineRow> fdcLines,
+		Double highestFdcPressurePsi,
 		List<SegmentRow> segments,
 		List<StandpipeCheck> checks) {
 
@@ -52,6 +56,32 @@ public record StandpipeHydraulicResult(
 	 * @param flowGpm     the flow this step contributes or sets, gpm
 	 */
 	public record DemandLine(String clause, String description, double flowGpm) {
+
+	}
+
+	/**
+	 * One fire department connection: the pressure the fire department must deliver at it to supply
+	 * the flow it carries (A.10.4.1).
+	 *
+	 * @param label                the connection
+	 * @param flowGpm              the flow it carries
+	 * @param inlets               inlets given for it; null when not given
+	 * @param segments             one worksheet row per pipe, system end first. In each row the "remote end" is the system
+	 *                             side and the "supply end" the connection side
+	 * @param totalFrictionLossPsi friction over its pipes
+	 * @param totalElevationPsi    elevation pressure over its pipes
+	 * @param pressureAtSystemPsi  pressure required at its system end, the supply end of the main path
+	 * @param pressureAtFdcPsi     pressure required at the connection
+	 */
+	public record FdcLineRow(
+			String label,
+			double flowGpm,
+			Integer inlets,
+			List<SegmentRow> segments,
+			double totalFrictionLossPsi,
+			double totalElevationPsi,
+			double pressureAtSystemPsi,
+			double pressureAtFdcPsi) {
 
 	}
 
