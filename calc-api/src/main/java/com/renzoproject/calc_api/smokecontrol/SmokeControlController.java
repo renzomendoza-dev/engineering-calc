@@ -1,9 +1,11 @@
 package com.renzoproject.calc_api.smokecontrol;
 
+import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingReferenceResponse;
 import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingRequest;
 import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingResponse;
 import com.renzoproject.calc_api.smokecontrol.naturalventing.NaturalVentingService;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +56,12 @@ public class SmokeControlController {
 	@PostMapping("/natural-venting")
 	public NaturalVentingResponse calculateNaturalVenting(@Valid @RequestBody NaturalVentingRequest request) {
 		return naturalVentingService.calculate(request);
+	}
+
+	/** The NFPA 204 discharge coefficients (Table 9.2.4.2) and unit heat release rates (Table A.8.2.6) the form offers as defaults. */
+	@GetMapping("/natural-venting/reference")
+	public NaturalVentingReferenceResponse naturalVentingReference() {
+		return naturalVentingService.reference();
 	}
 
 }

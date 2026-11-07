@@ -1,0 +1,39 @@
+{
+  "standard": "NFPA 204 (2021 edition) - Table 9.2.4.2 Default Discharge Coefficients for Vents and Inlets, A.9.2.4.2, and Table A.8.2.6 Unit Heat Release Rates for Commodities",
+  "edition": "NFPA 204, 2021 edition",
+  "confidence": "verified",
+  "note": "Transcribed from the printed pages 204-14 (Table 9.2.4.2), 204-23 (Table A.8.2.6) and 204-24 (A.9.2.4.2) of the 2021 edition. Table 9.2.4.2 gives the discharge coefficient to use for a vent or an inlet when the manufacturer provides none and the AHJ accepts no other value (9.2.4.2). A.9.2.4.2 is explanatory text, not a requirement: it calls 0.6 reasonable for most vents and for doors and windows that open at least 45 degrees, and says a louver can range from 0.1 to 0.4. Table A.8.2.6 is the heat release rate per unit floor area of the fully involved commodity, based on negligible radiative feedback from the surroundings and 100 percent combustion efficiency. It is for the stack height shown; A.8.2.6 says a rate for another height can be taken as proportional to height, based on the wood pallet rows. PE: polyethylene. PP: polypropylene. PS: polystyrene. PU: polyurethane. PVC: polyvinyl chloride. FRP: fiberglass-reinforced polyester.",
+  "dischargeCoefficients": [
+    { "key": "LOUVER_90", "label": "Louvered, blades at 90 degrees to the airflow", "dischargeCoefficient": 0.55, "clause": "Table 9.2.4.2", "confidence": "verified" },
+    { "key": "FLAP_OR_DOOR_55", "label": "Flap type or door, open at least 55 degrees", "dischargeCoefficient": 0.55, "clause": "Table 9.2.4.2", "confidence": "verified" },
+    { "key": "DROP_OUT", "label": "Drop-out vent leaving a clear opening", "dischargeCoefficient": 0.55, "clause": "Table 9.2.4.2", "confidence": "verified" },
+    { "key": "FLAP_OR_DOOR_30", "label": "Flap type or door, open at least 30 degrees", "dischargeCoefficient": 0.35, "clause": "Table 9.2.4.2", "confidence": "verified" },
+    { "key": "WEATHER_LOUVER_45", "label": "Fixed weather louver, blades at 45 degrees", "dischargeCoefficient": 0.25, "clause": "Table 9.2.4.2", "confidence": "verified" },
+    { "key": "MOST_OPENINGS_45", "label": "Most vents, doors and windows opening at least 45 degrees (explanatory text)", "dischargeCoefficient": 0.6, "clause": "A.9.2.4.2", "confidence": "verified" }
+  ],
+  "commodities": [
+    { "key": "WOOD_PALLETS_0_46", "label": "Wood pallets, stacked 0.46 m high (6%-12% moisture)", "heatReleaseRateKwPerM2": 1420, "confidence": "verified" },
+    { "key": "WOOD_PALLETS_1_52", "label": "Wood pallets, stacked 1.52 m high (6%-12% moisture)", "heatReleaseRateKwPerM2": 4000, "confidence": "verified" },
+    { "key": "WOOD_PALLETS_3_05", "label": "Wood pallets, stacked 3.05 m high (6%-12% moisture)", "heatReleaseRateKwPerM2": 6800, "confidence": "verified" },
+    { "key": "WOOD_PALLETS_4_88", "label": "Wood pallets, stacked 4.88 m high (6%-12% moisture)", "heatReleaseRateKwPerM2": 10200, "confidence": "verified" },
+    { "key": "MAIL_BAGS_1_52", "label": "Mail bags, filled, stored 1.52 m high", "heatReleaseRateKwPerM2": 400, "confidence": "verified" },
+    { "key": "CARTONS_COMPARTMENTED_4_5", "label": "Cartons, compartmented, stacked 4.5 m high", "heatReleaseRateKwPerM2": 1700, "confidence": "verified" },
+    { "key": "PE_LETTER_TRAYS_1_5", "label": "PE letter trays, filled, stacked 1.5 m high on cart", "heatReleaseRateKwPerM2": 8500, "confidence": "verified" },
+    { "key": "PE_TRASH_BARRELS_4_5", "label": "PE trash barrels in cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 2000, "confidence": "verified" },
+    { "key": "FRP_SHOWER_STALLS_4_6", "label": "FRP shower stalls in cartons, stacked 4.6 m high", "heatReleaseRateKwPerM2": 1400, "confidence": "verified" },
+    { "key": "PE_BOTTLES_COMPARTMENTED_4_5", "label": "PE bottles packed in compartmented cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 6200, "confidence": "verified" },
+    { "key": "PE_BOTTLES_CARTONS_4_5", "label": "PE bottles in cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 2000, "confidence": "verified" },
+    { "key": "PU_INSULATION_BOARD_4_6", "label": "PU insulation board, rigid foam, stacked 4.6 m high", "heatReleaseRateKwPerM2": 1900, "confidence": "verified" },
+    { "key": "PS_JARS_COMPARTMENTED_4_5", "label": "PS jars packed in compartmented cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 14200, "confidence": "verified" },
+    { "key": "PS_TUBS_NESTED_4_2", "label": "PS tubs nested in cartons, stacked 4.2 m high", "heatReleaseRateKwPerM2": 5400, "confidence": "verified" },
+    { "key": "PS_TOY_PARTS_4_5", "label": "PS toy parts in cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 2000, "confidence": "verified" },
+    { "key": "PS_INSULATION_BOARD_4_2", "label": "PS insulation board, rigid foam, stacked 4.2 m high", "heatReleaseRateKwPerM2": 3300, "confidence": "verified" },
+    { "key": "PVC_BOTTLES_COMPARTMENTED_4_5", "label": "PVC bottles packed in compartmented cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 3400, "confidence": "verified" },
+    { "key": "PP_TUBS_COMPARTMENTED_4_5", "label": "PP tubs packed in compartmented cartons, stacked 4.5 m high", "heatReleaseRateKwPerM2": 4400, "confidence": "verified" },
+    { "key": "PP_PE_FILM_ROLLS_4_1", "label": "PP and PE film in rolls, stacked 4.1 m high", "heatReleaseRateKwPerM2": 6200, "confidence": "verified" },
+    { "key": "METHYL_ALCOHOL", "label": "Methyl alcohol", "heatReleaseRateKwPerM2": 740, "confidence": "verified" },
+    { "key": "GASOLINE", "label": "Gasoline", "heatReleaseRateKwPerM2": 2500, "confidence": "verified" },
+    { "key": "KEROSENE", "label": "Kerosene", "heatReleaseRateKwPerM2": 1700, "confidence": "verified" },
+    { "key": "FUEL_OIL_NO_2", "label": "Fuel oil, no. 2", "heatReleaseRateKwPerM2": 1700, "confidence": "verified" }
+  ]
+}

@@ -44,6 +44,8 @@ import com.renzoproject.calc.core.mechanical.sprinkler.RemoteAreaRulesResolver;
 import com.renzoproject.calc.core.mechanical.sprinkler.SprinklerKFactorResolver;
 import com.renzoproject.calc.core.smokecontrol.JsonSmokeControlDefaultsResolver;
 import com.renzoproject.calc.core.smokecontrol.SmokeControlDefaultsResolver;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.JsonNaturalVentingReferenceResolver;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingReferenceResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -199,6 +201,11 @@ public class ResolverConfig {
 	@Bean
 	public SmokeControlDefaultsResolver smokeControlDefaultsResolver() {
 		return new JsonSmokeControlDefaultsResolver();
+	}
+
+	@Bean
+	public NaturalVentingReferenceResolver naturalVentingReferenceResolver() {
+		return new JsonNaturalVentingReferenceResolver();
 	}
 
 }
