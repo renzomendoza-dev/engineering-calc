@@ -1,14 +1,10 @@
 package com.renzoproject.calc.core.common;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.renzoproject.calc.core.exception.CalculationException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 
 /**
  * Loads {@code reference/common/air-properties.json} from the classpath once. Mirrors
- * {@code JsonFirePumpMotorSizeResolver}'s loading approach: fresh {@code ObjectMapper},
+ * {@code JsonFirePumpMotorSizeResolver}'s loading approach: read through {@code ReferenceJson},
  * hardcoded resource path constant, {@code CalculationException} on a missing/unreadable
  * resource, parsed eagerly in the constructor and cached rather than re-read per call.
  */
@@ -28,15 +24,7 @@ public class JsonAirPropertiesResolver implements AirPropertiesResolver {
 	}
 
 	private static AirPropertiesFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonAirPropertiesResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, AirPropertiesFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, AirPropertiesFile.class);
 	}
 
 	@Override

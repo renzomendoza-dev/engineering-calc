@@ -18,7 +18,7 @@ public interface FittingEquivalentLengthResolver {
 	 * The C factor the published lengths are based on. NFPA 13 requires multiplying them by
 	 * {@code (C/basis)^1.85} for pipe with a different C factor -- below 1 for C under the basis,
 	 * matching the standard's 0.713 at C=100; see {@code reference/sprinkler/README.md} and
-	 * {@link HazenWilliams#equivalentLengthAdjustmentFactor(double, double)}.
+	 * {@link com.renzoproject.calc.core.mechanical.HazenWilliams#equivalentLengthAdjustmentFactor(double, double)}.
 	 */
 	double cFactorBasis();
 

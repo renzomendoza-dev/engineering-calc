@@ -1,7 +1,7 @@
 package com.renzoproject.calc.core.mechanical.pipe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -9,8 +9,6 @@ import javax.measure.MetricPrefix;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.Map;
 /**
  * Loads pipe dimension reference data from {@code reference/pipes/{material}.json} on the
  * classpath, one file per material — same eager-load-into-a-combined-map approach as
- * {@code MotorFlcTable} in the electrical package (fresh {@code ObjectMapper} per file, for
+ * {@code MotorFlcTable} in the electrical package (each file read through {@code ReferenceJson}, for
  * consistency with that class's style).
  *
  * <p>Material codes are hardcoded rather than discovering files by scanning the classpath
@@ -56,15 +54,7 @@ public class JsonPipeDimensionResolver implements PipeDimensionResolver, PipeRou
 	}
 
 	private static PipeDimensionFile loadFile(String resourcePath) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonPipeDimensionResolver.class.getResourceAsStream(resourcePath)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + resourcePath);
-			}
-			return objectMapper.readValue(in, PipeDimensionFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + resourcePath, e);
-		}
+		return ReferenceJson.read(resourcePath, PipeDimensionFile.class);
 	}
 
 	@Override

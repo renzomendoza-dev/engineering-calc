@@ -2,6 +2,7 @@ package com.renzoproject.calc.core.mechanical.standpipe;
 
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.mechanical.HazenWilliams;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.DemandLine;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.FdcLineRow;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * <p>Deliberately separate from the sprinkler calculator: the demand rules, the residual-pressure
  * rule at a hose connection and the checks differ, and the sprinkler's tree network is not needed
- * for one path. {@code HazenWilliams}-style arithmetic is duplicated on purpose, as elsewhere.
+ * for one path. Friction and the fitting length rescaling come from the shared {@link HazenWilliams}.
  *
  * <p>Scope: one path (the most remote standpipe); flow of other standpipes and the sprinkler
  * allowance join at the supply as flow only, with no pressure check of their own.
@@ -103,7 +104,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 
 			double insideDiameter = insideDiameterInch(segment);
 			double fittingsLength = fittingsLengthFt(segment, insideDiameter);
-			double perFoot = 4.52 * Math.pow(flow, 1.85) / (Math.pow(segment.cFactor(), 1.85) * Math.pow(insideDiameter, 4.87));
+			double perFoot = HazenWilliams.frictionLossPsiPerFoot(flow, segment.cFactor(), insideDiameter);
 			double friction = perFoot * (segment.pipeLengthFt() + fittingsLength);
 			double elevation = PSI_PER_FOOT * segment.elevationRiseFt();
 			pressure = remotePressure + friction + elevation;
@@ -250,7 +251,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			for (StandpipeSegment segment : line.segments()) {
 				double insideDiameter = insideDiameterInch(segment);
 				double fittingsLength = fittingsLengthFt(segment, insideDiameter);
-				double perFoot = 4.52 * Math.pow(flow, 1.85) / (Math.pow(segment.cFactor(), 1.85) * Math.pow(insideDiameter, 4.87));
+				double perFoot = HazenWilliams.frictionLossPsiPerFoot(flow, segment.cFactor(), insideDiameter);
 				double segmentFriction = perFoot * (segment.pipeLengthFt() + fittingsLength);
 				double segmentElevation = PSI_PER_FOOT * segment.elevationRiseFt();
 				double systemEnd = pressure;
@@ -558,7 +559,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				throw new CalculationException("segment " + segment.label() + ": " + row.label() + " has no published equivalent length for "
 						+ segment.nominalSize() + " in.; give an explicit length");
 			}
-			double cAdjustment = Math.pow(segment.cFactor() / referenceResolver.cFactorBasis(), 1.85);
+			double cAdjustment = HazenWilliams.equivalentLengthAdjustmentFactor(segment.cFactor(), referenceResolver.cFactorBasis());
 			total += fitting.quantity() * published * cAdjustment * diameterAdjustment(segment, insideDiameter);
 		}
 		return total;
@@ -572,7 +573,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		}
 		double schedule40 = dimensionResolver.resolve("BI", "SCH40", segment.nominalSize())
 				.internalDiameter().to(StandpipeUnits.INCH).getValue().doubleValue();
-		return Math.pow(insideDiameter / schedule40, 4.87);
+		return HazenWilliams.diameterAdjustmentFactor(insideDiameter, schedule40);
 	}
 
 	/** "2-1/2" gives 2.5, "4" gives 4, "3/4" gives 0.75. */

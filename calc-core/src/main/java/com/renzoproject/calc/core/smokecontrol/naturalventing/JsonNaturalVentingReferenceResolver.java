@@ -1,9 +1,7 @@
 package com.renzoproject.calc.core.smokecontrol.naturalventing;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,15 +23,7 @@ public class JsonNaturalVentingReferenceResolver implements NaturalVentingRefere
 	}
 
 	private static NaturalVentingReferenceFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonNaturalVentingReferenceResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, NaturalVentingReferenceFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, NaturalVentingReferenceFile.class);
 	}
 
 	private static void requireUniqueKeys(String table, List<String> keys) {

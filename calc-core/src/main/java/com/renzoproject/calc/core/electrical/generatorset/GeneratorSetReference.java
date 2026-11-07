@@ -1,11 +1,9 @@
 package com.renzoproject.calc.core.electrical.generatorset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.List;
 
 /**
@@ -27,14 +25,7 @@ public class GeneratorSetReference {
 	private final FirePumpFile firePump = load("fire-pump-requirements.json", FirePumpFile.class);
 
 	private static <T> T load(String name, Class<T> type) {
-		try (InputStream in = GeneratorSetReference.class.getResourceAsStream(BASE + name)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + BASE + name);
-			}
-			return new ObjectMapper().readValue(in, type);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + BASE + name, e);
-		}
+		return ReferenceJson.read(BASE + name, type);
 	}
 
 	/** A band of a stepped demand factor: {@code percent} applies up to the cumulative {@code upToVoltAmperes}. */

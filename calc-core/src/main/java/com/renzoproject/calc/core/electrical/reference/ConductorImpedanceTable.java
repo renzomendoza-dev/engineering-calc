@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -26,20 +24,12 @@ public class ConductorImpedanceTable {
 	}
 
 	private static Map<String, ConductorImpedanceEntry> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = ConductorImpedanceTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			ConductorImpedanceEntry[] entries = objectMapper.readValue(in, ConductorImpedanceEntry[].class);
-			Map<String, ConductorImpedanceEntry> bySize = new HashMap<>();
-			for (ConductorImpedanceEntry entry : entries) {
-				bySize.put(entry.sizeLabel(), entry);
-			}
-			return bySize;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		ConductorImpedanceEntry[] entries = ReferenceJson.read(RESOURCE_PATH, ConductorImpedanceEntry[].class);
+		Map<String, ConductorImpedanceEntry> bySize = new HashMap<>();
+		for (ConductorImpedanceEntry entry : entries) {
+			bySize.put(entry.sizeLabel(), entry);
 		}
+		return bySize;
 	}
 
 	/**

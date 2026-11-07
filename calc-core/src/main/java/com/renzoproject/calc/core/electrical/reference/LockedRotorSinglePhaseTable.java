@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -29,20 +27,12 @@ public class LockedRotorSinglePhaseTable {
 	}
 
 	private static Map<String, LockedRotorEntry> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = LockedRotorSinglePhaseTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			LockedRotorEntry[] rows = objectMapper.readValue(in, LockedRotorEntry[].class);
-			Map<String, LockedRotorEntry> byKey = new HashMap<>();
-			for (LockedRotorEntry row : rows) {
-				byKey.put(key(row.sizeLabel(), row.voltage()), row);
-			}
-			return byKey;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		LockedRotorEntry[] rows = ReferenceJson.read(RESOURCE_PATH, LockedRotorEntry[].class);
+		Map<String, LockedRotorEntry> byKey = new HashMap<>();
+		for (LockedRotorEntry row : rows) {
+			byKey.put(key(row.sizeLabel(), row.voltage()), row);
 		}
+		return byKey;
 	}
 
 	private static String key(String sizeLabel, int voltage) {

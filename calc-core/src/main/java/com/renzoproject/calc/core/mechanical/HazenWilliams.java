@@ -1,10 +1,11 @@
-package com.renzoproject.calc.core.mechanical.sprinkler;
+package com.renzoproject.calc.core.mechanical;
 
 import com.renzoproject.calc.core.exception.CalculationException;
 
 /**
- * Hazen-Williams friction loss for sprinkler piping, NFPA 13's required method:
- * {@code p = 4.52 * Q^1.85 / (C^1.85 * d^4.87)}.
+ * Hazen-Williams friction loss for fire protection piping, the method NFPA 13 (sprinklers) and
+ * NFPA 14 (standpipes, 11.3) both require: {@code p = 4.52 * Q^1.85 / (C^1.85 * d^4.87)}, with the
+ * rescaling of published fitting equivalent lengths for another C or inside diameter.
  *
  * <p><b>Units:</b> {@code p} is psi per foot of pipe, {@code Q} is US gpm, {@code d} is actual
  * inside diameter in inches, {@code C} is dimensionless. The 4.52 coefficient is specific to that
@@ -75,6 +76,25 @@ public final class HazenWilliams {
 			throw new CalculationException("publishedBasisC must be positive (was " + publishedBasisC + ")");
 		}
 		return Math.pow(cFactor / publishedBasisC, C_EXPONENT);
+	}
+
+	/**
+	 * Multiplier that converts a published fitting equivalent length to a pipe whose inside diameter
+	 * differs from the one the chart assumes: {@code (actual ID / basis ID)^4.87} (NFPA 14 11.3.2.5,
+	 * where the basis is Schedule 40 steel).
+	 *
+	 * @param insideDiameterInch      the segment's actual inside diameter, in; must be positive
+	 * @param basisInsideDiameterInch inside diameter of the pipe the published lengths assume, in; must be positive
+	 * @throws CalculationException if either argument is out of range
+	 */
+	public static double diameterAdjustmentFactor(double insideDiameterInch, double basisInsideDiameterInch) {
+		if (insideDiameterInch <= 0) {
+			throw new CalculationException("insideDiameterInch must be positive (was " + insideDiameterInch + ")");
+		}
+		if (basisInsideDiameterInch <= 0) {
+			throw new CalculationException("basisInsideDiameterInch must be positive (was " + basisInsideDiameterInch + ")");
+		}
+		return Math.pow(insideDiameterInch / basisInsideDiameterInch, DIAMETER_EXPONENT);
 	}
 
 }

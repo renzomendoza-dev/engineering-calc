@@ -1,13 +1,11 @@
 package com.renzoproject.calc.core.mechanical.pipe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import tech.units.indriya.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Temperature;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -50,15 +48,7 @@ public class JsonFluidPropertiesResolver implements FluidPropertiesResolver {
 
 	private FluidPropertiesFile loadFile(String fluidKeyUpper) {
 		String resourcePath = "/reference/fluids/" + fluidKeyUpper.toLowerCase() + ".json";
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonFluidPropertiesResolver.class.getResourceAsStream(resourcePath)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + resourcePath);
-			}
-			return objectMapper.readValue(in, FluidPropertiesFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + resourcePath, e);
-		}
+		return ReferenceJson.read(resourcePath, FluidPropertiesFile.class);
 	}
 
 	private static FluidProperties interpolate(FluidPropertiesFile file, double temperatureC, String fluidKey) {

@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,15 +30,7 @@ public class InsulationTypeTempRating {
 	}
 
 	private static List<InsulationTypeTempRatingEntry> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = InsulationTypeTempRating.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return List.of(objectMapper.readValue(in, InsulationTypeTempRatingEntry[].class));
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return List.of(ReferenceJson.read(RESOURCE_PATH, InsulationTypeTempRatingEntry[].class));
 	}
 
 	private static String key(InsulationType type, ConductorMaterial material) {

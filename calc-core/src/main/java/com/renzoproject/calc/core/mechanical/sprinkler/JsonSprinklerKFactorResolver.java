@@ -1,10 +1,6 @@
 package com.renzoproject.calc.core.mechanical.sprinkler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.renzoproject.calc.core.exception.CalculationException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.List;
 
 /**
@@ -22,15 +18,7 @@ public class JsonSprinklerKFactorResolver implements SprinklerKFactorResolver {
 	}
 
 	private static SprinklerKFactorFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonSprinklerKFactorResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, SprinklerKFactorFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, SprinklerKFactorFile.class);
 	}
 
 	@Override

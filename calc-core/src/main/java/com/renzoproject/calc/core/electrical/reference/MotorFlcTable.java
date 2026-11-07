@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,17 +33,9 @@ public class MotorFlcTable {
 	}
 
 	private static void loadInto(Map<String, MotorFlcEntry> target, String resourcePath) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = MotorFlcTable.class.getResourceAsStream(resourcePath)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + resourcePath);
-			}
-			MotorFlcEntry[] rows = objectMapper.readValue(in, MotorFlcEntry[].class);
-			for (MotorFlcEntry row : rows) {
-				target.put(key(row.phaseType(), row.motorClass(), row.sizeLabel(), row.voltage()), row);
-			}
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + resourcePath, e);
+		MotorFlcEntry[] rows = ReferenceJson.read(resourcePath, MotorFlcEntry[].class);
+		for (MotorFlcEntry row : rows) {
+			target.put(key(row.phaseType(), row.motorClass(), row.sizeLabel(), row.voltage()), row);
 		}
 	}
 

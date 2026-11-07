@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,20 +22,12 @@ public class SynchronousPowerFactorAdjustmentTable {
 	}
 
 	private static Map<Integer, Double> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = SynchronousPowerFactorAdjustmentTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			Row[] rows = objectMapper.readValue(in, Row[].class);
-			Map<Integer, Double> byPercent = new HashMap<>();
-			for (Row row : rows) {
-				byPercent.put(row.powerFactorPercent(), row.multiplier());
-			}
-			return byPercent;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		Row[] rows = ReferenceJson.read(RESOURCE_PATH, Row[].class);
+		Map<Integer, Double> byPercent = new HashMap<>();
+		for (Row row : rows) {
+			byPercent.put(row.powerFactorPercent(), row.multiplier());
 		}
+		return byPercent;
 	}
 
 	/**

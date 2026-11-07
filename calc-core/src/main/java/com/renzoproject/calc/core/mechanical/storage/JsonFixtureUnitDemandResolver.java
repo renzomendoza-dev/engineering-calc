@@ -1,16 +1,14 @@
 package com.renzoproject.calc.core.mechanical.storage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * Loads {@code reference/storage/wsfu-demand.json} from the classpath once. Mirrors
- * {@code JsonPipeDimensionResolver}'s loading approach: fresh {@code ObjectMapper}, hardcoded
+ * {@code JsonPipeDimensionResolver}'s loading approach: read through {@code ReferenceJson}, hardcoded
  * resource path constant, {@code CalculationException} on a missing/unreadable resource, parsed
  * eagerly in the constructor and cached rather than re-read per call.
  */
@@ -30,15 +28,7 @@ public class JsonFixtureUnitDemandResolver implements FixtureUnitDemandResolver 
 	}
 
 	private static WsfuDemandFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonFixtureUnitDemandResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, WsfuDemandFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, WsfuDemandFile.class);
 	}
 
 	@Override

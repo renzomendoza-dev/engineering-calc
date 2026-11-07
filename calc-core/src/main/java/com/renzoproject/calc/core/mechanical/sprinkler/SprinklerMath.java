@@ -6,7 +6,7 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * Sprinkler discharge relationship {@code Q = K * sqrt(P)} and its inverse.
  *
  * <p><b>Units:</b> {@code Q} in US gpm, {@code P} in psi, so {@code K} is in gpm/psi^0.5 (the
- * US nominal K-factor, not the metric K). Plain doubles, same reason as {@link HazenWilliams}.
+ * US nominal K-factor, not the metric K). Plain doubles, same reason as {@link com.renzoproject.calc.core.mechanical.HazenWilliams}.
  */
 public final class SprinklerMath {
 

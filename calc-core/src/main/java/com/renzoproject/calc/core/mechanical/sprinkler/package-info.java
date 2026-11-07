@@ -4,7 +4,7 @@
  * result against a supply flow test.
  *
  * <p><b>Friction loss is Hazen-Williams, not Darcy-Weisbach.</b> NFPA 13 mandates Hazen-Williams
- * for sprinkler piping, so {@link com.renzoproject.calc.core.mechanical.sprinkler.HazenWilliams}
+ * for sprinkler piping, so {@link com.renzoproject.calc.core.mechanical.HazenWilliams}
  * exists alongside {@code mechanical.FrictionFactorCalculator} rather than one delegating to the
  * other. They are different correlations for different standards, not duplicated math:
  * Hazen-Williams carries an empirical C factor and a unit-specific coefficient, while

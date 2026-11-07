@@ -1,17 +1,15 @@
 package com.renzoproject.calc.core.mechanical.storage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Loads {@code reference/storage/fire-water-duration.json} from the classpath once. Mirrors
- * {@code JsonPipeDimensionResolver}'s loading approach: fresh {@code ObjectMapper}, hardcoded
+ * {@code JsonPipeDimensionResolver}'s loading approach: read through {@code ReferenceJson}, hardcoded
  * resource path constant, {@code CalculationException} on a missing/unreadable resource, parsed
  * eagerly in the constructor and cached rather than re-read per call. No interpolation needed --
  * flat lookup by classification, same as {@link JsonPerCapitaConsumptionResolver}.
@@ -39,15 +37,7 @@ public class JsonFireWaterDurationResolver implements FireWaterDurationResolver 
 	}
 
 	private static FireWaterDurationFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonFireWaterDurationResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, FireWaterDurationFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, FireWaterDurationFile.class);
 	}
 
 	@Override

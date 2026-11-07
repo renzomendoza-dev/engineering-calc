@@ -1,19 +1,17 @@
 package com.renzoproject.calc.core.mechanical.firepump;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.pipe.VolumetricFlowRate;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import tech.units.indriya.quantity.Quantities;
 
 import javax.measure.Quantity;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * Loads {@code reference/firepump/standard-capacities.json} from the classpath once. Mirrors
- * {@code JsonPipeDimensionResolver}'s loading approach: fresh {@code ObjectMapper}, hardcoded
+ * {@code JsonPipeDimensionResolver}'s loading approach: read through {@code ReferenceJson}, hardcoded
  * resource path constant, {@code CalculationException} on a missing/unreadable resource.
  */
 public class JsonFirePumpCapacityResolver implements FirePumpCapacityResolver {
@@ -27,15 +25,7 @@ public class JsonFirePumpCapacityResolver implements FirePumpCapacityResolver {
 	}
 
 	private static List<Integer> loadCapacities() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonFirePumpCapacityResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, StandardCapacitiesFile.class).capacities();
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, StandardCapacitiesFile.class).capacities();
 	}
 
 	@Override

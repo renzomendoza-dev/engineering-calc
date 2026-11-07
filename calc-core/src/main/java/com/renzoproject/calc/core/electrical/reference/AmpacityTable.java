@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +23,12 @@ public class AmpacityTable {
 	}
 
 	private static Map<String, AmpacityEntry> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = AmpacityTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			AmpacityEntry[] rows = objectMapper.readValue(in, AmpacityEntry[].class);
-			Map<String, AmpacityEntry> byKey = new HashMap<>();
-			for (AmpacityEntry row : rows) {
-				byKey.put(key(row.conductorMaterial(), row.sizeLabel(), row.tempRatingCelsius()), row);
-			}
-			return byKey;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		AmpacityEntry[] rows = ReferenceJson.read(RESOURCE_PATH, AmpacityEntry[].class);
+		Map<String, AmpacityEntry> byKey = new HashMap<>();
+		for (AmpacityEntry row : rows) {
+			byKey.put(key(row.conductorMaterial(), row.sizeLabel(), row.tempRatingCelsius()), row);
 		}
+		return byKey;
 	}
 
 	private static String key(ConductorMaterial material, String sizeLabel, int tempRatingCelsius) {

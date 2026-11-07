@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,20 +28,12 @@ public class ConductorDcResistanceTable {
 	}
 
 	private static Map<String, List<ConductorDcResistanceEntry>> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = ConductorDcResistanceTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			ConductorDcResistanceEntry[] entries = objectMapper.readValue(in, ConductorDcResistanceEntry[].class);
-			Map<String, List<ConductorDcResistanceEntry>> bySize = new HashMap<>();
-			for (ConductorDcResistanceEntry entry : entries) {
-				bySize.computeIfAbsent(entry.sizeLabel(), key -> new ArrayList<>()).add(entry);
-			}
-			return bySize;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		ConductorDcResistanceEntry[] entries = ReferenceJson.read(RESOURCE_PATH, ConductorDcResistanceEntry[].class);
+		Map<String, List<ConductorDcResistanceEntry>> bySize = new HashMap<>();
+		for (ConductorDcResistanceEntry entry : entries) {
+			bySize.computeIfAbsent(entry.sizeLabel(), key -> new ArrayList<>()).add(entry);
 		}
+		return bySize;
 	}
 
 	/**

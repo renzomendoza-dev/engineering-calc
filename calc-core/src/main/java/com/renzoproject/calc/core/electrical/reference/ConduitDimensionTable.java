@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,26 +24,18 @@ public class ConduitDimensionTable {
 	}
 
 	private static Map<ConduitType, List<ConduitDimensionEntry>> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = ConduitDimensionTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			ConduitDimensionEntry[] rows = objectMapper.readValue(in, ConduitDimensionEntry[].class);
-			Map<ConduitType, List<ConduitDimensionEntry>> grouped = new HashMap<>();
-			for (ConduitDimensionEntry row : rows) {
-				grouped.computeIfAbsent(row.conduitType(), key -> new ArrayList<>()).add(row);
-			}
-			Map<ConduitType, List<ConduitDimensionEntry>> sorted = new HashMap<>();
-			for (Map.Entry<ConduitType, List<ConduitDimensionEntry>> entry : grouped.entrySet()) {
-				List<ConduitDimensionEntry> list = new ArrayList<>(entry.getValue());
-				list.sort(Comparator.comparingInt(ConduitDimensionEntry::racewaySizeMm));
-				sorted.put(entry.getKey(), List.copyOf(list));
-			}
-			return sorted;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		ConduitDimensionEntry[] rows = ReferenceJson.read(RESOURCE_PATH, ConduitDimensionEntry[].class);
+		Map<ConduitType, List<ConduitDimensionEntry>> grouped = new HashMap<>();
+		for (ConduitDimensionEntry row : rows) {
+			grouped.computeIfAbsent(row.conduitType(), key -> new ArrayList<>()).add(row);
 		}
+		Map<ConduitType, List<ConduitDimensionEntry>> sorted = new HashMap<>();
+		for (Map.Entry<ConduitType, List<ConduitDimensionEntry>> entry : grouped.entrySet()) {
+			List<ConduitDimensionEntry> list = new ArrayList<>(entry.getValue());
+			list.sort(Comparator.comparingInt(ConduitDimensionEntry::racewaySizeMm));
+			sorted.put(entry.getKey(), List.copyOf(list));
+		}
+		return sorted;
 	}
 
 	/**

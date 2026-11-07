@@ -1,10 +1,6 @@
 package com.renzoproject.calc.core.mechanical.sprinkler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.renzoproject.calc.core.exception.CalculationException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 
 /**
  * Loads {@code reference/sprinkler/remote-area-rules.json} from the classpath once. Mirrors
@@ -35,15 +31,7 @@ public class JsonRemoteAreaRulesResolver implements RemoteAreaRulesResolver {
 	}
 
 	private static RemoteAreaRulesFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonRemoteAreaRulesResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, RemoteAreaRulesFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, RemoteAreaRulesFile.class);
 	}
 
 	@Override

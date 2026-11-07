@@ -1,10 +1,8 @@
 package com.renzoproject.calc.core.electrical.reference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +23,12 @@ public class ConductorDimensionTable {
 	}
 
 	private static Map<String, ConductorDimensionEntry> loadEntries() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = ConductorDimensionTable.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			ConductorDimensionEntry[] rows = objectMapper.readValue(in, ConductorDimensionEntry[].class);
-			Map<String, ConductorDimensionEntry> byKey = new HashMap<>();
-			for (ConductorDimensionEntry row : rows) {
-				byKey.put(key(row.insulationType(), row.sizeLabel(), row.withoutOuterCovering()), row);
-			}
-			return byKey;
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
+		ConductorDimensionEntry[] rows = ReferenceJson.read(RESOURCE_PATH, ConductorDimensionEntry[].class);
+		Map<String, ConductorDimensionEntry> byKey = new HashMap<>();
+		for (ConductorDimensionEntry row : rows) {
+			byKey.put(key(row.insulationType(), row.sizeLabel(), row.withoutOuterCovering()), row);
 		}
+		return byKey;
 	}
 
 	private static String key(InsulationType type, String sizeLabel, boolean withoutOuterCovering) {

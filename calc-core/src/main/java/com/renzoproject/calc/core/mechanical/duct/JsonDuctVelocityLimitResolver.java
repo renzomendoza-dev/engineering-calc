@@ -1,15 +1,13 @@
 package com.renzoproject.calc.core.mechanical.duct;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.renzoproject.calc.core.exception.CalculationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 import java.util.List;
 
 /**
  * Loads {@code reference/duct/duct-velocity-limits.json} from the classpath once. Mirrors
- * {@code JsonPipeDimensionResolver}'s loading approach: fresh {@code ObjectMapper}, hardcoded
+ * {@code JsonPipeDimensionResolver}'s loading approach: read through {@code ReferenceJson}, hardcoded
  * resource path constant, {@code CalculationException} on a missing/unreadable resource, parsed
  * eagerly in the constructor and cached rather than re-read per call.
  */
@@ -24,15 +22,7 @@ public class JsonDuctVelocityLimitResolver implements DuctVelocityLimitResolver 
 	}
 
 	private static DuctVelocityLimitFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonDuctVelocityLimitResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, DuctVelocityLimitFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, DuctVelocityLimitFile.class);
 	}
 
 	@Override

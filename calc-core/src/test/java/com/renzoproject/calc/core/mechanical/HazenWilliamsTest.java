@@ -1,4 +1,4 @@
-package com.renzoproject.calc.core.mechanical.sprinkler;
+package com.renzoproject.calc.core.mechanical;
 
 import com.renzoproject.calc.core.exception.CalculationException;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HazenWilliamsTest {
+
+	@Test
+	void diameterAdjustment_scalesWithTheInsideDiameterRatioToThe4Point87() {
+		// 2 in. Schedule 10 steel (2.157 in.) against Schedule 40 (2.067 in.): NFPA 14 11.3.2.5.
+		assertEquals(Math.pow(2.157 / 2.067, 4.87), HazenWilliams.diameterAdjustmentFactor(2.157, 2.067), 1e-12);
+		assertEquals(1.0, HazenWilliams.diameterAdjustmentFactor(2.067, 2.067), 0.0);
+		assertTrue(HazenWilliams.diameterAdjustmentFactor(2.157, 2.067) > 1.0);
+		assertThrows(CalculationException.class, () -> HazenWilliams.diameterAdjustmentFactor(0.0, 2.067));
+		assertThrows(CalculationException.class, () -> HazenWilliams.diameterAdjustmentFactor(2.157, -1.0));
+	}
 
 	@Test
 	void frictionLoss_2inSch40_100gpm_matchesHandCalculation() {

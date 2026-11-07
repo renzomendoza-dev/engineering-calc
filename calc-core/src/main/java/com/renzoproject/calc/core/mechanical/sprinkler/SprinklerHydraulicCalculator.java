@@ -2,6 +2,7 @@ package com.renzoproject.calc.core.mechanical.sprinkler;
 
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
+import com.renzoproject.calc.core.mechanical.HazenWilliams;
 import com.renzoproject.calc.core.mechanical.firepump.FirePumpUnits;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.pipe.PipeSizingMode;

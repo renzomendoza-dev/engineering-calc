@@ -1,14 +1,10 @@
 package com.renzoproject.calc.core.acoustics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.renzoproject.calc.core.exception.CalculationException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import com.renzoproject.calc.core.reference.ReferenceJson;
 
 /**
  * Loads {@code reference/acoustics/nfpa72-audibility-thresholds.json} from the classpath once.
- * Mirrors {@code JsonFirePumpMotorSizeResolver}'s loading approach: fresh {@code ObjectMapper},
+ * Mirrors {@code JsonFirePumpMotorSizeResolver}'s loading approach: read through {@code ReferenceJson},
  * hardcoded resource path constant, {@code CalculationException} on a missing/unreadable
  * resource, parsed eagerly in the constructor and cached in fields rather than re-read per call.
  */
@@ -30,15 +26,7 @@ public class JsonAudibilityThresholdResolver implements AudibilityThresholdResol
 	}
 
 	private static NfpaAudibilityThresholdsFile load() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try (InputStream in = JsonAudibilityThresholdResolver.class.getResourceAsStream(RESOURCE_PATH)) {
-			if (in == null) {
-				throw new CalculationException("Reference data resource not found: " + RESOURCE_PATH);
-			}
-			return objectMapper.readValue(in, NfpaAudibilityThresholdsFile.class);
-		} catch (IOException e) {
-			throw new CalculationException("Failed to load reference data: " + RESOURCE_PATH, e);
-		}
+		return ReferenceJson.read(RESOURCE_PATH, NfpaAudibilityThresholdsFile.class);
 	}
 
 	@Override
