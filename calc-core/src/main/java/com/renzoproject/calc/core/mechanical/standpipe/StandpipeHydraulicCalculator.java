@@ -36,6 +36,8 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	/** 10.6.1.2.1 and 10.2.6.1: the residual pressure at the connection point of each other standpipe, as at a 2.5 in. hose connection. */
 	private static final double OTHER_STANDPIPE_RESIDUAL_PSI = 100.0;
 	private static final double PRD_RESIDUAL_LIMIT_PSI = 100.0;
+	/** A.7.1: below this highest available pressure standard-weight valves and fittings are acceptable. */
+	private static final double STANDARD_WEIGHT_LIMIT_PSI = 175.0;
 	private static final double MINIMUM_SUPPLY_MINUTES = 30.0;
 	/**
 	 * A.10.7: the conservative basis for what the fire department can deliver, a 1,000 gpm pumper at the NFPA 1901
@@ -136,7 +138,14 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				// With no connection piping given, the manual system's pressure at the supply is the one the fire department pumps in.
 				pumperChecks("Fire department connection", pressure, flowAtSupply, inletSize, checks);
 			}
+			if (input.standpipeClass() == StandpipeClass.CLASS_III) {
+				checks.add(new StandpipeCheck("A.8.2.3.3.1", "Manual wet system on a Class III standpipe: attached supply gives 100 gpm at 65 psi to the most remote 1.5 in. hose connection",
+						CheckStatus.CONFIRM, null, null, null,
+						"A manual wet standpipe can satisfy the demand of a Class III system as long as the water supply can provide 100 gpm at 65 psi to the "
+								+ "most remote 1.5 in. hose connection. The fire department provides the rest of the demand through the fire department connection."));
+			}
 		}
+		highestPressureCheck(input, pressure, highestFdcPressure, checks);
 
 		return new StandpipeHydraulicResult(demand.lines(), demand.totalGpm(), demand.capped(), demand.mostRemoteGpm(), flowAtSupply, flowAdded,
 				automatic, pressure,
@@ -295,6 +304,31 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
 					CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
 		}
+	}
+
+	/**
+	 * A.7.1: standard-weight valves and fittings are ordinarily confined to the upper stories of very high
+	 * buildings and to equipment in which the highest available pressure is below 175 psi. The highest
+	 * pressure is taken from the supply static pressure where given, the pressure required at the supply
+	 * and the pressure required at any fire department connection.
+	 */
+	private void highestPressureCheck(StandpipeHydraulicInput input, double pressureAtSupply, Double highestFdcPressure, List<StandpipeCheck> checks) {
+		double highest = pressureAtSupply;
+		String where = "the pressure required at the supply";
+		if (highestFdcPressure != null && highestFdcPressure > highest) {
+			highest = highestFdcPressure;
+			where = "the pressure required at a fire department connection";
+		}
+		if (input.supplyStaticPressurePsi() != null && input.supplyStaticPressurePsi() > highest) {
+			highest = input.supplyStaticPressurePsi();
+			where = "the static pressure at the supply";
+		}
+		boolean below = highest < STANDARD_WEIGHT_LIMIT_PSI;
+		checks.add(new StandpipeCheck("A.7.1", "Highest pressure in the system below 175 psi, where standard-weight valves and fittings are acceptable",
+				below ? CheckStatus.PASS : CheckStatus.CONFIRM, highest, STANDARD_WEIGHT_LIMIT_PSI, "psi",
+				below ? "The highest is " + where + "."
+						: "The highest is " + where + ". Use valves and fittings rated for it: standard-weight ones are confined to the upper stories of "
+								+ "very high buildings and to equipment where the highest available pressure is below 175 psi."));
 	}
 
 	/**

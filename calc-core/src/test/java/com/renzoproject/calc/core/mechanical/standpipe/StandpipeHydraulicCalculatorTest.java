@@ -634,6 +634,51 @@ class StandpipeHydraulicCalculatorTest {
 		assertTrue(automatic.checks().stream().noneMatch(c -> c.clause().startsWith("A.10.7")));
 	}
 
+	@Test
+	void standardWeightFittings_areAcceptableOnlyBelow175PsiAtTheHighestPressureInTheSystem() {
+		var low = withStatic(120.0, 0.0);
+		var high = withStatic(250.0, 0.0);
+		var lowCheck = low.checks().stream().filter(c -> c.clause().equals("A.7.1")).findFirst().orElseThrow();
+		var highCheck = high.checks().stream().filter(c -> c.clause().equals("A.7.1")).findFirst().orElseThrow();
+
+		// The pressure required at the supply is about 130 psi here, so the static pressure only sets the highest when it is above that.
+		assertEquals(175.0, lowCheck.limit(), 1e-9);
+		assertEquals(Math.max(low.pressureAtSupplyPsi(), 120.0), lowCheck.actual(), 1e-9);
+		assertEquals(250.0, highCheck.actual(), 1e-9);
+		assertEquals(CheckStatus.CONFIRM, highCheck.status());
+		assertTrue(highCheck.note().contains("static pressure at the supply"));
+		assertEquals(lowCheck.actual() < 175.0 ? CheckStatus.PASS : CheckStatus.CONFIRM, lowCheck.status());
+	}
+
+	@Test
+	void theHighestPressure_includesAFireDepartmentConnectionAndTheSupplyPressure() {
+		var flat = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Flat", "4", 10, 0)));
+		var base = withFdc(StandpipeClass.CLASS_I, false, List.of(flat));
+		var up = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Up", "4", 10, (300.0 - base.pressureAtSupplyPsi()) / 0.433)));
+
+		var high = withFdc(StandpipeClass.CLASS_I, false, List.of(up));
+		var check = high.checks().stream().filter(c -> c.clause().equals("A.7.1")).findFirst().orElseThrow();
+
+		assertEquals(high.highestFdcPressurePsi(), check.actual(), 1e-9);
+		assertEquals(CheckStatus.CONFIRM, check.status());
+		assertTrue(check.note().contains("fire department connection"));
+		// With no connection and no static pressure, it is the pressure required at the supply.
+		var plain = withFdc(StandpipeClass.CLASS_I, false, null);
+		assertEquals(plain.pressureAtSupplyPsi(),
+				plain.checks().stream().filter(c -> c.clause().equals("A.7.1")).findFirst().orElseThrow().actual(), 1e-9);
+	}
+
+	@Test
+	void aManualClassIIIStandpipe_hasTheAttachedSupplyConfirmedFor100GpmAt65Psi() {
+		var manual3 = withFdc(StandpipeClass.CLASS_III, true, null);
+		var manual1 = withFdc(StandpipeClass.CLASS_I, true, null);
+		var automatic3 = withFdc(StandpipeClass.CLASS_III, false, null);
+
+		assertEquals(CheckStatus.CONFIRM, status(manual3, "A.8.2.3.3.1"));
+		assertTrue(manual1.checks().stream().noneMatch(c -> c.clause().equals("A.8.2.3.3.1")));
+		assertTrue(automatic3.checks().stream().noneMatch(c -> c.clause().equals("A.8.2.3.3.1")));
+	}
+
 	private StandpipeHydraulicResult withStatic(Double staticPsi, Double heightFt) {
 		return calculator.calculate(new StandpipeHydraulicInput(StandpipeClass.CLASS_I, SprinklerProtection.NONE, null, null, 0, false, false, 0, false,
 				false, null, null, null, null, staticPsi, heightFt, null, twoConnectionsAndRiser()));
