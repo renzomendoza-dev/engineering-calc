@@ -40,7 +40,7 @@ class NaturalVentingCalculatorTest {
 	}
 
 	private static FireCase annexDFire(String name, double q, double layerHeight) {
-		return new FireCase(name, "Retail storage", FireCaseKind.STEADY, q, null, null, null, null, null, null, 2136.0, null, 0.5, layerHeight);
+		return new FireCase(name, "Retail storage", FireCaseKind.STEADY, q, null, null, null, null, null, null, null, null, 2136.0, null, 0.5, layerHeight);
 	}
 
 	private NaturalVentingInput annexDInput(List<FireCase> cases) {
@@ -88,7 +88,7 @@ class NaturalVentingCalculatorTest {
 	@Test
 	void plumeBelowTheLayer_usesTheVirtualOriginEquation() {
 		// 1 MW, 0.5 m diameter: L = 0.235 * 1000^0.4 - 0.51 = 3.3 m, below a 6 m layer.
-		var fire = new FireCase("Small", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, 0.5, null, null, null, null, 6.0);
+		var fire = new FireCase("Small", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 0.5, null, null, null, null, 6.0);
 		var zone = new VentZone("Z", 8.0, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
 
 		var c = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(fire))).fireCases().get(0);
@@ -104,7 +104,7 @@ class NaturalVentingCalculatorTest {
 
 	@Test
 	void growingFire_usesTheGrowthConstantInput_default1055() {
-		FireCase growing = new FireCase("Growing", "Z", FireCaseKind.GROWING, null, 150.0, 90.0, 360.0, null, 3.0, null, null, null, null, 6.0);
+		FireCase growing = new FireCase("Growing", "Z", FireCaseKind.GROWING, null, 150.0, 90.0, null, null, 360.0, null, 3.0, null, null, null, null, 6.0);
 		var zone = new VentZone("Z", 10.0, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
 
 		var byDefault = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(growing))).fireCases().get(0);
@@ -119,7 +119,7 @@ class NaturalVentingCalculatorTest {
 
 	@Test
 	void growingFire_limitedByItsFuel_isCappedAndFlaggedForConfirmation() {
-		FireCase growing = new FireCase("Growing", "Z", FireCaseKind.GROWING, null, 75.0, 90.0, 360.0, 5000.0, 3.0, null, null, null, null, 6.0);
+		FireCase growing = new FireCase("Growing", "Z", FireCaseKind.GROWING, null, 75.0, 90.0, null, null, 360.0, 5000.0, 3.0, null, null, null, null, 6.0);
 		var zone = new VentZone("Z", 10.0, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
 
 		var c = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(growing))).fireCases().get(0);
@@ -129,11 +129,69 @@ class NaturalVentingCalculatorTest {
 		assertTrue(c.checks().stream().anyMatch(ch -> ch.clause().equals("8.1.1") && ch.status() == CheckStatus.CONFIRM));
 	}
 
+	private static VentZone plainZone(double ceilingHeight) {
+		return new VentZone("Z", ceilingHeight, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
+	}
+
+	@Test
+	void growingFire_detectionTimeFromSmokeDetectors_isWorkedOutFromEquation9254_3() {
+		FireCase byDetector = new FireCase("Detector", "Z", FireCaseKind.GROWING, null, 150.0, null, 6.5, null, 300.0, null, 3.0, null, null, null, null, 6.0);
+		double expectedTd = SmokeDetectorDetectionTime.timeToTemperatureRise(150.0, 10.0, 6.5, 20.0);
+		FireCase given = new FireCase("Given", "Z", FireCaseKind.GROWING, null, 150.0, expectedTd, null, null, 300.0, null, 3.0, null, null, null, null, 6.0);
+
+		var fromDetector = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(plainZone(10.0)), List.of(byDetector))).fireCases().get(0);
+		var asGiven = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(plainZone(10.0)), List.of(given))).fireCases().get(0);
+
+		assertEquals(expectedTd, fromDetector.detectionTime(), 1e-9);
+		assertTrue(fromDetector.detectionTimeFromDetector());
+		assertEquals(1055 * Math.pow((300 + expectedTd) / 150, 2), fromDetector.designHeatReleaseRate(), 1e-6);
+		// The same td entered by hand gives the same fire and the same plume.
+		assertFalse(asGiven.detectionTimeFromDetector());
+		assertEquals(expectedTd, asGiven.detectionTime(), 1e-9);
+		assertEquals(asGiven.designHeatReleaseRate(), fromDetector.designHeatReleaseRate(), 1e-9);
+		assertEquals(asGiven.plumeMassFlow(), fromDetector.plumeMassFlow(), 1e-9);
+		// Rise left blank: the 20 degree minimum is used and said so.
+		assertTrue(fromDetector.checks().stream().anyMatch(ch -> ch.clause().equals("9.2.5.4.3") && ch.status() == CheckStatus.INFO));
+		assertTrue(fromDetector.checks().stream().anyMatch(ch -> ch.clause().equals("9.2.5.4.3.2") && ch.status() == CheckStatus.INFO));
+		assertTrue(asGiven.checks().stream().noneMatch(ch -> ch.clause().startsWith("9.2.5.4.3")));
+	}
+
+	@Test
+	void smokeDetectorHeight_isTheCeilingAboveTheBaseOfTheFire_andALowRiseNeedsTestData() {
+		// Annex D: 0.5 m fire base under a 9.1 m ceiling is H = 8.6 m; detectors 6.5 m from the axis; tg = 75 s; a 10 C rise.
+		FireCase annexD = new FireCase("Smoke", "Z", FireCaseKind.GROWING, null, 75.0, null, 6.5, 10.0, 300.0, null, 3.0, null, null, null, 0.5, 6.0);
+
+		var c = calculator.calculate(new NaturalVentingInput(21.0, null, null, null, null, List.of(plainZone(9.1)), List.of(annexD))).fireCases().get(0);
+
+		// The printed equation gives 54.6 s here; Annex D prints 48 s from DETACT-QS, a different model (A.9.2.5.4.4.2).
+		assertEquals(54.6, c.detectionTime(), 0.05);
+		assertTrue(c.checks().stream().anyMatch(ch -> ch.clause().equals("9.2.5.4.3.1") && ch.status() == CheckStatus.CONFIRM));
+		assertTrue(c.checks().stream().noneMatch(ch -> ch.clause().equals("9.2.5.4.3.2")));
+	}
+
+	@Test
+	void detectorInputs_followTheirRules() {
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, 90.0, 6.5, null, 300.0, null, 3.0, null, null, null, null, 6.0));
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, null, 20.0, 300.0, null, 3.0, null, null, null, null, 6.0));
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, -1.0, null, 300.0, null, 3.0, null, null, null, null, 6.0));
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, 6.5, 0.0, 300.0, null, 3.0, null, null, null, null, 6.0));
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, 6.5, null, null, null, 1.0, null, null, null, null, 6.0));
+		assertThrows(CalculationException.class,
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, null, null, 300.0, null, 3.0, null, null, null, null, 6.0));
+		// A distance of zero is a detector over the fire axis: allowed.
+		assertEquals(6.5, new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, 6.5, null, 300.0, null, 3.0, null, null, null, null, 6.0).detectorDistance());
+	}
+
 	@Test
 	void fireDiameter_fromAreaOrUnitHeatReleaseRate() {
 		var zone = new VentZone("Z", 10.0, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
-		FireCase byArea = new FireCase("Area", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, 12.0, null, null, null, 6.0);
-		FireCase byFlux = new FireCase("Flux", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, null, 500.0, null, null, 6.0);
+		FireCase byArea = new FireCase("Area", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, null, null, 12.0, null, null, null, 6.0);
+		FireCase byFlux = new FireCase("Flux", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, null, null, null, 500.0, null, null, 6.0);
 
 		var result = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(byArea, byFlux)));
 
@@ -144,8 +202,8 @@ class NaturalVentingCalculatorTest {
 	@Test
 	void lineFire_withLayerBelowFourTimesItsLength_increasesThePlumeFlow() {
 		var zone = new VentZone("Z", 10.0, null, null, null, null, 0.6, null, null, null, null, null, null, null, 1.5, null, null, null, null);
-		FireCase point = new FireCase("Point", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, 2.0, null, null, null, null, 6.0);
-		FireCase line = new FireCase("Line", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, 2.0, null, null, 3.0, null, 6.0);
+		FireCase point = new FireCase("Point", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, null, 2.0, null, null, null, null, 6.0);
+		FireCase line = new FireCase("Line", "Z", FireCaseKind.STEADY, 2000.0, null, null, null, null, null, null, 2.0, null, null, 3.0, null, 6.0);
 
 		var result = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(point, line)));
 
@@ -274,8 +332,8 @@ class NaturalVentingCalculatorTest {
 		var good = new VentZone("Good", 9.1, null, 2.0, 70.0, 60.0, 0.61, null, null, null, null, 18.3, 9.05, null, null, null, null, null, null);
 		var bad = new VentZone("Bad", 9.1, null, 1.0, 80.0, 60.0, 0.61, null, null, null, null, 40.0, 30.0, null, null, null, null, null, null);
 		var fires = List.of(
-				new FireCase("A", "Good", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 6.0),
-				new FireCase("B", "Bad", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 6.0));
+				new FireCase("A", "Good", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 6.0),
+				new FireCase("B", "Bad", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 6.0));
 
 		var result = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(good, bad), fires));
 
@@ -291,7 +349,7 @@ class NaturalVentingCalculatorTest {
 	void zoneWithNothingGiven_reportsEachGeometryCheckOpen() {
 		var zone = new VentZone("Z", 9.1, null, null, null, null, 0.61, null, null, null, null, null, null, null, null, null, null, null, null);
 
-		FireCase fire = new FireCase("Case", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 6.0);
+		FireCase fire = new FireCase("Case", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 6.0);
 
 		var result = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(fire)));
 
@@ -304,7 +362,7 @@ class NaturalVentingCalculatorTest {
 	void aisleWidth_isComparedWithThe8_2_3Minimum() {
 		// Annex D: 3,250 kW needs 0.042 * sqrt(3250) = 2.39 m, and the aisle there is 2.4 m.
 		var zone = new VentZone("Z", 9.1, null, null, null, null, 0.61, null, null, null, null, null, null, null, 1.5, null, null, null, 2.4);
-		FireCase fire = new FireCase("Rack", "Z", FireCaseKind.STEADY, 3250.0, null, null, null, null, 3.0, null, null, null, null, 6.0);
+		FireCase fire = new FireCase("Rack", "Z", FireCaseKind.STEADY, 3250.0, null, null, null, null, null, null, 3.0, null, null, null, null, 6.0);
 
 		var c = calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(fire))).fireCases().get(0);
 
@@ -333,7 +391,7 @@ class NaturalVentingCalculatorTest {
 	@Test
 	void layerAtOrAboveTheVents_isRejected() {
 		var zone = new VentZone("Z", 9.1, 6.0, null, null, null, 0.61, null, null, null, null, null, null, null, 1.5, null, null, null, null);
-		FireCase fire = new FireCase("Case", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 6.0);
+		FireCase fire = new FireCase("Case", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 6.0);
 
 		assertThrows(CalculationException.class,
 				() -> calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(fire))));
@@ -341,7 +399,7 @@ class NaturalVentingCalculatorTest {
 
 	@Test
 	void layerAboveTheCeiling_isRejected() {
-		FireCase fire = new FireCase("Case", "Retail storage", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 9.5);
+		FireCase fire = new FireCase("Case", "Retail storage", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 9.5);
 
 		assertThrows(CalculationException.class, () -> calculator.calculate(annexDInput(List.of(fire))));
 	}
@@ -357,16 +415,16 @@ class NaturalVentingCalculatorTest {
 		assertThrows(CalculationException.class,
 				() -> new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(ok, ok)));
 		assertThrows(CalculationException.class, () -> new NaturalVentingInput(20.0, null, null, null, null, List.of(zone),
-				List.of(new FireCase("Other", "Nowhere", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, null, 3.0))));
+				List.of(new FireCase("Other", "Nowhere", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 3.0))));
 		assertThrows(CalculationException.class, () -> new NaturalVentingInput(20.0, null, null, 1.5, null, List.of(zone), List.of(ok)));
 		assertThrows(CalculationException.class,
-				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, 5.0, null, null, null, 3.0));
+				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, 5.0, null, null, null, 3.0));
 		assertThrows(CalculationException.class,
-				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, null, null, null, 3.0));
+				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, null, null, null, null, null, 3.0));
 		assertThrows(CalculationException.class,
-				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, 360.0, null, 1.0, null, null, null, null, 3.0));
+				() -> new FireCase("x", "Z", FireCaseKind.GROWING, null, 150.0, null, null, null, 360.0, null, 1.0, null, null, null, null, 3.0));
 		assertThrows(CalculationException.class,
-				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, 1.0, null, null, null, 3.0, 3.0));
+				() -> new FireCase("x", "Z", FireCaseKind.STEADY, 1000.0, null, null, null, null, null, null, 1.0, null, null, null, 3.0, 3.0));
 		assertThrows(CalculationException.class,
 				() -> new VentZone("Z", 9.1, null, null, null, null, 1.5, null, null, null, null, null, null, null, null, null, null, null, null));
 		assertNotNull(calculator.calculate(new NaturalVentingInput(20.0, null, null, null, null, List.of(zone), List.of(ok))));

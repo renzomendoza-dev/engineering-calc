@@ -61,10 +61,17 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		// Chapter 8: design fire.
 		double uncappedQ;
 		Double growthCoefficient = null;
+		Double detectionTime = null;
+		boolean detectionFromDetector = false;
 		if (fireCase.kind() == FireCaseKind.STEADY) {
 			uncappedQ = fireCase.steadyHeatReleaseRate();
 		} else {
-			double ratio = (fireCase.designInterval() + fireCase.detectionTime()) / fireCase.growthTime();
+			detectionTime = fireCase.detectionTime();
+			if (fireCase.detectorDistance() != null) {
+				detectionTime = smokeDetectorDetectionTime(zone, fireCase, checks);
+				detectionFromDetector = true;
+			}
+			double ratio = (fireCase.designInterval() + detectionTime) / fireCase.growthTime();
 			uncappedQ = input.growthConstant() * ratio * ratio;
 			growthCoefficient = input.growthConstant() / (fireCase.growthTime() * fireCase.growthTime());
 		}
@@ -74,7 +81,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		double diameter = fireDiameter(fireCase, q);
 
 		if (fireCase.kind() == FireCaseKind.GROWING) {
-			double atInterval = fireCase.designInterval() + fireCase.detectionTime();
+			double atInterval = fireCase.designInterval() + detectionTime;
 			checks.add(new VentingCheck("8.3.5", "Design fire at the end of the design interval, Q = c((tr + td)/tg)^2 with c = "
 					+ trim(input.growthConstant()), CheckBasis.NFPA_204, CheckStatus.INFO, uncappedQ, null, "kW",
 					"Evaluated at tr + td = " + trim(atInterval) + " s; tr is measured from detection (3.3.8)."));
@@ -243,10 +250,37 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 			}
 		}
 
-		return new FireCaseResult(fireCase.name(), zone.name(), q, capped, growthCoefficient, diameter, flameHeight, virtualOrigin, zs,
+		return new FireCaseResult(fireCase.name(), zone.name(), q, capped, growthCoefficient, detectionTime, detectionFromDetector,
+				diameter, flameHeight, virtualOrigin, zs,
 				layerDepth, regime, lineFireFactor, qc, plumeFlow, temperatureRise, layerTemperature, layerDensity, aerodynamicArea,
 				requiredVentArea, inletCorrection, requiredInletArea, inletForVelocityLimit, inletVelocity, floorFlux, feasibleQ,
 				minimumAisle, List.copyOf(checks));
+	}
+
+	/**
+	 * td of the smoke detector that controls detection, from the time its location reaches the
+	 * activation temperature rise (9.2.5.4.3). H is the ceiling height above the base of the fire.
+	 */
+	private double smokeDetectorDetectionTime(VentZone zone, FireCase fireCase, List<VentingCheck> checks) {
+		double height = zone.ceilingHeight() - fireCase.fireBaseHeight();
+		boolean minimum = fireCase.detectorTemperatureRise() == null;
+		double rise = minimum ? SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE : fireCase.detectorTemperatureRise();
+		double td = SmokeDetectorDetectionTime.timeToTemperatureRise(fireCase.growthTime(), height, fireCase.detectorDistance(), rise);
+		checks.add(new VentingCheck("9.2.5.4.3", "Detection time of the smoke detector, from the gas temperature rise at its location",
+				CheckBasis.NFPA_204, CheckStatus.INFO, td, null, "s",
+				"Rise of " + trim(rise) + " C at " + trim(fireCase.detectorDistance()) + " m from the fire axis, H = " + trim(height)
+						+ " m, tg = " + trim(fireCase.growthTime()) + " s. The fire is taken at the farthest distance from the detector that "
+						+ "controls detection (9.2.5.4.2). From the printed equation, not DETACT-QS."));
+		if (minimum) {
+			checks.add(new VentingCheck("9.2.5.4.3.2", "Temperature rise for activation taken as the 20 C minimum", CheckBasis.NFPA_204,
+					CheckStatus.INFO, rise, SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE, "C",
+					"Used because no test data are given for the detector and the fuel (9.2.5.4.3.1)."));
+		} else if (rise < SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE) {
+			checks.add(new VentingCheck("9.2.5.4.3.1", "Temperature rise below the 20 C minimum needs dedicated test data", CheckBasis.NFPA_204,
+					CheckStatus.CONFIRM, rise, SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE, "C",
+					"The rise must come from tests, or the equivalent, for the combustibles of the occupancy and the detector model to be installed."));
+		}
+		return td;
 	}
 
 	private ZoneResult zoneChecks(VentZone zone) {

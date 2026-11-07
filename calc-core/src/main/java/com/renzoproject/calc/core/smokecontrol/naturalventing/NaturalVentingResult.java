@@ -30,6 +30,8 @@ public record NaturalVentingResult(
 	 * @param designHeatReleaseRate     Q, kW
 	 * @param heatReleaseRateCapped     whether Q was limited to the fire's maximum heat release rate
 	 * @param growthCoefficient         alpha_g, kW/s2, for a growing fire; otherwise null
+	 * @param detectionTime             td, s, used for a growing fire; null for a steady fire
+	 * @param detectionTimeFromDetector whether td was worked out from the smoke detector equation (9.2.5.4.3), not given
 	 * @param fireDiameter              D, m
 	 * @param meanFlameHeight           L, m (9.2.3.1)
 	 * @param virtualOrigin             z0, m (9.2.3.2)
@@ -62,6 +64,8 @@ public record NaturalVentingResult(
 			double designHeatReleaseRate,
 			boolean heatReleaseRateCapped,
 			Double growthCoefficient,
+			Double detectionTime,
+			boolean detectionTimeFromDetector,
 			double fireDiameter,
 			double meanFlameHeight,
 			double virtualOrigin,

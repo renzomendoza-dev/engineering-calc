@@ -39,7 +39,8 @@ public final class NaturalVentingMapper {
 	private static FireCase toCoreFireCase(FireCaseDto fireCase) {
 		return new FireCase(
 				fireCase.name(), fireCase.zoneName(), EnumParsing.parse(FireCaseKind.class, fireCase.kind(), "fire case kind"),
-				fireCase.steadyHeatReleaseRate(), fireCase.growthTime(), fireCase.detectionTime(), fireCase.designInterval(),
+				fireCase.steadyHeatReleaseRate(), fireCase.growthTime(), fireCase.detectionTime(), fireCase.detectorDistance(),
+					fireCase.detectorTemperatureRise(), fireCase.designInterval(),
 				fireCase.maxHeatReleaseRate(), fireCase.fireDiameter(), fireCase.fireArea(), fireCase.unitHeatReleaseRate(),
 				fireCase.largestFireDimension(), fireCase.fireBaseHeight(), fireCase.smokeLayerHeight());
 	}
@@ -52,7 +53,7 @@ public final class NaturalVentingMapper {
 
 	private static FireCaseResultDto toDto(FireCaseResult r) {
 		return new FireCaseResultDto(
-				r.name(), r.zoneName(), r.designHeatReleaseRate(), r.heatReleaseRateCapped(), r.growthCoefficient(), r.fireDiameter(),
+				r.name(), r.zoneName(), r.designHeatReleaseRate(), r.heatReleaseRateCapped(), r.growthCoefficient(), r.detectionTime(), r.detectionTimeFromDetector(), r.fireDiameter(),
 				r.meanFlameHeight(), r.virtualOrigin(), r.layerHeightAboveFire(), r.layerDepth(), r.regime().name(), r.lineFireFactor(),
 				r.convectiveHeatReleaseRate(), r.plumeMassFlow(), r.layerTemperatureRise(), r.layerTemperature(), r.layerDensity(),
 				r.aerodynamicVentArea(), r.requiredVentArea(), r.inletCorrection(), r.requiredInletArea(), r.inletAreaForVelocityLimit(),

@@ -13,6 +13,8 @@ public record FireCaseResultDto(
 		double designHeatReleaseRate,
 		boolean heatReleaseRateCapped,
 		Double growthCoefficient,
+		Double detectionTime,
+		boolean detectionTimeFromDetector,
 		double fireDiameter,
 		double meanFlameHeight,
 		double virtualOrigin,

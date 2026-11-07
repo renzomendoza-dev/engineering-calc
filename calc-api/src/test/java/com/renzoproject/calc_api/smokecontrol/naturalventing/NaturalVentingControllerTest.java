@@ -12,6 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +35,7 @@ class NaturalVentingControllerTest {
 	}
 
 	private static FireCaseDto annexDFire(String name, double q, double layerHeight) {
-		return new FireCaseDto(name, "Retail storage", "STEADY", q, null, null, null, null, null, null, 2136.0, null, 0.5, layerHeight);
+		return new FireCaseDto(name, "Retail storage", "STEADY", q, null, null, null, null, null, null, null, null, 2136.0, null, 0.5, layerHeight);
 	}
 
 	@Test
@@ -57,7 +58,7 @@ class NaturalVentingControllerTest {
 
 	@Test
 	void growingFire_withDefaults_usesTheGrowthConstant1055() throws Exception {
-		FireCaseDto growing = new FireCaseDto("Growing", "Retail storage", "GROWING", null, 150.0, 90.0, 360.0, null, 3.0, null, null, null,
+		FireCaseDto growing = new FireCaseDto("Growing", "Retail storage", "GROWING", null, 150.0, 90.0, null, null, 360.0, null, 3.0, null, null, null,
 				null, 6.0);
 		NaturalVentingRequest request = new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()), List.of(growing));
 
@@ -67,8 +68,45 @@ class NaturalVentingControllerTest {
 	}
 
 	@Test
+	void growingFire_withASmokeDetector_hasItsDetectionTimeWorkedOut() throws Exception {
+		FireCaseDto byDetector = new FireCaseDto("Detector", "Retail storage", "GROWING", null, 150.0, null, 6.5, null, 300.0, null, 3.0, null, null, null,
+				null, 6.0);
+		NaturalVentingRequest request = new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()), List.of(byDetector));
+
+		FireCaseResultDto fire = postForResponse(request).fireCases().get(0);
+
+		// H = 9.1 m (the fire is at floor level), r = 6.5 m, tg = 150 s, the 20 C minimum rise: 138.4 s.
+		assertEquals(138.4, fire.detectionTime(), 0.2);
+		assertTrue(fire.detectionTimeFromDetector());
+		assertEquals(1055 * Math.pow((300 + fire.detectionTime()) / 150, 2), fire.designHeatReleaseRate(), 1e-6);
+		assertTrue(fire.checks().stream().anyMatch(c -> c.clause().equals("9.2.5.4.3") && c.status().equals("INFO")));
+	}
+
+	@Test
+	void growingFire_withAGivenDetectionTime_reportsItAsGiven() throws Exception {
+		FireCaseDto growing = new FireCaseDto("Growing", "Retail storage", "GROWING", null, 150.0, 90.0, null, null, 360.0, null, 3.0, null, null, null,
+				null, 6.0);
+		NaturalVentingRequest request = new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()), List.of(growing));
+
+		FireCaseResultDto fire = postForResponse(request).fireCases().get(0);
+
+		assertEquals(90.0, fire.detectionTime(), 1e-9);
+		assertFalse(fire.detectionTimeFromDetector());
+	}
+
+	@Test
+	void detectionTimeAndDetectorDistanceTogether_return400() throws Exception {
+		FireCaseDto both = new FireCaseDto("Both", "Retail storage", "GROWING", null, 150.0, 90.0, 6.5, null, 360.0, null, 3.0, null, null, null, null, 6.0);
+
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(
+								new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()), List.of(both)))))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void unknownFireKind_returns400() throws Exception {
-		FireCaseDto bad = new FireCaseDto("Bad", "Retail storage", "FAST", 1000.0, null, null, null, null, 1.0, null, null, null, null, 3.0);
+		FireCaseDto bad = new FireCaseDto("Bad", "Retail storage", "FAST", 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 3.0);
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
@@ -78,7 +116,7 @@ class NaturalVentingControllerTest {
 
 	@Test
 	void fireCaseInUnknownZone_returns400() throws Exception {
-		FireCaseDto lost = new FireCaseDto("Lost", "Nowhere", "STEADY", 1000.0, null, null, null, null, 1.0, null, null, null, null, 3.0);
+		FireCaseDto lost = new FireCaseDto("Lost", "Nowhere", "STEADY", 1000.0, null, null, null, null, null, null, 1.0, null, null, null, null, 3.0);
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(

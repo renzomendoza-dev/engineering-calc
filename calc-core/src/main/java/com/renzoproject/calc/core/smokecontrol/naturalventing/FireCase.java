@@ -14,7 +14,11 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param kind                steady or growing
  * @param steadyHeatReleaseRate Q, kW; required for {@link FireCaseKind#STEADY}
  * @param growthTime          tg, s, time to 1055 kW (1 MW); required for {@link FireCaseKind#GROWING}
- * @param detectionTime       td, s; required for {@link FireCaseKind#GROWING}
+ * @param detectionTime       td, s; for {@link FireCaseKind#GROWING}, give this or {@code detectorDistance}, not both
+ * @param detectorDistance    r, m, the farthest distance from the fire axis to the smoke detector that controls detection
+ *                            (9.2.5.4.2); when given, td is worked out from Equation 9.2.5.4.3. Growing fires only; nullable
+ * @param detectorTemperatureRise the gas temperature rise at which that detector activates, degrees C; nullable, defaults to
+ *                            the 20 degree minimum (9.2.5.4.3.2). Only with {@code detectorDistance}
  * @param designInterval      tr, s, measured from detection (3.3.8); required for {@link FireCaseKind#GROWING}
  * @param maxHeatReleaseRate  fuel-limited ceiling for a growing fire, kW; nullable
  * @param fireDiameter        D, m; nullable
@@ -31,6 +35,8 @@ public record FireCase(
 		Double steadyHeatReleaseRate,
 		Double growthTime,
 		Double detectionTime,
+		Double detectorDistance,
+		Double detectorTemperatureRise,
 		Double designInterval,
 		Double maxHeatReleaseRate,
 		Double fireDiameter,
@@ -53,12 +59,33 @@ public record FireCase(
 		switch (kind) {
 			case STEADY -> {
 				requirePositive(name, "steadyHeatReleaseRate", steadyHeatReleaseRate);
+				if (detectorDistance != null || detectorTemperatureRise != null) {
+					throw new CalculationException("fire case " + name
+							+ ": the smoke detector equation (9.2.5.4.3) is for a growing fire, so detectorDistance and detectorTemperatureRise do not apply");
+				}
 			}
 			case GROWING -> {
 				requirePositive(name, "growthTime", growthTime);
 				requirePositive(name, "designInterval", designInterval);
-				if (detectionTime == null || detectionTime < 0) {
-					throw new CalculationException("fire case " + name + ": detectionTime is required and must not be negative");
+				if (detectorDistance != null) {
+					if (detectionTime != null) {
+						throw new CalculationException("fire case " + name
+								+ ": give the detectionTime or the detectorDistance it is to be worked out from, not both");
+					}
+					if (detectorDistance < 0) {
+						throw new CalculationException("fire case " + name + ": detectorDistance must not be negative");
+					}
+					if (detectorTemperatureRise != null && detectorTemperatureRise <= 0) {
+						throw new CalculationException("fire case " + name + ": detectorTemperatureRise must be positive");
+					}
+				} else {
+					if (detectorTemperatureRise != null) {
+						throw new CalculationException("fire case " + name + ": detectorTemperatureRise needs a detectorDistance");
+					}
+					if (detectionTime == null || detectionTime < 0) {
+						throw new CalculationException("fire case " + name
+								+ ": give a detectionTime (not negative) or the detectorDistance to work it out from");
+					}
 				}
 			}
 		}
