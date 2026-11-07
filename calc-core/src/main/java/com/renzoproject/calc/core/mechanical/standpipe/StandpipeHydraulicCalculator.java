@@ -76,6 +76,9 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			if (segment.hoseConnectionSize() != null) {
 				hoseConnectionFlow += segment.flowAddedGpm();
 				double required = segment.hoseConnectionSize().minimumResidualPsi();
+				if (segment.designResidualPressurePsi() != null) {
+					required = Math.max(required, segment.designResidualPressurePsi());
+				}
 				if (remotePressure < required) {
 					raised = !first;
 					remotePressure = required;
@@ -453,6 +456,24 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				segment.flowAddedGpm(), size.maximumFlowGpm(), "gpm", null));
 		checks.add(new StandpipeCheck("10.2.6.1", name + ": residual pressure at the outlet at least the minimum for its size", CheckStatus.PASS,
 				pressure, size.minimumResidualPsi(), "psi", "Taken as the minimum residual, or the pressure the path gives there if that is higher."));
+		Double design = segment.designResidualPressurePsi();
+		if (design != null) {
+			boolean small = size == HoseConnectionSize.ONE_AND_HALF_INCH;
+			double limit = small ? PRD_RESIDUAL_LIMIT_PSI : STATIC_PRESSURE_LIMIT_PSI;
+			checks.add(new StandpipeCheck("A.10.2.6", name + ": residual pressure at the outlet held at the pressure the designer gave for the fire department's hose and nozzle",
+					CheckStatus.INFO, pressure, design, "psi",
+					design <= size.minimumResidualPsi()
+							? "Not above the " + trim(size.minimumResidualPsi()) + " psi minimum for this size, so the minimum applies (10.2.6.1)."
+							: "Above the " + trim(size.minimumResidualPsi()) + " psi minimum for this size (10.2.6.1), so the outlet is held at it. How much pressure a "
+									+ "hose and nozzle need varies with the hose, and the fire department should flow test its own choice (A.10.2.6)."));
+			checks.add(new StandpipeCheck(small ? "10.2.4.1" : "10.2.4.2",
+					name + ": pressure required at the outlet not above " + trim(limit) + " psi, to which a pressure-regulating device limits the residual pressure",
+					design <= limit ? CheckStatus.PASS : CheckStatus.FAIL, design, limit, "psi",
+					design <= limit ? null
+							: "The pressure at an outlet is never below its flowing pressure, so a connection that needs " + trim(design)
+									+ " psi flowing has more than " + trim(limit) + " psi static and needs a listed pressure-regulating device that limits "
+									+ "static and residual pressure to " + trim(limit) + " psi: the equipment cannot be given what it needs there."));
+		}
 		if (size == HoseConnectionSize.ONE_AND_HALF_INCH && pressure > PRD_RESIDUAL_LIMIT_PSI) {
 			checks.add(new StandpipeCheck("10.2.4.1", name + ": residual pressure at a 1.5 in. connection above 100 psi needs a listed pressure-regulating device",
 					CheckStatus.CONFIRM, pressure, PRD_RESIDUAL_LIMIT_PSI, "psi",

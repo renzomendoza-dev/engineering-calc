@@ -5,6 +5,80 @@
   "note": "Transcribed from the printed pages of the 2024 edition (14-30) and checked value by value; the 2019 edition printed the same figures. Equivalent lengths are in FEET of Schedule 40 steel pipe at C = 120, keyed by the same nominalSize strings as reference/pipes/*.json. A size missing from a fitting's map is a dash in the printed table: the calculator throws for that combination rather than assuming zero.",
   "cFactorBasis": 120,
   "cFactorBasisNote": "Table 11.3.1.3 applies where C = 120 (11.3.2.1). For other C the lengths are multiplied by Table 11.3.2.2 (0.713 at C=100, 1.16 at 130, 1.33 at 140, 1.51 at 150), which is (C/120)^1.85. For a pipe whose inside diameter differs from Schedule 40 steel the length is further multiplied by (actual ID / Schedule 40 ID)^4.87 (11.3.2.5). Both are applied by StandpipeHydraulicCalculator.",
+  "hoseNozzleNote": "Table A.10.2.6 Hose Stream Friction Losses Summary, 2024 edition (printed page 14-50, read at 220 dpi): possible hose and nozzle combinations found in use, each with the pressure needed at the hose valve outlet to flow the stated amount. The Annex says friction loss in fire hose varies greatly from manufacturer to manufacturer and that the fire department should flow test the combination of its choice. The minimum flow and pressure of standpipe hose connections are based on 2-1/2 in. hose and smooth bore nozzles, and many departments use combination nozzles requiring 100 psi at the nozzle inlet; lengths of 200 ft and longer should be anticipated (A.10.2.6). aboveMinimumResidual is the asterisk the table prints: it requires an operating pressure above the minimum required hose connection residual pressure.",
+  "hoseNozzleCombinations": [
+    {
+      "number": 1,
+      "label": "150 ft of 2-1/2 in. hose, 1-1/8 in. smooth bore nozzle",
+      "hose": "150 ft (45 m) of 2-1/2 in. (65 mm) hose",
+      "nozzle": "1-1/8 in. (29 mm) smooth bore nozzle",
+      "outletPressurePsi": 75,
+      "flowGpm": 250,
+      "aboveMinimumResidual": false,
+      "confidence": "verified"
+    },
+    {
+      "number": 2,
+      "label": "150 ft of 2 in. hose with 2-1/2 in. couplings, 1-1/16 in. smooth bore nozzle",
+      "hose": "150 ft (45 m) of 2 in. (50 mm) hose with 2-1/2 in. (65 mm) couplings",
+      "nozzle": "1-1/16 in. (27 mm) smooth bore nozzle",
+      "outletPressurePsi": 94,
+      "flowGpm": 240,
+      "aboveMinimumResidual": false,
+      "confidence": "verified"
+    },
+    {
+      "number": 3,
+      "label": "150 ft of 2 in. hose with 1-1/2 in. couplings, 1 in. smooth bore nozzle",
+      "hose": "150 ft (45 m) of 2 in. (50 mm) hose with 1-1/2 in. (40 mm) couplings",
+      "nozzle": "1 in. (25 mm) smooth bore nozzle",
+      "outletPressurePsi": 108,
+      "flowGpm": 210,
+      "aboveMinimumResidual": true,
+      "confidence": "verified"
+    },
+    {
+      "number": 4,
+      "label": "150 ft of 1-3/4 in. hose, 7/8 in. smooth bore nozzle",
+      "hose": "150 ft (45 m) of 1-3/4 in. (45 mm) hose",
+      "nozzle": "7/8 in. (22 mm) smooth bore nozzle",
+      "outletPressurePsi": 118,
+      "flowGpm": 165,
+      "aboveMinimumResidual": true,
+      "confidence": "verified"
+    },
+    {
+      "number": 5,
+      "label": "150 ft of 1-3/4 in. hose, 15/16 in. smooth bore nozzle",
+      "hose": "150 ft (45 m) of 1-3/4 in. (45 mm) hose",
+      "nozzle": "15/16 in. (24 mm) smooth bore nozzle",
+      "outletPressurePsi": 135,
+      "flowGpm": 185,
+      "aboveMinimumResidual": true,
+      "confidence": "verified"
+    },
+    {
+      "number": 6,
+      "label": "150 ft of 1-1/2 in. hose, 150 gpm at 75 psi combination fog nozzle",
+      "hose": "150 ft (45 m) of 1-1/2 in. (40 mm) hose",
+      "nozzle": "150 gpm @ 75 psi (570 L/min @ 5.2 bar) combination fog nozzle",
+      "outletPressurePsi": 161,
+      "flowGpm": 150,
+      "aboveMinimumResidual": true,
+      "confidence": "verified"
+    },
+    {
+      "number": 7,
+      "label": "150 ft of 1-1/2 in. hose (nozzle not stated in the table)",
+      "hose": "150 ft (45 m) of 1-1/2 in. (40 mm) hose",
+      "nozzle": null,
+      "outletPressurePsi": 186,
+      "flowGpm": 150,
+      "aboveMinimumResidual": true,
+      "confidence": "verify",
+      "sourceNote": "The printed row names the hose and stops: no nozzle is given in the copy of the 2024 edition read. The 186 psi and 150 gpm are as printed."
+    }
+  ],
   "fittings": [
     {
       "fittingType": "ELBOW_45",

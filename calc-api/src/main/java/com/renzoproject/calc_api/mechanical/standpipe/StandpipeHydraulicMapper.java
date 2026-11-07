@@ -64,6 +64,7 @@ public final class StandpipeHydraulicMapper {
 				blank(segment.hoseConnectionSize()) ? null
 						: EnumParsing.parse(HoseConnectionSize.class, segment.hoseConnectionSize(), "hose connection size"),
 				Boolean.TRUE.equals(segment.otherStandpipeConnection()),
+				segment.designResidualPressurePsi(),
 				segment.pipeMaterial(),
 				segment.schedule(),
 				segment.nominalSize(),

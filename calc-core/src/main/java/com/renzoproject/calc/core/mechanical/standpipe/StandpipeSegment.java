@@ -19,6 +19,10 @@ import java.util.List;
  *                           its connection point to the common supply piping at the remote end of this segment (10.6.1.2.1).
  *                           The pressure there is held at the minimum residual, and the flow is not balanced to a higher
  *                           pressure (10.6.1.2.4). Needs a flow, and is not a hose connection
+ * @param designResidualPressurePsi when not null, the residual pressure the designer requires at the outlet of this hose
+ *                           connection, psi, for example the pressure Table A.10.2.6 gives for the fire department's hose and
+ *                           nozzle. The pressure held there is this or the minimum for the connection's size, whichever is
+ *                           higher. Only for a hose connection; must be positive
  * @param pipeMaterial       material code for {@code PipeDimensionResolver} (e.g. {@code BI})
  * @param schedule           schedule code (e.g. {@code SCH40})
  * @param nominalSize        nominal size as published in {@code reference/pipes/*.json}; the inside
@@ -36,6 +40,7 @@ public record StandpipeSegment(
 		Double flowAddedGpm,
 		HoseConnectionSize hoseConnectionSize,
 		boolean otherStandpipeConnection,
+		Double designResidualPressurePsi,
 		String pipeMaterial,
 		String schedule,
 		String nominalSize,
@@ -65,6 +70,12 @@ public record StandpipeSegment(
 		}
 		if (otherStandpipeConnection && flowAddedGpm <= 0) {
 			throw new CalculationException("segment " + label + ": another standpipe's connection point needs its flow");
+		}
+		if (designResidualPressurePsi != null && hoseConnectionSize == null) {
+			throw new CalculationException("segment " + label + ": a design residual pressure belongs to a hose connection");
+		}
+		if (designResidualPressurePsi != null && designResidualPressurePsi <= 0) {
+			throw new CalculationException("segment " + label + ": designResidualPressurePsi must be positive");
 		}
 		if (pipeMaterial == null || pipeMaterial.isBlank()) {
 			throw new CalculationException("segment " + label + ": pipeMaterial is required");

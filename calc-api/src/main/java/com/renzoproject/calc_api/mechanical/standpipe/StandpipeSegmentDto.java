@@ -10,7 +10,11 @@ import java.util.List;
  * calc-core StandpipeSegment. {@code role} is HOSE_PIPING, STANDPIPE, BRANCH_LINE or OTHER;
  * {@code hoseConnectionSize} is ONE_AND_HALF_INCH or TWO_AND_HALF_INCH, or null.
  * {@code otherStandpipeConnection} (may be left out, meaning false) marks the flow added here as
- * another standpipe's, at its connection point to the common supply piping. Units: gpm, ft.
+ * another standpipe's, at its connection point to the common supply piping.
+ * {@code designResidualPressurePsi} (optional, for a hose connection) is the residual pressure the designer
+ * requires at its outlet, for example from the fire department's hose and nozzle in Table A.10.2.6; the
+ * pressure held there is this or the minimum for the connection's size, whichever is higher.
+ * Units: gpm, ft, psi.
  */
 public record StandpipeSegmentDto(
 		@NotBlank String label,
@@ -18,6 +22,7 @@ public record StandpipeSegmentDto(
 		Double flowAddedGpm,
 		String hoseConnectionSize,
 		Boolean otherStandpipeConnection,
+		Double designResidualPressurePsi,
 		@NotBlank String pipeMaterial,
 		String schedule,
 		@NotBlank String nominalSize,

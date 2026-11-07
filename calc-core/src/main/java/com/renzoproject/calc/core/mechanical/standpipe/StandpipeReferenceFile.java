@@ -13,6 +13,8 @@ record StandpipeReferenceFile(
 		String note,
 		double cFactorBasis,
 		String cFactorBasisNote,
+		String hoseNozzleNote,
+		List<StandpipeHoseNozzleRow> hoseNozzleCombinations,
 		List<StandpipeFittingRow> fittings,
 		List<StandpipeCFactorRow> cFactors) {
 

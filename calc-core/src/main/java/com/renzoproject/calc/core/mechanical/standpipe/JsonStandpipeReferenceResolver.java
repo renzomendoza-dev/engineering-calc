@@ -67,6 +67,16 @@ public class JsonStandpipeReferenceResolver implements StandpipeReferenceResolve
 	}
 
 	@Override
+	public List<StandpipeHoseNozzleRow> allHoseNozzleCombinations() {
+		return file.hoseNozzleCombinations();
+	}
+
+	@Override
+	public String hoseNozzleNote() {
+		return file.hoseNozzleNote();
+	}
+
+	@Override
 	public String edition() {
 		return file.edition();
 	}

@@ -35,6 +35,11 @@ public class StandpipeHydraulicService {
 						.toList(),
 				referenceResolver.allCFactors().stream()
 						.map(row -> new StandpipeCFactorEntryDto(row.pipeType(), row.label(), row.cFactor(), row.confidence()))
+						.toList(),
+				referenceResolver.hoseNozzleNote(),
+				referenceResolver.allHoseNozzleCombinations().stream()
+						.map(row -> new StandpipeHoseNozzleEntryDto(row.number(), row.label(), row.hose(), row.nozzle(), row.outletPressurePsi(),
+								row.flowGpm(), row.aboveMinimumResidual(), row.confidence(), row.sourceNote()))
 						.toList());
 	}
 

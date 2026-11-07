@@ -19,11 +19,11 @@ class StandpipeHydraulicCalculatorTest {
 
 	private static StandpipeSegment hosePiping(String label, double flow, HoseConnectionSize size, String nominal, double length, double rise,
 			List<StandpipeFitting> fittings) {
-		return new StandpipeSegment(label, PipeRole.HOSE_PIPING, flow, size, false, "BI", "SCH40", nominal, 120, length, rise, fittings);
+		return new StandpipeSegment(label, PipeRole.HOSE_PIPING, flow, size, false, null, "BI", "SCH40", nominal, 120, length, rise, fittings);
 	}
 
 	private static StandpipeSegment riser(String label, double flow, String nominal, double length, double rise, List<StandpipeFitting> fittings) {
-		return new StandpipeSegment(label, PipeRole.STANDPIPE, flow, null, false, "BI", "SCH40", nominal, 120, length, rise, fittings);
+		return new StandpipeSegment(label, PipeRole.STANDPIPE, flow, null, false, null, "BI", "SCH40", nominal, 120, length, rise, fittings);
 	}
 
 	private static StandpipeHydraulicInput input(StandpipeClass standpipeClass, SprinklerProtection protection, List<StandpipeSegment> segments) {
@@ -95,9 +95,9 @@ class StandpipeHydraulicCalculatorTest {
 	@Test
 	void fittingLength_isRescaledForCAndExplicitLengthIsNot() {
 		StandpipeSegment atC120 = riser("a", 100, "3", 10, 0, List.of(new StandpipeFitting("TEE_OR_CROSS", 2, null)));
-		StandpipeSegment atC100 = new StandpipeSegment("b", PipeRole.STANDPIPE, 100.0, null, false, "BI", "SCH40", "3", 100, 10, 0,
+		StandpipeSegment atC100 = new StandpipeSegment("b", PipeRole.STANDPIPE, 100.0, null, false, null, "BI", "SCH40", "3", 100, 10, 0,
 				List.of(new StandpipeFitting("TEE_OR_CROSS", 2, null)));
-		StandpipeSegment explicit = new StandpipeSegment("c", PipeRole.STANDPIPE, 100.0, null, false, "BI", "SCH40", "3", 100, 10, 0,
+		StandpipeSegment explicit = new StandpipeSegment("c", PipeRole.STANDPIPE, 100.0, null, false, null, "BI", "SCH40", "3", 100, 10, 0,
 				List.of(new StandpipeFitting(null, 2, 7.5)));
 		var hose = hosePiping("h", 100, HoseConnectionSize.ONE_AND_HALF_INCH, "1-1/2", 1, 0, null);
 
@@ -131,7 +131,7 @@ class StandpipeHydraulicCalculatorTest {
 		// Two 2.5 in. connections at 250 gpm.
 		var top = hosePiping("Top connection", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", 2, 0, null);
 		// The second connection is 20 ft higher than the first, so the path loses pressure getting there.
-		var drop = new StandpipeSegment("Riser top", PipeRole.STANDPIPE, 0.0, null, false, "BI", "SCH40", "4", 120, 3, -20, null);
+		var drop = new StandpipeSegment("Riser top", PipeRole.STANDPIPE, 0.0, null, false, null, "BI", "SCH40", "4", 120, 3, -20, null);
 		var second = hosePiping("Second connection", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", 2, 0, null);
 		var riser = riser("Riser", 0, "4", 50, 30, null);
 
@@ -299,7 +299,7 @@ class StandpipeHydraulicCalculatorTest {
 
 		// 1.5 in. connection at 100 gpm on a long line: the residual is the minimum, but raised pressure above 100 psi needs a regulator.
 		var first = hosePiping("one", 100, HoseConnectionSize.ONE_AND_HALF_INCH, "1-1/2", 5, 0, null);
-		var rise = new StandpipeSegment("rise", PipeRole.STANDPIPE, 0.0, null, false, "BI", "SCH40", "4", 120, 500, 100, null);
+		var rise = new StandpipeSegment("rise", PipeRole.STANDPIPE, 0.0, null, false, null, "BI", "SCH40", "4", 120, 500, 100, null);
 		var second = hosePiping("two", 100, HoseConnectionSize.ONE_AND_HALF_INCH, "1-1/2", 5, 0, null);
 		var out = calculator.calculate(input(StandpipeClass.CLASS_III, SprinklerProtection.NONE, List.of(first, rise, second)));
 		assertEquals(CheckStatus.CONFIRM, status(out, "10.2.4.1"));
@@ -309,7 +309,7 @@ class StandpipeHydraulicCalculatorTest {
 	void minimumPipeSizes_applyToClassIAndIIIOnly() {
 		var hose = hosePiping("h", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", 5, 0, null);
 		var thin = riser("Riser", 0, "3", 20, 10, null);
-		var branch = new StandpipeSegment("Branch", PipeRole.BRANCH_LINE, 0.0, null, false, "BI", "SCH40", "2", 120, 10, 0, null);
+		var branch = new StandpipeSegment("Branch", PipeRole.BRANCH_LINE, 0.0, null, false, null, "BI", "SCH40", "2", 120, 10, 0, null);
 		var six = riser("Big", 0, "4", 20, 10, null);
 
 		var classI = calculator.calculate(input(StandpipeClass.CLASS_I, SprinklerProtection.NONE, List.of(hose, thin, branch)));
@@ -367,14 +367,14 @@ class StandpipeHydraulicCalculatorTest {
 		assertThrows(CalculationException.class, () -> input(StandpipeClass.CLASS_II, SprinklerProtection.NONE, List.of()));
 		assertThrows(CalculationException.class, () -> input(StandpipeClass.CLASS_II, SprinklerProtection.NONE, List.of(plain)));
 		assertThrows(CalculationException.class, () -> input(StandpipeClass.CLASS_II, SprinklerProtection.NONE, List.of(hose, hose)));
-		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, HoseConnectionSize.ONE_AND_HALF_INCH, false, "BI",
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, HoseConnectionSize.ONE_AND_HALF_INCH, false, null, "BI",
 				"SCH40", "3", 120, 1, 0, null));
-		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, null, false, "BI", "SCH40", "3", 0, 1, 0, null));
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, null, false, null, "BI", "SCH40", "3", 0, 1, 0, null));
 		assertThrows(CalculationException.class, () -> new StandpipeFitting(null, 1, null));
-		assertNull(new StandpipeSegment("x", PipeRole.OTHER, null, null, false, "BI", "SCH40", "3", 120, 1, 0, null).hoseConnectionSize());
+		assertNull(new StandpipeSegment("x", PipeRole.OTHER, null, null, false, null, "BI", "SCH40", "3", 120, 1, 0, null).hoseConnectionSize());
 		// A segment with no flow anywhere upstream carries nothing.
 		assertThrows(CalculationException.class, () -> calculator.calculate(input(StandpipeClass.CLASS_II, SprinklerProtection.NONE,
-				List.of(new StandpipeSegment("dead", PipeRole.OTHER, 0.0, null, false, "BI", "SCH40", "3", 120, 1, 0, null), hose))));
+				List.of(new StandpipeSegment("dead", PipeRole.OTHER, 0.0, null, false, null, "BI", "SCH40", "3", 120, 1, 0, null), hose))));
 	}
 
 	private StandpipeHydraulicResult withOptions(StandpipeClass standpipeClass, int additional, int laterals, boolean levels, boolean manual,
@@ -462,7 +462,7 @@ class StandpipeHydraulicCalculatorTest {
 	}
 
 	private static StandpipeSegment fdcPipe(String label, String nominal, double length, double rise) {
-		return new StandpipeSegment(label, PipeRole.OTHER, null, null, false, "BI", "SCH40", nominal, 120, length, rise, null);
+		return new StandpipeSegment(label, PipeRole.OTHER, null, null, false, null, "BI", "SCH40", nominal, 120, length, rise, null);
 	}
 
 	private static CheckStatus statusOf(StandpipeHydraulicResult result, String clause, String descriptionPart) {
@@ -634,6 +634,78 @@ class StandpipeHydraulicCalculatorTest {
 		assertTrue(automatic.checks().stream().noneMatch(c -> c.clause().startsWith("A.10.7")));
 	}
 
+	private static StandpipeSegment hoseWithDesign(String label, double flow, HoseConnectionSize size, String nominal, Double design) {
+		return new StandpipeSegment(label, PipeRole.HOSE_PIPING, flow, size, false, design, "BI", "SCH40", nominal, 120, 5, 0, null);
+	}
+
+	private List<StandpipeSegment> twoConnectionsWithTheFirstDesigned(Double design) {
+		return List.of(hoseWithDesign("h", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", design),
+				hosePiping("h2", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", 5, 0, null), riser("r", 0, "4", 20, 10, null));
+	}
+
+	@Test
+	void designResidual_holdsTheOutletAtTheHigherPressure_andRaisesThePressureAtTheSupplyByTheDifference() {
+		var base = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(null));
+		var designed = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(135.0));
+
+		assertEquals(100.0, base.segments().get(0).pressureAtRemoteEndPsi(), 1e-9);
+		assertEquals(135.0, designed.segments().get(0).pressureAtRemoteEndPsi(), 1e-9);
+		assertEquals(base.pressureAtSupplyPsi() + 35.0, designed.pressureAtSupplyPsi(), 1e-9);
+		var note = designed.checks().stream().filter(c -> c.clause().equals("A.10.2.6")).findFirst().orElseThrow();
+		assertEquals(CheckStatus.INFO, note.status());
+		assertEquals(135.0, note.limit(), 1e-9);
+		assertTrue(note.note().contains("flow test"));
+		assertTrue(base.checks().stream().noneMatch(c -> c.clause().equals("A.10.2.6")));
+		assertEquals(CheckStatus.PASS, status(designed, "10.2.4.2"));
+	}
+
+	@Test
+	void aDesignResidualBelowTheMinimumForTheSize_changesNothing_andSaysSo() {
+		var base = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(null));
+		var low = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(94.0));
+
+		assertEquals(base.pressureAtSupplyPsi(), low.pressureAtSupplyPsi(), 1e-9);
+		var note = low.checks().stream().filter(c -> c.clause().equals("A.10.2.6")).findFirst().orElseThrow();
+		assertTrue(note.note().contains("minimum applies"));
+	}
+
+	@Test
+	void aDesignResidualAboveWhatARegulatingDeviceAllows_fails_at175PsiOn2AndAHalfInchAnd100OnOneAndAHalf() {
+		var over = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(186.0));
+		var atLimit = withOptions(StandpipeClass.CLASS_I, 0, 0, false, false, null, null, twoConnectionsWithTheFirstDesigned(175.0));
+		assertEquals(CheckStatus.FAIL, status(over, "10.2.4.2"));
+		assertEquals(CheckStatus.PASS, status(atLimit, "10.2.4.2"));
+
+		List<StandpipeSegment> small = List.of(hoseWithDesign("A", 100, HoseConnectionSize.ONE_AND_HALF_INCH, "1-1/2", 120.0),
+				riser("Riser", 0, "3", 400, 5, null));
+		List<StandpipeSegment> smallAtLimit = List.of(hoseWithDesign("A", 100, HoseConnectionSize.ONE_AND_HALF_INCH, "1-1/2", 100.0),
+				riser("Riser", 0, "3", 400, 5, null));
+		assertEquals(CheckStatus.FAIL, statusOf(calculator.calculate(input(StandpipeClass.CLASS_II, SprinklerProtection.NONE, small)), "10.2.4.1", "not above 100"));
+		assertEquals(CheckStatus.PASS, statusOf(calculator.calculate(input(StandpipeClass.CLASS_II, SprinklerProtection.NONE, smallAtLimit)), "10.2.4.1", "not above 100"));
+	}
+
+	@Test
+	void aDesignResidual_isForAHoseConnection_andMustBePositive() {
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("r", PipeRole.STANDPIPE, 0.0, null, false, 120.0, "BI", "SCH40", "4", 120, 20, 10, null));
+		assertThrows(CalculationException.class, () -> hoseWithDesign("h", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", 0.0));
+		assertThrows(CalculationException.class, () -> hoseWithDesign("h", 250, HoseConnectionSize.TWO_AND_HALF_INCH, "2-1/2", -5.0));
+	}
+
+	@Test
+	void tableA1026_isServedAsPrintedWithItsAsterisksAndTheRowThatNamesNoNozzle() {
+		var rows = new JsonStandpipeReferenceResolver().allHoseNozzleCombinations();
+
+		assertEquals(7, rows.size());
+		assertEquals(List.of(75.0, 94.0, 108.0, 118.0, 135.0, 161.0, 186.0), rows.stream().map(StandpipeHoseNozzleRow::outletPressurePsi).toList());
+		assertEquals(List.of(250.0, 240.0, 210.0, 165.0, 185.0, 150.0, 150.0), rows.stream().map(StandpipeHoseNozzleRow::flowGpm).toList());
+		assertEquals(List.of(false, false, true, true, true, true, true), rows.stream().map(StandpipeHoseNozzleRow::aboveMinimumResidual).toList());
+		assertEquals(List.of(1, 2, 3, 4, 5, 6, 7), rows.stream().map(StandpipeHoseNozzleRow::number).toList());
+		assertNull(rows.get(6).nozzle());
+		assertEquals("verify", rows.get(6).confidence());
+		assertTrue(rows.subList(0, 6).stream().allMatch(row -> row.confidence().equals("verified") && row.nozzle() != null));
+		assertTrue(new JsonStandpipeReferenceResolver().hoseNozzleNote().contains("flow test"));
+	}
+
 	@Test
 	void standardWeightFittings_areAcceptableOnlyBelow175PsiAtTheHighestPressureInTheSystem() {
 		var low = withStatic(120.0, 0.0);
@@ -741,11 +813,11 @@ class StandpipeHydraulicCalculatorTest {
 	}
 
 	private static StandpipeSegment otherStandpipeNode(String label, double flow, double length, double rise) {
-		return new StandpipeSegment(label, PipeRole.OTHER, flow, null, true, "BI", "SCH40", "4", 120, length, rise, null);
+		return new StandpipeSegment(label, PipeRole.OTHER, flow, null, true, null, "BI", "SCH40", "4", 120, length, rise, null);
 	}
 
 	private static StandpipeSegment plainPipe(String label, double length, double rise) {
-		return new StandpipeSegment(label, PipeRole.OTHER, null, null, false, "BI", "SCH40", "4", 120, length, rise, null);
+		return new StandpipeSegment(label, PipeRole.OTHER, null, null, false, null, "BI", "SCH40", "4", 120, length, rise, null);
 	}
 
 	private StandpipeHydraulicResult withOthers(int additional, List<StandpipeSegment> segments) {
@@ -836,10 +908,10 @@ class StandpipeHydraulicCalculatorTest {
 
 	@Test
 	void otherStandpipeConnectionRules() {
-		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, 250.0, HoseConnectionSize.TWO_AND_HALF_INCH, true,
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, 250.0, HoseConnectionSize.TWO_AND_HALF_INCH, true, null,
 				"BI", "SCH40", "4", 120, 10, 0, null));
-		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, null, true, "BI", "SCH40", "4", 120, 10, 0, null));
-		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, 0.0, null, true, "BI", "SCH40", "4", 120, 10, 0, null));
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, null, null, true, null, "BI", "SCH40", "4", 120, 10, 0, null));
+		assertThrows(CalculationException.class, () -> new StandpipeSegment("x", PipeRole.OTHER, 0.0, null, true, null, "BI", "SCH40", "4", 120, 10, 0, null));
 		// A fire department connection's pipe carries no other flow, so it cannot hold another standpipe's connection point.
 		assertThrows(CalculationException.class, () -> new StandpipeFdcLine("L", null, null, List.of(otherStandpipeNode("n", 250, 10, 0))));
 	}
@@ -847,8 +919,8 @@ class StandpipeHydraulicCalculatorTest {
 	@Test
 	void fdcLineInputRules() {
 		var pipe = fdcPipe("A", "4", 30, 0);
-		var hose = new StandpipeSegment("H", PipeRole.HOSE_PIPING, 100.0, HoseConnectionSize.ONE_AND_HALF_INCH, false, "BI", "SCH40", "1-1/2", 120, 5, 0, null);
-		var withFlowAdded = new StandpipeSegment("F", PipeRole.OTHER, 50.0, null, false, "BI", "SCH40", "4", 120, 5, 0, null);
+		var hose = new StandpipeSegment("H", PipeRole.HOSE_PIPING, 100.0, HoseConnectionSize.ONE_AND_HALF_INCH, false, null, "BI", "SCH40", "1-1/2", 120, 5, 0, null);
+		var withFlowAdded = new StandpipeSegment("F", PipeRole.OTHER, 50.0, null, false, null, "BI", "SCH40", "4", 120, 5, 0, null);
 
 		assertThrows(CalculationException.class, () -> new StandpipeFdcLine(" ", null, null, List.of(pipe)));
 		assertThrows(CalculationException.class, () -> new StandpipeFdcLine("L", null, null, List.of()));
