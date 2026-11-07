@@ -3,7 +3,10 @@ package com.renzoproject.calc.core.smokecontrol.naturalventing;
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.FireCaseResult;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.ImageFire;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.ImageFireScenario;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.Regime;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.TransientInterface;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.ZoneResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 
 	private static final double KELVIN_OFFSET = 273.15;
 	private static final double GRAVITY = 9.81;
-	private static final double CONVECTIVE_FRACTION = 0.7;
+	static final double CONVECTIVE_FRACTION = 0.7;
 	private static final double STEFAN_BOLTZMANN_KW = 5.67e-11;
 	private static final double INLET_VELOCITY_LIMIT = 1.0;
 	/** Equation 1.3.5: the standard is not valid for a fire above 12,000 zs^(5/2) kW. */
@@ -98,21 +101,11 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		}
 
 		// 9.2.3: plume.
-		double flameHeight = -1.02 * diameter + 0.235 * Math.pow(q, 2.0 / 5.0);
-		double virtualOrigin = 0.083 * Math.pow(q, 2.0 / 5.0) - 1.02 * diameter;
-		Regime regime = flameHeight < zs ? Regime.BELOW_LAYER : Regime.REACHES_LAYER;
-		double plumeFlow;
-		if (regime == Regime.BELOW_LAYER) {
-			double height = zs - virtualOrigin;
-			if (height <= 0) {
-				throw new CalculationException("fire case " + fireCase.name()
-						+ ": the smoke layer boundary is at or below the virtual origin of the plume, so Equation 9.2.3.6 does not apply");
-			}
-			plumeFlow = 0.071 * Math.cbrt(qc) * Math.pow(height, 5.0 / 3.0)
-					* (1 + 0.027 * Math.pow(qc, 2.0 / 3.0) * Math.pow(height, -5.0 / 3.0));
-		} else {
-			plumeFlow = 0.0056 * qc * zs / flameHeight;
-		}
+		PlumeEquations.Plume designPlume = PlumeEquations.plume(q, diameter, zs, "fire case " + fireCase.name());
+		double flameHeight = designPlume.flameHeight();
+		double virtualOrigin = designPlume.virtualOrigin();
+		Regime regime = designPlume.regime();
+		double plumeFlow = designPlume.massFlow();
 		double lineFireFactor = 1.0;
 		if (fireCase.largestFireDimension() != null) {
 			double wf = fireCase.largestFireDimension();
@@ -258,6 +251,13 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		checks.add(new VentingCheck("Annex D.7h", "Annex D checks the same limit with 23,200 zs^(5/2); equation 1.3.5 prints 12,000, which governs",
 				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, q, annexDFeasibleQ, "kW", null));
 
+		// Supplementary, not NFPA 204: a fire against a wall or in a corner, and the layer boundary while the fire grows.
+		ImageFire imageFire = imageFire(input, zone, fireCase, q, qc, diameter, zs, checks);
+		TransientInterface transientInterface = null;
+		if (fireCase.kind() == FireCaseKind.GROWING) {
+			transientInterface = transientInterface(input, zone, fireCase, ambientK, ambientDensity, lineFireFactor, zs, detectionTime, checks);
+		}
+
 		Double minimumAisle = null;
 		if (fireCase.kind() == FireCaseKind.STEADY) {
 			minimumAisle = AISLE_COEFFICIENT * Math.sqrt(q);
@@ -272,7 +272,96 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 				diameter, flameHeight, virtualOrigin, zs,
 				layerDepth, regime, lineFireFactor, qc, plumeFlow, temperatureRise, layerTemperature, layerDensity, aerodynamicArea,
 				requiredVentArea, inletCorrection, requiredInletArea, inletForVelocityLimit, inletVelocity, floorFlux, feasibleQ,
-				minimumAisle, List.copyOf(checks));
+				minimumAisle, List.copyOf(checks), imageFire, transientInterface);
+	}
+
+	/**
+	 * The smoke layer of a fire against a wall (2) or in a corner (4) by the image-fire method of the smoke
+	 * management literature (Klote and Milke; the SFPE Handbook): the fire is treated as {@code n} times its size
+	 * in open space and the plume flow divided by {@code n}, so {@code dT = K Qc / (cp mp / n)}. NFPA 204 4.5.3.1
+	 * applies the entrainment equations to a single fire only, so this is a screening estimate, labelled
+	 * supplementary. The line-fire factor is not applied, which keeps the temperature on the high side.
+	 */
+	private ImageFire imageFire(NaturalVentingInput input, VentZone zone, FireCase fireCase, double q, double qc, double diameter, double zs,
+			List<VentingCheck> checks) {
+		double ambientK = input.ambientTemperature() + KELVIN_OFFSET;
+		ImageFireScenario wall = imageScenario(input, fireCase, 2, q, qc, diameter, zs, ambientK);
+		ImageFireScenario corner = imageScenario(input, fireCase, 4, q, qc, diameter, zs, ambientK);
+		addImageFireCheck(zone, "Image fire (wall)", "Fire against a wall", wall, input, checks);
+		addImageFireCheck(zone, "Image fire (corner)", "Fire in a corner", corner, input, checks);
+		return new ImageFire(wall, corner);
+	}
+
+	private ImageFireScenario imageScenario(NaturalVentingInput input, FireCase fireCase, int multiplier, double q, double qc, double diameter,
+			double zs, double ambientK) {
+		double equivalentQ = multiplier * q;
+		PlumeEquations.Plume plume = PlumeEquations.plume(equivalentQ, diameter * Math.sqrt(multiplier), zs,
+				"fire case " + fireCase.name() + " as an image fire");
+		double plumeFlow = plume.massFlow() / multiplier;
+		double rise = (input.layerEnergyFraction() * qc) / (input.specificHeat() * plumeFlow);
+		return new ImageFireScenario(multiplier, equivalentQ, plumeFlow, rise, ambientK + rise);
+	}
+
+	private void addImageFireCheck(VentZone zone, String clause, String what, ImageFireScenario scenario, NaturalVentingInput input,
+			List<VentingCheck> checks) {
+		String note = "Treated as " + trim(scenario.multiplier()) + " x Q in open space with the plume flow divided by " + trim(scenario.multiplier())
+				+ ", K = " + trim(input.layerEnergyFraction()) + ", no line-fire factor. A screening estimate from the smoke management "
+				+ "literature, not NFPA 204, which applies the entrainment equations to a single fire (4.5.3.1).";
+		if (zone.maxLayerTemperatureRise() != null) {
+			checks.add(new VentingCheck(clause, what + ": smoke layer temperature rise within the design objective", CheckBasis.SUPPLEMENTARY,
+					scenario.layerTemperatureRise() <= zone.maxLayerTemperatureRise() ? CheckStatus.PASS : CheckStatus.FAIL,
+					scenario.layerTemperatureRise(), zone.maxLayerTemperatureRise(), "K", note));
+		} else {
+			checks.add(new VentingCheck(clause, what + ": smoke layer temperature rise", CheckBasis.SUPPLEMENTARY, CheckStatus.INFO,
+					scenario.layerTemperatureRise(), null, "K", note));
+		}
+	}
+
+	/**
+	 * The supplementary time-stepping check (see {@link TransientInterfaceModel}). Needs the zone's length, width
+	 * and total vent area: without them the check is reported open.
+	 */
+	private TransientInterface transientInterface(NaturalVentingInput input, VentZone zone, FireCase fireCase, double ambientK,
+			double ambientDensity, double lineFireFactor, double zs, double detectionTime, List<VentingCheck> checks) {
+		if (zone.zoneLength() == null || zone.zoneWidth() == null || zone.ventTotalArea() == null) {
+			checks.add(new VentingCheck("Time-stepping", "Smoke layer boundary at the end of the design interval, stepped as the fire grows",
+					CheckBasis.SUPPLEMENTARY, CheckStatus.OPEN, null, null, "m",
+					"Give the length and width of the curtained area and the total vent area to run it. Not NFPA 204, which sizes the vents for equilibrium (9.2.2.3)."));
+			return null;
+		}
+		double ventAerodynamic = zone.ventDischargeCoefficient() * zone.ventTotalArea();
+		Double inletAerodynamic = null;
+		if (zone.inletNetArea() != null) {
+			inletAerodynamic = zone.inletDischargeCoefficient() * zone.inletNetArea();
+		} else if (zone.inletAreaRatio() != null) {
+			inletAerodynamic = zone.inletDischargeCoefficient() * zone.inletAreaRatio() * zone.ventTotalArea();
+		}
+		double eave = zone.eaveHeight() != null ? zone.eaveHeight() : zone.ceilingHeight();
+		double growth = input.growthConstant() / (fireCase.growthTime() * fireCase.growthTime());
+		Double cap = fireCase.maxHeatReleaseRate();
+		double endTime = fireCase.designInterval() + detectionTime;
+		TransientInterfaceModel.Parameters parameters = new TransientInterfaceModel.Parameters(
+				new TransientInterfaceModel.Reservoir(zone.zoneWidth(), zone.zoneLength(), zone.ceilingHeight(), eave),
+				ventAerodynamic, inletAerodynamic, zone.ventCentreHeight(), ambientK, ambientDensity, input.specificHeat(),
+				input.layerEnergyFraction(), fireCase.smokeLayerHeight(), zs, lineFireFactor,
+				t -> cap == null ? growth * t * t : Math.min(growth * t * t, cap),
+				heatReleaseRate -> fireDiameter(fireCase, heatReleaseRate), endTime);
+		TransientInterface result = TransientInterfaceModel.run(parameters);
+
+		String basis = "Volume balance stepped at 1 s with the plume of 9.2.3.6/9.2.3.7 at the design layer height, K = "
+				+ trim(input.layerEnergyFraction()) + ", the vent flow of 9.2.4.1 with the inlet term, and the volume of a "
+				+ (zone.eaveHeight() == null ? "flat" : "gable") + " reservoir (the volume inside a roof monitor is neglected). "
+				+ "Not NFPA 204, which sizes the vents for equilibrium (9.2.2.3); a CFD or other analysis the AHJ accepts governs.";
+		checks.add(new VentingCheck("Time-stepping", "Smoke layer boundary at or above the design height at the end of the design interval, stepped as the fire grows",
+				CheckBasis.SUPPLEMENTARY, result.interfaceHeightAtEnd() >= fireCase.smokeLayerHeight() - 1e-9 ? CheckStatus.PASS : CheckStatus.FAIL,
+				result.interfaceHeightAtEnd(), fireCase.smokeLayerHeight(), "m", "Read at tr + td = " + trim(endTime) + " s. " + basis));
+		checks.add(new VentingCheck("Time-stepping", "Time for the boundary to fall below the design height with the vents working, if the fire kept growing",
+				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, result.timeToDesignHeight(), null, "s",
+				result.timeToDesignHeight() == null ? "Not reached within " + trim(result.horizon() / 60) + " minutes." : "From ignition."));
+		checks.add(new VentingCheck("Time-stepping", "Time for the boundary to fall below the design height with no venting",
+				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, result.timeToDesignHeightWithoutVents(), null, "s",
+				result.timeToDesignHeightWithoutVents() == null ? "Not reached within " + trim(result.horizon() / 60) + " minutes." : "From ignition."));
+		return result;
 	}
 
 	/**

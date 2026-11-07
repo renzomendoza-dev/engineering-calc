@@ -31,7 +31,7 @@ class NaturalVentingControllerTest {
 
 	private static VentZoneDto annexDZone() {
 		return new VentZoneDto("Retail storage", 9.1, null, null, 73.0, 73.0, 0.61, 16, null, null, null, 18.3, 9.05, null, 1.5, null,
-				null, null, null);
+				null, null, null, null);
 	}
 
 	private static FireCaseDto annexDFire(String name, double q, double layerHeight) {
@@ -80,6 +80,57 @@ class NaturalVentingControllerTest {
 		assertTrue(fire.detectionTimeFromDetector());
 		assertEquals(1055 * Math.pow((300 + fire.detectionTime()) / 150, 2), fire.designHeatReleaseRate(), 1e-6);
 		assertTrue(fire.checks().stream().anyMatch(c -> c.clause().equals("9.2.5.4.3") && c.status().equals("INFO")));
+	}
+
+	@Test
+	void theImageFireScreening_isReturnedForEveryFireCase() throws Exception {
+		NaturalVentingRequest request = new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()),
+				List.of(annexDFire("Case 8", 34_400, 6.0)));
+
+		FireCaseResultDto fire = postForResponse(request).fireCases().get(0);
+
+		assertEquals(2.0, fire.imageFire().wall().multiplier(), 1e-9);
+		assertEquals(4.0, fire.imageFire().corner().multiplier(), 1e-9);
+		assertEquals(4 * 34_400.0, fire.imageFire().corner().equivalentHeatReleaseRate(), 1e-6);
+		assertTrue(fire.imageFire().corner().layerTemperatureRise() > fire.imageFire().wall().layerTemperatureRise());
+		assertTrue(fire.imageFire().wall().layerTemperatureRise() > fire.layerTemperatureRise());
+		assertTrue(fire.checks().stream().anyMatch(c -> c.clause().equals("Image fire (wall)") && c.basis().equals("SUPPLEMENTARY")));
+	}
+
+	@Test
+	void theTimeSteppingCheck_isCarriedThroughForAGrowingFireInAGableZoneWithARaisedMonitor() throws Exception {
+		// The IN1GO warehouse 1: ridge 12 m, eave 8 m, a raised monitor with its vent centre at 12.75 m, K = 1.0.
+		VentZoneDto warehouse = new VentZoneDto("W1", 12.0, 12.75, null, 60.0, 20.0, 0.25, null, 144.0, null, null, null, null, 0.25, null, 128.0,
+				null, null, null, 8.0);
+		FireCaseDto ultrafast = new FireCaseDto("Ultrafast", "W1", "GROWING", null, 75.0, 90.0, null, null, 360.0, null, null, null, 1133.33, null, 0.0, 7.0);
+		NaturalVentingRequest request = new NaturalVentingRequest(40.0, 1.127, 1.0, 1.0, null, List.of(warehouse), List.of(ultrafast));
+
+		FireCaseResultDto fire = postForResponse(request).fireCases().get(0);
+
+		assertEquals(450.0, fire.transientInterface().endTime(), 1e-9);
+		assertEquals(10.2, fire.transientInterface().interfaceHeightAtEnd(), 0.05);
+		assertEquals(646.0, fire.transientInterface().timeToDesignHeight(), 1.5);
+		assertEquals(174.0, fire.transientInterface().timeToDesignHeightWithoutVents(), 1.5);
+		assertTrue(fire.checks().stream().anyMatch(c -> c.clause().equals("Time-stepping") && c.status().equals("PASS")));
+	}
+
+	@Test
+	void theTimeSteppingCheck_isLeftOutForASteadyFire() throws Exception {
+		NaturalVentingRequest request = new NaturalVentingRequest(20.0, null, null, null, null, List.of(annexDZone()),
+				List.of(annexDFire("Case 8", 34_400, 6.0)));
+
+		assertEquals(null, postForResponse(request).fireCases().get(0).transientInterface());
+	}
+
+	@Test
+	void anEaveAboveTheRidge_returns400() throws Exception {
+		VentZoneDto bad = new VentZoneDto("W1", 12.0, 12.75, null, 60.0, 20.0, 0.25, null, 144.0, null, null, null, null, 0.25, null, 128.0,
+				null, null, null, 13.0);
+		FireCaseDto fire = new FireCaseDto("Ultrafast", "W1", "GROWING", null, 75.0, 90.0, null, null, 360.0, null, null, null, 1133.33, null, 0.0, 7.0);
+		NaturalVentingRequest request = new NaturalVentingRequest(40.0, null, null, null, null, List.of(bad), List.of(fire));
+
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test

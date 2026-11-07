@@ -25,6 +25,52 @@ public record NaturalVentingResult(
 	}
 
 	/**
+	 * The supplementary time-stepping check of the smoke layer boundary (not NFPA 204).
+	 *
+	 * @param endTime                       tr + td, s: the time the boundary is read at
+	 * @param interfaceHeightAtEnd          height of the layer boundary above the floor at {@code endTime}, m
+	 * @param timeToDesignHeight            time from ignition at which the boundary first falls below the design
+	 *                                      height with the vents working, s; null if it does not within {@code horizon}
+	 * @param timeToDesignHeightWithoutVents the same with no venting, s; null if it does not within {@code horizon}
+	 * @param horizon                       time stepped to, s
+	 */
+	public record TransientInterface(
+			double endTime,
+			double interfaceHeightAtEnd,
+			Double timeToDesignHeight,
+			Double timeToDesignHeightWithoutVents,
+			double horizon) {
+
+	}
+
+	/**
+	 * The smoke layer of a fire against a wall or in a corner by the image-fire method (not NFPA 204): the fire
+	 * is treated as {@code multiplier} times its size in open space, and the plume flow divided by it.
+	 *
+	 * @param multiplier                2 for a wall fire, 4 for a corner fire
+	 * @param equivalentHeatReleaseRate multiplier x Q, kW
+	 * @param plumeMassFlow             mp of the fire against the wall or in the corner, kg/s
+	 * @param layerTemperatureRise      dT = K Qc / (cp mp), K
+	 * @param layerTemperature          T, K
+	 */
+	public record ImageFireScenario(
+			double multiplier,
+			double equivalentHeatReleaseRate,
+			double plumeMassFlow,
+			double layerTemperatureRise,
+			double layerTemperature) {
+
+	}
+
+	/**
+	 * @param wall   the fire against a wall
+	 * @param corner the fire in a corner
+	 */
+	public record ImageFire(ImageFireScenario wall, ImageFireScenario corner) {
+
+	}
+
+	/**
 	 * @param name                      the fire case
 	 * @param zoneName                  its zone
 	 * @param designHeatReleaseRate     Q, kW
@@ -57,6 +103,9 @@ public record NaturalVentingResult(
 	 * @param feasibleHeatReleaseRate   12,000 zs^(5/2), kW (Equation 1.3.5), the fire above which the standard is not valid
 	 * @param minimumAisleWidth         0.042 Q^(1/2), m (8.2.3), steady fires only; else null
 	 * @param checks                    compliance lines for this case
+	 * @param imageFire                 the layer for a fire against a wall and in a corner, supplementary
+	 * @param transientInterface        the time-stepping check; null for a steady fire or when the zone lacks
+	 *                                  the geometry it needs
 	 */
 	public record FireCaseResult(
 			String name,
@@ -87,7 +136,9 @@ public record NaturalVentingResult(
 			double floorRadiantFlux,
 			double feasibleHeatReleaseRate,
 			Double minimumAisleWidth,
-			List<VentingCheck> checks) {
+			List<VentingCheck> checks,
+			ImageFire imageFire,
+			TransientInterface transientInterface) {
 
 	}
 

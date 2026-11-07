@@ -33,7 +33,7 @@ public final class NaturalVentingMapper {
 				zone.name(), zone.ceilingHeight(), zone.ventCentreHeight(), zone.curtainDepth(), zone.zoneLength(), zone.zoneWidth(),
 				zone.ventDischargeCoefficient(), zone.ventCount(), zone.ventTotalArea(), zone.ventUnitLength(), zone.ventUnitWidth(),
 				zone.ventSpacing(), zone.ventToWallDistance(), zone.inletDischargeCoefficient(), zone.inletAreaRatio(),
-				zone.inletNetArea(), zone.maxLayerTemperatureRise(), zone.maxFloorRadiantFlux(), zone.aisleWidth());
+				zone.inletNetArea(), zone.maxLayerTemperatureRise(), zone.maxFloorRadiantFlux(), zone.aisleWidth(), zone.eaveHeight());
 	}
 
 	private static FireCase toCoreFireCase(FireCaseDto fireCase) {
@@ -58,7 +58,16 @@ public final class NaturalVentingMapper {
 				r.convectiveHeatReleaseRate(), r.plumeMassFlow(), r.layerTemperatureRise(), r.layerTemperature(), r.layerDensity(),
 				r.aerodynamicVentArea(), r.requiredVentArea(), r.inletCorrection(), r.requiredInletArea(), r.inletAreaForVelocityLimit(),
 				r.inletVelocity(), r.floorRadiantFlux(), r.feasibleHeatReleaseRate(), r.minimumAisleWidth(),
-				r.checks().stream().map(VentingCheckDto::from).toList());
+				r.checks().stream().map(VentingCheckDto::from).toList(),
+				r.imageFire() == null ? null : new ImageFireDto(toDto(r.imageFire().wall()), toDto(r.imageFire().corner())),
+				r.transientInterface() == null ? null : new TransientInterfaceDto(r.transientInterface().endTime(),
+						r.transientInterface().interfaceHeightAtEnd(), r.transientInterface().timeToDesignHeight(),
+						r.transientInterface().timeToDesignHeightWithoutVents(), r.transientInterface().horizon()));
+	}
+
+	private static ImageFireScenarioDto toDto(NaturalVentingResult.ImageFireScenario scenario) {
+		return new ImageFireScenarioDto(scenario.multiplier(), scenario.equivalentHeatReleaseRate(), scenario.plumeMassFlow(),
+				scenario.layerTemperatureRise(), scenario.layerTemperature());
 	}
 
 	private static ZoneResultDto toDto(ZoneResult zone) {

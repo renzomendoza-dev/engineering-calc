@@ -36,6 +36,8 @@ public record FireCaseResultDto(
 		double floorRadiantFlux,
 		double feasibleHeatReleaseRate,
 		Double minimumAisleWidth,
-		List<VentingCheckDto> checks) {
+		List<VentingCheckDto> checks,
+		ImageFireDto imageFire,
+		TransientInterfaceDto transientInterface) {
 
 }

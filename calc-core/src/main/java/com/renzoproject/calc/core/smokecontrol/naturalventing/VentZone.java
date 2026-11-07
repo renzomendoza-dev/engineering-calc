@@ -10,7 +10,8 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param name                      label the fire cases refer to; not blank
  * @param ceilingHeight             H, m, floor to ceiling (7.3.1); positive
  * @param ventCentreHeight          m above the floor to the middle of the vent openings, used for
- *                                  the smoke layer depth {@code d}; nullable, defaults to the ceiling
+ *                                  the smoke layer depth {@code d}; nullable, defaults to the ceiling.
+ *                                  May be above the ceiling: a raised roof monitor puts the vents there
  * @param curtainDepth              depth of the draft curtains, m; nullable (no curtains, or unknown)
  * @param zoneLength                length of the curtained area, m; nullable
  * @param zoneWidth                 width of the curtained area, m; nullable
@@ -29,6 +30,9 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param maxLayerTemperatureRise   design objective, K above ambient (clause 4.1); nullable
  * @param maxFloorRadiantFlux       design objective, kW/m2 at floor level (Annex D uses 2.5); nullable
  * @param aisleWidth                aisle width separating fuel arrays, m, for 8.2.3; nullable
+ * @param eaveHeight                m above the floor to the eave of a gable roof, for the volume of the
+ *                                  time-stepping check; nullable (a flat ceiling at {@code ceilingHeight},
+ *                                  which is then the ridge height of a gable roof)
  */
 public record VentZone(
 		String name,
@@ -49,7 +53,8 @@ public record VentZone(
 		Double inletNetArea,
 		Double maxLayerTemperatureRise,
 		Double maxFloorRadiantFlux,
-		Double aisleWidth) {
+		Double aisleWidth,
+		Double eaveHeight) {
 
 	public VentZone {
 		if (name == null || name.isBlank()) {
@@ -61,8 +66,8 @@ public record VentZone(
 		if (ventCentreHeight == null) {
 			ventCentreHeight = ceilingHeight;
 		}
-		if (ventCentreHeight <= 0 || ventCentreHeight > ceilingHeight) {
-			throw new CalculationException("zone " + name + ": ventCentreHeight must be above the floor and not above the ceiling");
+		if (ventCentreHeight <= 0) {
+			throw new CalculationException("zone " + name + ": ventCentreHeight must be above the floor");
 		}
 		if (ventDischargeCoefficient <= 0 || ventDischargeCoefficient > 1) {
 			throw new CalculationException("zone " + name + ": ventDischargeCoefficient must be greater than 0 and at most 1");
@@ -88,6 +93,10 @@ public record VentZone(
 		requirePositiveWhenGiven(name, "aisleWidth", aisleWidth);
 		if (ventCount != null && ventCount <= 0) {
 			throw new CalculationException("zone " + name + ": ventCount must be positive");
+		}
+		requirePositiveWhenGiven(name, "eaveHeight", eaveHeight);
+		if (eaveHeight != null && eaveHeight > ceilingHeight) {
+			throw new CalculationException("zone " + name + ": eaveHeight must not exceed ceilingHeight, the ridge height of a gable roof");
 		}
 		if (curtainDepth != null && curtainDepth > ceilingHeight) {
 			throw new CalculationException("zone " + name + ": curtainDepth must not exceed ceilingHeight");
