@@ -33,6 +33,8 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	private static final double MAXIMUM_PRESSURE_PSI = 400.0;
 	/** 10.2.4.1.3 and 10.2.4.2: above this static pressure at a hose connection a listed pressure-regulating device is required. */
 	private static final double STATIC_PRESSURE_LIMIT_PSI = 175.0;
+	/** 10.6.1.2.1 and 10.2.6.1: the residual pressure at the connection point of each other standpipe, as at a 2.5 in. hose connection. */
+	private static final double OTHER_STANDPIPE_RESIDUAL_PSI = 100.0;
 	private static final double PRD_RESIDUAL_LIMIT_PSI = 100.0;
 	private static final double MINIMUM_SUPPLY_MINUTES = 30.0;
 
@@ -69,6 +71,17 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 					remotePressure = required;
 				}
 				connectionChecks(input, segment, remotePressure, checks);
+			} else if (segment.otherStandpipeConnection()) {
+				// Another standpipe's flow is added at its connection point to the common supply piping, at the minimum
+				// residual (10.6.1.2.1), and not balanced to a higher pressure there (10.6.1.2.4).
+				if (remotePressure < OTHER_STANDPIPE_RESIDUAL_PSI) {
+					raised = !first;
+					remotePressure = OTHER_STANDPIPE_RESIDUAL_PSI;
+				}
+				checks.add(new StandpipeCheck("10.6.1.2.1", segment.label() + ": another standpipe's connection point, residual pressure at least the minimum",
+						CheckStatus.PASS, remotePressure, OTHER_STANDPIPE_RESIDUAL_PSI, "psi",
+						"Taken as the minimum residual, or the pressure the path gives there if that is higher. Its " + Math.round(segment.flowAddedGpm())
+								+ " gpm is not balanced to the higher pressure at the connection point (10.6.1.2.4)."));
 			}
 			first = false;
 			if (flow <= 0) {
@@ -87,7 +100,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			rows.add(new SegmentRow(segment.label(), segment.role(), segment.hoseConnectionSize(), segment.nominalSize(), insideDiameter,
 					segment.cFactor(), segment.flowAddedGpm(), flow, VELOCITY_COEFFICIENT * flow / (insideDiameter * insideDiameter),
 					segment.pipeLengthFt(), fittingsLength, perFoot, friction, segment.elevationRiseFt(), elevation, remotePressure,
-					pressure, raised));
+					pressure, raised, segment.otherStandpipeConnection()));
 			sizeCheck(input, segment, checks);
 		}
 
@@ -99,6 +112,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				? input.flowAddedAtSupplyGpm()
 				: automatic ? Math.max(0.0, demand.totalGpm() - flow) : 0.0;
 		double flowAtSupply = flow + flowAdded;
+		pressure = otherStandpipesAtTheSupply(input, flowAdded, pressure, checks);
 		supplyChecks(input, demand, hoseConnectionFlow, flowAtSupply, flowAdded, automatic, pressure, checks);
 		InletSize inletSize = input.fireDepartmentConnectionInletSize();
 		int requiredInlets = (int) Math.ceil(flowAtSupply / inletSize.flowPerInletGpm() - 1e-9);
@@ -157,6 +171,29 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	}
 
 	/**
+	 * The other standpipes of a Class I or III system join the common supply piping at their connection
+	 * points, with their flow at the minimum residual pressure and not balanced to a higher one
+	 * (10.6.1.2.1, 10.6.1.2.4, A.10.6.1.2.3). Those not placed on the path join at the supply end, so the
+	 * pressure required there is at least that residual. Returns the pressure required at the supply end.
+	 */
+	private double otherStandpipesAtTheSupply(StandpipeHydraulicInput input, double flowAdded, double pressure, List<StandpipeCheck> checks) {
+		boolean others = input.standpipeClass() != StandpipeClass.CLASS_II
+				&& input.additionalStandpipes() + input.singleConnectionLaterals() > 0 && flowAdded > 0;
+		if (!others) {
+			return pressure;
+		}
+		boolean raised = pressure < OTHER_STANDPIPE_RESIDUAL_PSI;
+		double required = Math.max(pressure, OTHER_STANDPIPE_RESIDUAL_PSI);
+		checks.add(new StandpipeCheck("10.6.1.2.1", "Other standpipes joining at the supply end: residual pressure at their connection point at least the minimum",
+				CheckStatus.PASS, required, OTHER_STANDPIPE_RESIDUAL_PSI, "psi",
+				(raised ? "The path gives " + trim(pressure) + " psi there, so the pressure required at the supply is raised to the minimum residual. "
+						: "The path gives more than the minimum there. ")
+						+ "Their flow joins as flow only and is not balanced to the higher pressure (10.6.1.2.4). Place a standpipe's flow "
+						+ "on the path, at its own connection point, where it joins the common supply piping elsewhere."));
+		return required;
+	}
+
+	/**
 	 * 10.4.1 and A.10.4.1: the pressure the fire department must deliver at each fire department
 	 * connection for it to supply the system demand. Each connection's pipes are worked from the
 	 * system end, where the pressure is that required at the supply end of the main path, out to the
@@ -198,7 +235,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				elevation += segmentElevation;
 				rows.add(new SegmentRow(segment.label(), segment.role(), null, segment.nominalSize(), insideDiameter, segment.cFactor(), 0.0,
 						flow, VELOCITY_COEFFICIENT * flow / (insideDiameter * insideDiameter), segment.pipeLengthFt(), fittingsLength, perFoot,
-						segmentFriction, segment.elevationRiseFt(), segmentElevation, systemEnd, pressure, false));
+						segmentFriction, segment.elevationRiseFt(), segmentElevation, systemEnd, pressure, false, false));
 			}
 			lines.add(new FdcLineRow(line.label(), flow, line.inlets(), List.copyOf(rows), friction, elevation, pressureAtSystem, pressure));
 

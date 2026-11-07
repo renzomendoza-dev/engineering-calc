@@ -63,6 +63,7 @@ public final class StandpipeHydraulicMapper {
 				segment.flowAddedGpm(),
 				blank(segment.hoseConnectionSize()) ? null
 						: EnumParsing.parse(HoseConnectionSize.class, segment.hoseConnectionSize(), "hose connection size"),
+				Boolean.TRUE.equals(segment.otherStandpipeConnection()),
 				segment.pipeMaterial(),
 				segment.schedule(),
 				segment.nominalSize(),
@@ -113,7 +114,8 @@ public final class StandpipeHydraulicMapper {
 				row.label(), row.role().name(), row.hoseConnectionSize() == null ? null : row.hoseConnectionSize().name(), row.nominalSize(),
 				row.insideDiameterInch(), row.cFactor(), row.flowAddedGpm(), row.flowGpm(), row.velocityFtPerSec(), row.pipeLengthFt(),
 				row.fittingsLengthFt(), row.frictionPsiPerFt(), row.frictionLossPsi(), row.elevationRiseFt(), row.elevationPsi(),
-				row.pressureAtRemoteEndPsi(), row.pressureAtSupplyEndPsi(), row.residualRaised());
+				row.pressureAtRemoteEndPsi(), row.pressureAtSupplyEndPsi(), row.residualRaised(),
+				row.otherStandpipeConnection());
 	}
 
 }

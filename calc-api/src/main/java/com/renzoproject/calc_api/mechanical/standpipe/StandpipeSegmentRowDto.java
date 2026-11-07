@@ -22,6 +22,7 @@ public record StandpipeSegmentRowDto(
 		double elevationPsi,
 		double pressureAtRemoteEndPsi,
 		double pressureAtSupplyEndPsi,
-		boolean residualRaised) {
+		boolean residualRaised,
+		boolean otherStandpipeConnection) {
 
 }

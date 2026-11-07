@@ -47,7 +47,7 @@ public record StandpipeFdcLine(
 		segments = List.copyOf(segments);
 		Set<String> labels = new HashSet<>();
 		for (StandpipeSegment segment : segments) {
-			if (segment.hoseConnectionSize() != null || segment.flowAddedGpm() > 0) {
+			if (segment.hoseConnectionSize() != null || segment.flowAddedGpm() > 0 || segment.otherStandpipeConnection()) {
 				throw new CalculationException("fire department connection " + label + ": segment " + segment.label()
 						+ " must be plain pipe, with no hose connection or added flow");
 			}

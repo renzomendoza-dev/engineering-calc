@@ -109,6 +109,7 @@ public record StandpipeHydraulicResult(
 	 * @param pressureAtRemoteEndPsi  pressure at the remote end of the segment, after any residual requirement
 	 * @param pressureAtSupplyEndPsi  pressure required at the supply end of the segment
 	 * @param residualRaised          whether the remote-end pressure was raised to the connection's minimum residual
+	 * @param otherStandpipeConnection whether the flow added at the remote end is another standpipe's, at its connection point
 	 */
 	public record SegmentRow(
 			String label,
@@ -128,7 +129,8 @@ public record StandpipeHydraulicResult(
 			double elevationPsi,
 			double pressureAtRemoteEndPsi,
 			double pressureAtSupplyEndPsi,
-			boolean residualRaised) {
+			boolean residualRaised,
+			boolean otherStandpipeConnection) {
 
 	}
 

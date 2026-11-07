@@ -15,6 +15,10 @@ import java.util.List;
  * @param hoseConnectionSize when not null, {@code flowAddedGpm} is the discharge of a hose connection
  *                           of this size at the remote end of the segment, which must then also be
  *                           given. Its residual pressure is the minimum for that size (10.2.6.1)
+ * @param otherStandpipeConnection when true, {@code flowAddedGpm} is the flow of another standpipe of the building, added at
+ *                           its connection point to the common supply piping at the remote end of this segment (10.6.1.2.1).
+ *                           The pressure there is held at the minimum residual, and the flow is not balanced to a higher
+ *                           pressure (10.6.1.2.4). Needs a flow, and is not a hose connection
  * @param pipeMaterial       material code for {@code PipeDimensionResolver} (e.g. {@code BI})
  * @param schedule           schedule code (e.g. {@code SCH40})
  * @param nominalSize        nominal size as published in {@code reference/pipes/*.json}; the inside
@@ -31,6 +35,7 @@ public record StandpipeSegment(
 		PipeRole role,
 		Double flowAddedGpm,
 		HoseConnectionSize hoseConnectionSize,
+		boolean otherStandpipeConnection,
 		String pipeMaterial,
 		String schedule,
 		String nominalSize,
@@ -54,6 +59,12 @@ public record StandpipeSegment(
 		}
 		if (hoseConnectionSize != null && flowAddedGpm <= 0) {
 			throw new CalculationException("segment " + label + ": a hose connection needs a flow");
+		}
+		if (otherStandpipeConnection && hoseConnectionSize != null) {
+			throw new CalculationException("segment " + label + ": the flow added is either a hose connection's or another standpipe's, not both");
+		}
+		if (otherStandpipeConnection && flowAddedGpm <= 0) {
+			throw new CalculationException("segment " + label + ": another standpipe's connection point needs its flow");
 		}
 		if (pipeMaterial == null || pipeMaterial.isBlank()) {
 			throw new CalculationException("segment " + label + ": pipeMaterial is required");
