@@ -24,6 +24,7 @@ public record StandpipeHydraulicResponse(
 		double waterSupplyVolumeGal,
 		List<FdcLineRowDto> fdcLines,
 		Double highestFdcPressurePsi,
+		Double staticPressureAtLowestConnectionPsi,
 		List<StandpipeSegmentRowDto> segments,
 		List<StandpipeCheckDto> checks) {
 

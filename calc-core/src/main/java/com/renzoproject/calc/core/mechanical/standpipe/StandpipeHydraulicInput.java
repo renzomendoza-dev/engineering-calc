@@ -33,6 +33,13 @@ import java.util.Set;
  *                                             Class I and III it is worked out as the required flow less the flow on the
  *                                             path; for Class II, which has no combining rule on the pages read, it is zero.
  *                                             A figure given is used as it is
+ * @param supplyStaticPressurePsi              the highest static (nonflowing) pressure at the supply end of the path, psi; nullable.
+ *                                             For a fire pump that is the pump boost at churn plus the supply pressure at the pump
+ *                                             suction, where the maximum system pressure normally occurs (A.10.2). Needed for the
+ *                                             static pressure checks (10.2.1, 10.2.4)
+ * @param lowestHoseConnectionHeightFt         height of the lowest hose connection above the supply point, ft; nullable, defaults to 0
+ *                                             (at the supply level, the most pressure). Negative where it is below. Where the static
+ *                                             pressure is highest. Only with {@code supplyStaticPressurePsi}
  * @param fireDepartmentConnections            the piping of each fire department connection, from the system to the connection,
  *                                             to show that each can supply the system demand (10.4.1, A.10.4.1); nullable. Class I
  *                                             and III only
@@ -53,6 +60,8 @@ public record StandpipeHydraulicInput(
 		Integer fireDepartmentConnectionInlets,
 		Double supplyDurationMinutes,
 		Double flowAddedAtSupplyGpm,
+		Double supplyStaticPressurePsi,
+		Double lowestHoseConnectionHeightFt,
 		List<StandpipeFdcLine> fireDepartmentConnections,
 		List<StandpipeSegment> segments) {
 
@@ -94,6 +103,12 @@ public record StandpipeHydraulicInput(
 		}
 		if (flowAddedAtSupplyGpm != null && flowAddedAtSupplyGpm < 0) {
 			throw new CalculationException("flowAddedAtSupplyGpm must not be negative");
+		}
+		if (supplyStaticPressurePsi != null && supplyStaticPressurePsi <= 0) {
+			throw new CalculationException("supplyStaticPressurePsi must be positive");
+		}
+		if (lowestHoseConnectionHeightFt != null && supplyStaticPressurePsi == null) {
+			throw new CalculationException("lowestHoseConnectionHeightFt needs a supplyStaticPressurePsi");
 		}
 		fireDepartmentConnections = fireDepartmentConnections == null ? List.of() : List.copyOf(fireDepartmentConnections);
 		if (!fireDepartmentConnections.isEmpty() && standpipeClass == StandpipeClass.CLASS_II) {

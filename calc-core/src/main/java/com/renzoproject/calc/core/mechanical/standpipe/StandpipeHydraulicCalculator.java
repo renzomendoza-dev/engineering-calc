@@ -31,6 +31,8 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	private static final double PSI_PER_FOOT = 0.433;
 	private static final double VELOCITY_COEFFICIENT = 0.4085;
 	private static final double MAXIMUM_PRESSURE_PSI = 400.0;
+	/** 10.2.4.1.3 and 10.2.4.2: above this static pressure at a hose connection a listed pressure-regulating device is required. */
+	private static final double STATIC_PRESSURE_LIMIT_PSI = 175.0;
 	private static final double PRD_RESIDUAL_LIMIT_PSI = 100.0;
 	private static final double MINIMUM_SUPPLY_MINUTES = 30.0;
 
@@ -101,6 +103,9 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		InletSize inletSize = input.fireDepartmentConnectionInletSize();
 		int requiredInlets = (int) Math.ceil(flowAtSupply / inletSize.flowPerInletGpm() - 1e-9);
 		fdcCheck(input, inletSize, requiredInlets, checks);
+		Double staticAtLowest = input.supplyStaticPressurePsi() == null ? null
+				: input.supplyStaticPressurePsi() - PSI_PER_FOOT * (input.lowestHoseConnectionHeightFt() == null ? 0.0 : input.lowestHoseConnectionHeightFt());
+		staticChecks(input, staticAtLowest, checks);
 		List<FdcLineRow> fdcLines = fdcLines(input, inletSize, flowAtSupply, pressure, checks);
 		Double highestFdcPressure = fdcLines.stream().map(FdcLineRow::pressureAtFdcPsi).max(Double::compare).orElse(null);
 		if (input.manualSystem()) {
@@ -110,7 +115,45 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		return new StandpipeHydraulicResult(demand.lines(), demand.totalGpm(), demand.capped(), demand.mostRemoteGpm(), flowAtSupply, flowAdded,
 				automatic, pressure,
 				totalFriction, totalElevation, requiredInlets, inletSize, input.manualSystem(), input.supplyDurationMinutes(),
-				flowAtSupply * input.supplyDurationMinutes(), fdcLines, highestFdcPressure, List.copyOf(rows), List.copyOf(checks));
+				flowAtSupply * input.supplyDurationMinutes(), fdcLines, highestFdcPressure, staticAtLowest, List.copyOf(rows), List.copyOf(checks));
+	}
+
+	/** A figure for a note: whole when it is whole, otherwise to a tenth. */
+	private static String trim(double value) {
+		return value == Math.rint(value) ? String.valueOf((long) value) : String.format(java.util.Locale.ROOT, "%.1f", value);
+	}
+
+	/**
+	 * The static (nonflowing) pressure limits: 400 psi anywhere in the system at any time (10.2.1), and
+	 * 175 psi at a hose connection, above which a listed pressure-regulating device is required
+	 * (10.2.4.2 for 2.5 in., 10.2.4.1.3 for 1.5 in.). The highest static pressure at a hose connection
+	 * is at the lowest one, the supply static pressure less the head of its height above the supply.
+	 */
+	private void staticChecks(StandpipeHydraulicInput input, Double staticAtLowest, List<StandpipeCheck> checks) {
+		Double supplyStatic = input.supplyStaticPressurePsi();
+		if (supplyStatic == null) {
+			checks.add(new StandpipeCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi", CheckStatus.OPEN, null,
+					STATIC_PRESSURE_LIMIT_PSI, "psi",
+					"Give the static pressure at the supply. For a fire pump it is the pump boost at churn plus the supply pressure at the "
+							+ "suction (A.10.2). Above 175 psi static a listed pressure-regulating device is required at a 2.5 in. connection "
+							+ "(10.2.4.2) and at a 1.5 in. connection (10.2.4.1.3)."));
+			return;
+		}
+		checks.add(new StandpipeCheck("10.2.1", "Static pressure at the supply not above 400 psi", supplyStatic <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS
+				: CheckStatus.FAIL, supplyStatic, MAXIMUM_PRESSURE_PSI, "psi",
+				"The maximum system pressure is normally at pump churn and includes both the pump boost and the supply pressure (A.10.2). "
+						+ "Express mains to vertical zones may exceed 400 psi where their listings allow, with no hose valves on them (10.2.3)."));
+		boolean above = staticAtLowest > STATIC_PRESSURE_LIMIT_PSI;
+		double height = input.lowestHoseConnectionHeightFt() == null ? 0.0 : input.lowestHoseConnectionHeightFt();
+		String basis = "Supply static " + Math.round(supplyStatic) + " psi, less 0.433 psi per foot over " + trim(height) + " ft.";
+		checks.add(new StandpipeCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi",
+				above ? CheckStatus.CONFIRM : CheckStatus.PASS, staticAtLowest, STATIC_PRESSURE_LIMIT_PSI, "psi",
+				above
+						? basis + " A listed pressure-regulating device is required to limit the static and residual pressure at the hose "
+								+ "connection to 175 psi, at a 2.5 in. connection (10.2.4.2) and at a 1.5 in. connection (10.2.4.1.3). The annex says "
+								+ "that on a Class I standpipe one should not be required where the hose and nozzles of the responding fire "
+								+ "company are rated for the pressures and the AHJ approves (A.10.2.4)."
+						: basis));
 	}
 
 	/**
@@ -330,9 +373,6 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		checks.add(new StandpipeCheck("10.2.1", "Pressure not above 400 psi",
 				pressure <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS : CheckStatus.FAIL, pressure, MAXIMUM_PRESSURE_PSI, "psi",
 				"Pump churn pressure and the city static pressure must also be kept within the limit."));
-		checks.add(new StandpipeCheck("10.2.4.2", "Static pressure at a hose connection not above 175 psi", CheckStatus.OPEN, null, 175.0, "psi",
-				"Needs the static pressure of the supply, which this calculation does not take. Above 175 psi static a listed pressure-regulating "
-						+ "device is required at a 2.5 in. connection (10.2.4.2) and at a 1.5 in. connection (10.2.4.1.3)."));
 		checks.add(new StandpipeCheck("5.2", "Water supply duration at least 30 minutes",
 				input.supplyDurationMinutes() >= MINIMUM_SUPPLY_MINUTES ? CheckStatus.PASS : CheckStatus.FAIL,
 				input.supplyDurationMinutes(), MINIMUM_SUPPLY_MINUTES, "min", null));

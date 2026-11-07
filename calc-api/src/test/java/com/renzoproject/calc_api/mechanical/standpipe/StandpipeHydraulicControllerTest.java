@@ -39,7 +39,7 @@ class StandpipeHydraulicControllerTest {
 	}
 
 	private static StandpipeHydraulicRequest carmona() {
-		return new StandpipeHydraulicRequest("CLASS_II", "NONE", null, null, 0, false, false, 0, false, false, null, null, 60.0, 50.0, null, List.of(hoseStation(), riser()));
+		return new StandpipeHydraulicRequest("CLASS_II", "NONE", null, null, 0, false, false, 0, false, false, null, null, 60.0, 50.0, null, null, null, List.of(hoseStation(), riser()));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class StandpipeHydraulicControllerTest {
 		var connection = new StandpipeSegmentDto("Top", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var second = new StandpipeSegmentDto("Second", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var standpipe = new StandpipeSegmentDto("Standpipe", "STANDPIPE", null, null, "BI", "SCH40", "4", 120.0, 100.0, 40.0, null);
-		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 1, false, false, 0, false, false, null, null, null, null, null, List.of(connection, second, standpipe));
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 1, false, false, 0, false, false, null, null, null, null, null, null, null, List.of(connection, second, standpipe));
 
 		StandpipeHydraulicResponse response = postForResponse(request);
 
@@ -75,7 +75,7 @@ class StandpipeHydraulicControllerTest {
 		var connection = new StandpipeSegmentDto("Top", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var second = new StandpipeSegmentDto("Second", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var standpipe = new StandpipeSegmentDto("Standpipe", "STANDPIPE", null, null, "BI", "SCH40", "4", 120.0, 100.0, 40.0, null);
-		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 1, true, true, "FOUR_INCH", null, null, null, null,
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 1, true, true, "FOUR_INCH", null, null, null, null, null, null,
 				List.of(connection, second, standpipe));
 
 		StandpipeHydraulicResponse response = postForResponse(request);
@@ -95,7 +95,7 @@ class StandpipeHydraulicControllerTest {
 		var standpipe = new StandpipeSegmentDto("Standpipe", "STANDPIPE", null, null, "BI", "SCH40", "4", 120.0, 100.0, 40.0, null);
 		var feed = new StandpipeSegmentDto("Feed", "OTHER", null, null, "BI", "SCH40", "4", 120.0, 50.0, 3.0, null);
 		var fdc = new StandpipeFdcLineDto("Street", null, 2, List.of(feed));
-		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null,
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null, null, null,
 				List.of(fdc), List.of(connection, second, standpipe));
 
 		StandpipeHydraulicResponse response = postForResponse(request);
@@ -115,7 +115,7 @@ class StandpipeHydraulicControllerTest {
 		var connection = new StandpipeSegmentDto("Top", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var second = new StandpipeSegmentDto("Second", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
 		var standpipe = new StandpipeSegmentDto("Standpipe", "STANDPIPE", null, null, "BI", "SCH40", "4", 120.0, 100.0, 40.0, null);
-		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null,
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null, null, null,
 				null, List.of(connection, second, standpipe));
 
 		StandpipeHydraulicResponse response = postForResponse(request);
@@ -126,9 +126,34 @@ class StandpipeHydraulicControllerTest {
 	}
 
 	@Test
+	void staticPressure_givenMakesTheStaticChecksInsteadOfLeavingThemOpen() throws Exception {
+		var connection = new StandpipeSegmentDto("Top", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
+		var second = new StandpipeSegmentDto("Second", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
+		var standpipe = new StandpipeSegmentDto("Standpipe", "STANDPIPE", null, null, "BI", "SCH40", "4", 120.0, 100.0, 40.0, null);
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null,
+				200.0, 20.0, null, List.of(connection, second, standpipe));
+
+		StandpipeHydraulicResponse response = postForResponse(request);
+
+		assertEquals(200.0 - 0.433 * 20.0, response.staticPressureAtLowestConnectionPsi(), 1e-9);
+		assertTrue(response.checks().stream().anyMatch(c -> c.clause().equals("10.2.4.2") && c.status().equals("CONFIRM")));
+		assertTrue(response.checks().stream().noneMatch(c -> c.clause().equals("10.2.4.2") && c.status().equals("OPEN")));
+	}
+
+	@Test
+	void lowestHoseConnectionHeightWithoutAStaticPressure_returns400() throws Exception {
+		var connection = new StandpipeSegmentDto("Top", "HOSE_PIPING", 250.0, "TWO_AND_HALF_INCH", "BI", "SCH40", "2-1/2", 120.0, 5.0, 0.0, null);
+		var request = new StandpipeHydraulicRequest("CLASS_I", "NONE", null, null, 0, false, false, 0, false, false, null, null, null, null,
+				null, 20.0, null, List.of(connection));
+
+		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void connectionPipingOnAClassIIsystem_returns400() throws Exception {
 		var feed = new StandpipeSegmentDto("Feed", "OTHER", null, null, "BI", "SCH40", "4", 120.0, 50.0, 3.0, null);
-		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null,
+		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, null,
 				List.of(new StandpipeFdcLineDto("Street", null, null, List.of(feed))), List.of(hoseStation(), riser()));
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
@@ -137,9 +162,9 @@ class StandpipeHydraulicControllerTest {
 
 	@Test
 	void manualClassII_andUnknownInletSize_return400() throws Exception {
-		var manualClassII = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, true, null, null, null, null, null,
+		var manualClassII = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, true, null, null, null, null, null, null, null,
 				List.of(hoseStation(), riser()));
-		var badSize = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, "SIX_INCH", null, null, null, null,
+		var badSize = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, "SIX_INCH", null, null, null, null, null, null,
 				List.of(hoseStation(), riser()));
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(manualClassII)))
@@ -150,7 +175,7 @@ class StandpipeHydraulicControllerTest {
 
 	@Test
 	void optionalFieldsMayBeLeftOut() throws Exception {
-		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, List.of(hoseStation(), riser()));
+		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, null, null, List.of(hoseStation(), riser()));
 
 		StandpipeHydraulicResponse response = postForResponse(request);
 
@@ -172,7 +197,7 @@ class StandpipeHydraulicControllerTest {
 
 	@Test
 	void unknownClass_returns400() throws Exception {
-		var request = new StandpipeHydraulicRequest("CLASS_IV", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, List.of(hoseStation()));
+		var request = new StandpipeHydraulicRequest("CLASS_IV", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, null, null, List.of(hoseStation()));
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
@@ -180,7 +205,7 @@ class StandpipeHydraulicControllerTest {
 
 	@Test
 	void noSegments_returns400() throws Exception {
-		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, List.of());
+		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, null, null, List.of());
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
@@ -190,7 +215,7 @@ class StandpipeHydraulicControllerTest {
 	void unknownFitting_returns400() throws Exception {
 		var segment = new StandpipeSegmentDto("A", "HOSE_PIPING", 100.0, "ONE_AND_HALF_INCH", "BI", "SCH40", "1-1/2", 120.0, 30.0, 0.0,
 				List.of(new StandpipeFittingDto("NOPE", 1, null)));
-		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, List.of(segment));
+		var request = new StandpipeHydraulicRequest("CLASS_II", null, null, null, 0, false, false, 0, false, false, null, null, null, null, null, null, null, List.of(segment));
 
 		mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());

@@ -24,6 +24,8 @@ import java.util.List;
  * @param waterSupplyVolumeGal  {@code flowAtSupply x duration}
  * @param fdcLines              one entry per fire department connection given, in input order; empty when none
  * @param highestFdcPressurePsi the highest pressure required at any of those connections; null when none
+ * @param staticPressureAtLowestConnectionPsi the static pressure at the lowest hose connection: the static pressure at the supply
+ *                              less 0.433 psi per foot of its height above the supply; null when no static pressure was given
  * @param segments              one row per input segment, in input order
  * @param checks                compliance lines
  */
@@ -45,6 +47,7 @@ public record StandpipeHydraulicResult(
 		double waterSupplyVolumeGal,
 		List<FdcLineRow> fdcLines,
 		Double highestFdcPressurePsi,
+		Double staticPressureAtLowestConnectionPsi,
 		List<SegmentRow> segments,
 		List<StandpipeCheck> checks) {
 

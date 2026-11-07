@@ -15,7 +15,9 @@ import java.util.List;
  * {@code manualSystem} may be left out and mean none, no and no. Domain rules stay in calc-core and
  * surface as a 400 through GlobalExceptionHandler. {@code fireDepartmentConnections} may be left
  * out; for Class I and III it gives each connection's piping from the system outward, so the
- * pressure the fire department must deliver at it is found (10.4.1).
+ * pressure the fire department must deliver at it is found (10.4.1). {@code supplyStaticPressurePsi}
+ * (and optionally {@code lowestHoseConnectionHeightFt}, ft above the supply, default 0) may be left
+ * out; given, they make the static pressure checks (10.2.1, 10.2.4) instead of leaving them open.
  */
 public record StandpipeHydraulicRequest(
 		@NotBlank String standpipeClass,
@@ -32,6 +34,8 @@ public record StandpipeHydraulicRequest(
 		Integer fireDepartmentConnectionInlets,
 		Double supplyDurationMinutes,
 		Double flowAddedAtSupplyGpm,
+		Double supplyStaticPressurePsi,
+		Double lowestHoseConnectionHeightFt,
 		List<@Valid StandpipeFdcLineDto> fireDepartmentConnections,
 		@NotEmpty List<@Valid StandpipeSegmentDto> segments) {
 

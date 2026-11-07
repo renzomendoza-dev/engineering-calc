@@ -43,6 +43,8 @@ public final class StandpipeHydraulicMapper {
 				request.fireDepartmentConnectionInlets(),
 				request.supplyDurationMinutes(),
 				request.flowAddedAtSupplyGpm(),
+				request.supplyStaticPressurePsi(),
+				request.lowestHoseConnectionHeightFt(),
 				request.fireDepartmentConnections() == null ? null : request.fireDepartmentConnections().stream()
 						.map(line -> new StandpipeFdcLine(line.label(), line.flowGpm(), line.inlets(),
 								line.segments().stream().map(StandpipeHydraulicMapper::toCoreSegment).toList()))
@@ -91,6 +93,7 @@ public final class StandpipeHydraulicMapper {
 				result.waterSupplyVolumeGal(),
 				result.fdcLines().stream().map(StandpipeHydraulicMapper::toDto).toList(),
 				result.highestFdcPressurePsi(),
+				result.staticPressureAtLowestConnectionPsi(),
 				result.segments().stream().map(StandpipeHydraulicMapper::toDto).toList(),
 				result.checks().stream().map(StandpipeCheckDto::from).toList());
 	}
