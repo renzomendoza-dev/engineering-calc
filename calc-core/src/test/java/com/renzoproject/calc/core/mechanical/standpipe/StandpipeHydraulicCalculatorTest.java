@@ -568,6 +568,72 @@ class StandpipeHydraulicCalculatorTest {
 		assertEquals(CheckStatus.CONFIRM, status(result, "10.4.4"));
 	}
 
+	private StandpipeHydraulicResult withFdcSized(InletSize inletSize, boolean manual, List<StandpipeFdcLine> lines) {
+		return calculator.calculate(new StandpipeHydraulicInput(StandpipeClass.CLASS_I, SprinklerProtection.NONE, null, null, 0, false, false, 0, false,
+				manual, inletSize, null, null, null, null, null, lines, twoConnectionsAndRiser()));
+	}
+
+	@Test
+	void pumperEnvelope_isTheConservativeBasisOfAnnexA10_7_andAPressureAboveItIsConfirmedNotFailed() {
+		var flat = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Flat", "4", 10, 0)));
+		var base = withFdc(StandpipeClass.CLASS_I, false, List.of(flat));
+		var check = base.checks().stream().filter(c -> c.clause().equals("A.10.7") && c.description().contains("Street")).findFirst().orElseThrow();
+
+		// 500 gpm is the 250 psi rating point of a 1,000 gpm pumper.
+		assertEquals(250.0, check.limit(), 1e-9);
+		assertEquals(base.fdcLines().get(0).pressureAtFdcPsi(), check.actual(), 1e-9);
+		assertEquals(CheckStatus.PASS, check.status());
+
+		double riseFt = (400.0 - base.pressureAtSupplyPsi()) / 0.433;
+		var high = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Up", "4", 10, riseFt)));
+		assertEquals(CheckStatus.CONFIRM, statusOf(withFdc(StandpipeClass.CLASS_I, false, List.of(high)), "A.10.7", "Street"));
+	}
+
+	@Test
+	void pumperEnvelope_stepsDownWithTheFlow_andAskForMoreThanOnePumperAboveTheRatedFlow() {
+		var at700 = withFdc(StandpipeClass.CLASS_I, false, List.of(new StandpipeFdcLine("A", 700.0, null, List.of(fdcPipe("p", "6", 10, 0)))));
+		var at1000 = withFdc(StandpipeClass.CLASS_I, false, List.of(new StandpipeFdcLine("A", 1000.0, null, List.of(fdcPipe("p", "6", 10, 0)))));
+		var at1200 = withFdc(StandpipeClass.CLASS_I, false, List.of(new StandpipeFdcLine("A", 1200.0, null, List.of(fdcPipe("p", "6", 10, 0)))));
+
+		assertEquals(200.0, at700.checks().stream().filter(c -> c.clause().equals("A.10.7")).findFirst().orElseThrow().limit(), 1e-9);
+		assertEquals(150.0, at1000.checks().stream().filter(c -> c.clause().equals("A.10.7")).findFirst().orElseThrow().limit(), 1e-9);
+		var above = at1200.checks().stream().filter(c -> c.clause().equals("A.10.7")).findFirst().orElseThrow();
+		assertEquals(CheckStatus.CONFIRM, above.status());
+		assertEquals(1000.0, above.limit(), 1e-9);
+		assertEquals("gpm", above.unit());
+	}
+
+	@Test
+	void largeInlets_areCheckedAgainstThe185PsiWorkingPressureOfLargeSupplyHose() {
+		var flat = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Flat", "4", 10, 0)));
+		double base = withFdcSized(InletSize.FOUR_INCH, false, List.of(flat)).pressureAtSupplyPsi();
+		var low = withFdcSized(InletSize.FOUR_INCH, false, List.of(flat));
+		var between = new StandpipeFdcLine("Street", null, null, List.of(fdcPipe("Up", "4", 10, (200.0 - base) / 0.433)));
+
+		assertEquals(CheckStatus.PASS, statusOf(low, "A.10.7.3.1.3", "Street"));
+		var over = withFdcSized(InletSize.FIVE_INCH, false, List.of(between));
+		assertEquals(CheckStatus.CONFIRM, statusOf(over, "A.10.7.3.1.3", "Street"));
+		assertEquals(185.0, over.checks().stream().filter(c -> c.clause().equals("A.10.7.3.1.3")).findFirst().orElseThrow().limit(), 1e-9);
+		// 200 psi is above the 185 psi hose rating but within what a pumper delivers at 500 gpm.
+		assertEquals(CheckStatus.PASS, statusOf(over, "A.10.7", "Street"));
+		// 2.5 in. inlets are not on large supply hose.
+		assertTrue(withFdcSized(InletSize.TWO_AND_HALF_INCH, false, List.of(between)).checks().stream()
+				.noneMatch(c -> c.clause().equals("A.10.7.3.1.3")));
+	}
+
+	@Test
+	void aManualSystemWithNoConnectionPiping_checksThePressureAtTheSupplyAgainstThePumper() {
+		var manual = withFdcSized(InletSize.FOUR_INCH, true, null);
+		var automatic = withFdcSized(InletSize.FOUR_INCH, false, null);
+
+		var check = manual.checks().stream().filter(c -> c.clause().equals("A.10.7")).findFirst().orElseThrow();
+		assertEquals(manual.pressureAtSupplyPsi(), check.actual(), 1e-9);
+		assertTrue(check.description().startsWith("Fire department connection"));
+		assertTrue(manual.checks().stream().anyMatch(c -> c.clause().equals("A.10.7.3.1.3")));
+		// Without a connection to check, an automatic system has no pressure to put to the pumper.
+		assertTrue(automatic.checks().stream().noneMatch(c -> c.clause().startsWith("A.10.7")));
+	}
+
 	private StandpipeHydraulicResult withStatic(Double staticPsi, Double heightFt) {
 		return calculator.calculate(new StandpipeHydraulicInput(StandpipeClass.CLASS_I, SprinklerProtection.NONE, null, null, 0, false, false, 0, false,
 				false, null, null, null, null, staticPsi, heightFt, null, twoConnectionsAndRiser()));

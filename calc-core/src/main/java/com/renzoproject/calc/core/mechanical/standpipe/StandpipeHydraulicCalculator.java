@@ -37,6 +37,14 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	private static final double OTHER_STANDPIPE_RESIDUAL_PSI = 100.0;
 	private static final double PRD_RESIDUAL_LIMIT_PSI = 100.0;
 	private static final double MINIMUM_SUPPLY_MINUTES = 30.0;
+	/**
+	 * A.10.7: the conservative basis for what the fire department can deliver, a 1,000 gpm pumper at the NFPA 1901
+	 * rating points: 1,000 gpm at 150 psi, 700 gpm at 200 psi and 500 gpm at 250 psi.
+	 */
+	private static final double PUMPER_RATED_FLOW_GPM = 1000.0;
+	private static final double[][] PUMPER_RATING_POINTS_GPM_PSI = {{500.0, 250.0}, {700.0, 200.0}, {1000.0, 150.0}};
+	/** A.10.7.3.1.3: the maximum working pressure of 4 in. and larger supply hose (NFPA 1961). */
+	private static final double LARGE_HOSE_WORKING_PRESSURE_PSI = 185.0;
 
 	private final PipeDimensionResolver dimensionResolver;
 	private final StandpipeReferenceResolver referenceResolver;
@@ -124,6 +132,10 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		Double highestFdcPressure = fdcLines.stream().map(FdcLineRow::pressureAtFdcPsi).max(Double::compare).orElse(null);
 		if (input.manualSystem()) {
 			manualChecks(highestFdcPressure != null ? highestFdcPressure : pressure, flowAtSupply, fdcLines.isEmpty(), checks);
+			if (fdcLines.isEmpty()) {
+				// With no connection piping given, the manual system's pressure at the supply is the one the fire department pumps in.
+				pumperChecks("Fire department connection", pressure, flowAtSupply, inletSize, checks);
+			}
 		}
 
 		return new StandpipeHydraulicResult(demand.lines(), demand.totalGpm(), demand.capped(), demand.mostRemoteGpm(), flowAtSupply, flowAdded,
@@ -247,6 +259,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 					pressure <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS : CheckStatus.FAIL, pressure, MAXIMUM_PRESSURE_PSI, "psi", null));
 			checks.add(new StandpipeCheck("10.2.2", line.label() + ": pressure required at the connection not above the working pressure of the components",
 					CheckStatus.CONFIRM, pressure, null, "psi", "Compare with the working pressure of the piping, valves and the connection."));
+			pumperChecks(line.label(), pressure, flow, inletSize, checks);
 			if (line.inlets() != null) {
 				double capacity = line.inlets() * inletSize.flowPerInletGpm();
 				checks.add(new StandpipeCheck(inletSize.clause(), line.label() + ": " + inletSize.label() + " inlets, one per "
@@ -281,6 +294,41 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		if (checkComponents) {
 			checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
 					CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
+		}
+	}
+
+	/**
+	 * A.10.7 and A.10.7.3.1.3, for the pressure the fire department must deliver at a connection. The first
+	 * compares it with what one 1,000 gpm pumper delivers at the NFPA 1901 rating points: it is the Annex's
+	 * conservative basis, not a limit (the sign at the connection may give another pressure), so a pressure
+	 * above it is confirmed against the local apparatus rather than failed. The second applies to 4 in. and
+	 * 5 in. inlets, whose supply hose is rated 185 psi.
+	 */
+	private void pumperChecks(String who, double pressure, double flow, InletSize inletSize, List<StandpipeCheck> checks) {
+		Double available = null;
+		if (flow <= PUMPER_RATED_FLOW_GPM + 1e-9) {
+			for (double[] point : PUMPER_RATING_POINTS_GPM_PSI) {
+				if (flow <= point[0] + 1e-9) {
+					available = point[1];
+					break;
+				}
+			}
+		}
+		String basis = " The Annex's conservative basis is a 1,000 gpm pumper at the NFPA 1901 rating points: 1,000 gpm at 150 psi, 700 gpm at 200 psi "
+				+ "and 500 gpm at 250 psi. It is not a limit; the local fire department's apparatus governs (A.10.7).";
+		if (available == null) {
+			checks.add(new StandpipeCheck("A.10.7", who + ": flow within one 1,000 gpm pumper",
+					CheckStatus.CONFIRM, flow, PUMPER_RATED_FLOW_GPM, "gpm",
+					"More than one pumper, or a larger one, is needed to supply " + Math.round(flow) + " gpm." + basis));
+		} else {
+			checks.add(new StandpipeCheck("A.10.7", who + ": pressure required at the connection within what one 1,000 gpm pumper delivers at " + Math.round(flow) + " gpm",
+					pressure <= available + 1e-9 ? CheckStatus.PASS : CheckStatus.CONFIRM, pressure, available, "psi", basis.trim()));
+		}
+		if (inletSize.largeDiameter()) {
+			checks.add(new StandpipeCheck("A.10.7.3.1.3", who + ": pressure required at the connection not above the " + (long) LARGE_HOSE_WORKING_PRESSURE_PSI
+					+ " psi working pressure of 4 in. and larger supply hose",
+					pressure <= LARGE_HOSE_WORKING_PRESSURE_PSI + 1e-9 ? CheckStatus.PASS : CheckStatus.CONFIRM, pressure, LARGE_HOSE_WORKING_PRESSURE_PSI, "psi",
+					"Above this, 2½ in. inlets are used unless hose rated for the higher pressure is approved (NFPA 1961)."));
 		}
 	}
 
