@@ -15,7 +15,11 @@ import java.util.List;
  * @param pressureAtSupplyPsi   pressure required at the supply end of the path, at that flow
  * @param totalFrictionLossPsi  friction over the whole path
  * @param totalElevationPsi     elevation pressure over the whole path
- * @param requiredFdcInlets     2.5 in. fire department connection inlets, one per 250 gpm (10.7.3)
+ * @param requiredFdcInlets     fire department connection inlets of {@code fdcInletSize}, one per 250 gpm for 2.5 in. (10.7.3),
+ *                              500 gpm for 4 in. and 750 gpm for 5 in.
+ * @param fdcInletSize          the inlet size the count is for
+ * @param manualSystem          whether the system is manual, so the pressure at the supply is the pressure needed at the fire
+ *                              department connection (10.2.6.1.2)
  * @param supplyDurationMinutes duration used for the volume
  * @param waterSupplyVolumeGal  {@code flowAtSupply x duration}
  * @param segments              one row per input segment, in input order
@@ -33,6 +37,8 @@ public record StandpipeHydraulicResult(
 		double totalFrictionLossPsi,
 		double totalElevationPsi,
 		int requiredFdcInlets,
+		InletSize fdcInletSize,
+		boolean manualSystem,
 		double supplyDurationMinutes,
 		double waterSupplyVolumeGal,
 		List<SegmentRow> segments,

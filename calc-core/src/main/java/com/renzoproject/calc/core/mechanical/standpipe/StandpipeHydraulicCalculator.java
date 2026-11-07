@@ -29,7 +29,6 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 
 	private static final double PSI_PER_FOOT = 0.433;
 	private static final double VELOCITY_COEFFICIENT = 0.4085;
-	private static final double FDC_INLET_FLOW_GPM = 250.0;
 	private static final double MAXIMUM_PRESSURE_PSI = 400.0;
 	private static final double PRD_RESIDUAL_LIMIT_PSI = 100.0;
 	private static final double MINIMUM_SUPPLY_MINUTES = 30.0;
@@ -98,13 +97,32 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				: automatic ? Math.max(0.0, demand.totalGpm() - flow) : 0.0;
 		double flowAtSupply = flow + flowAdded;
 		supplyChecks(input, demand, hoseConnectionFlow, flowAtSupply, flowAdded, automatic, pressure, checks);
-		int requiredInlets = (int) Math.ceil(flowAtSupply / FDC_INLET_FLOW_GPM - 1e-9);
-		fdcCheck(input, requiredInlets, flowAtSupply, checks);
+		InletSize inletSize = input.fireDepartmentConnectionInletSize();
+		int requiredInlets = (int) Math.ceil(flowAtSupply / inletSize.flowPerInletGpm() - 1e-9);
+		fdcCheck(input, inletSize, requiredInlets, checks);
+		if (input.manualSystem()) {
+			manualChecks(pressure, flowAtSupply, checks);
+		}
 
 		return new StandpipeHydraulicResult(demand.lines(), demand.totalGpm(), demand.capped(), demand.mostRemoteGpm(), flowAtSupply, flowAdded,
 				automatic, pressure,
-				totalFriction, totalElevation, requiredInlets, input.supplyDurationMinutes(), flowAtSupply * input.supplyDurationMinutes(),
-				List.copyOf(rows), List.copyOf(checks));
+				totalFriction, totalElevation, requiredInlets, inletSize, input.manualSystem(), input.supplyDurationMinutes(),
+				flowAtSupply * input.supplyDurationMinutes(), List.copyOf(rows), List.copyOf(checks));
+	}
+
+	/**
+	 * A manual system has no attached supply: the calculation ends at the fire department connection and the
+	 * pressure found is what the fire department must pump in (10.2.6.1.2).
+	 */
+	private void manualChecks(double pressureAtFdc, double flowAtSupply, List<StandpipeCheck> checks) {
+		checks.add(new StandpipeCheck("10.2.6.1.2", "Manual system: 100 psi at the most remote 2.5 in. hose connection, calculated back to the fire department connection",
+				CheckStatus.INFO, pressureAtFdc, null, "psi",
+				"The pressure at the supply is the pressure required at the fire department connection, at " + Math.round(flowAtSupply) + " gpm."));
+		checks.add(new StandpipeCheck("10.4.4", "The local fire department is consulted on the water supply its apparatus can deliver",
+				CheckStatus.CONFIRM, pressureAtFdc, null, "psi",
+				"Confirm the pumpers can deliver " + Math.round(flowAtSupply) + " gpm at this pressure."));
+		checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
+				CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
 	}
 
 	private record Demand(List<DemandLine> lines, double totalGpm, double mostRemoteGpm, boolean capped) {
@@ -127,14 +145,24 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				? new DemandLine("10.6.1.1.3", "Horizontal standpipe serving three or more connections on a floor", 750)
 				: new DemandLine("10.6.1.1.1", "Most remote standpipe: 250 gpm at each of the two most remote 2.5 in. connections", 500));
 
+		if (input.risersEndAtDifferentLevels()) {
+			checks.add(new StandpipeCheck("10.6.1.2.1.1", "Standpipes ending at different floor levels need a separate calculation for each level",
+					CheckStatus.CONFIRM, null, null, null,
+					"This calculation follows one path. Run it again for the standpipes that exist on each level, and in each run count only "
+							+ "the standpipes that exist on that level as additional standpipes (10.6.1.2.1.2)."));
+		}
+
+		// A lateral serving a single hose connection is treated as if that connection were on a separate standpipe (10.6.1.1.7).
+		int laterals = input.singleConnectionLaterals();
 		double additional = 0;
-		int extra = input.additionalStandpipes();
+		int extra = input.additionalStandpipes() + laterals;
+		String lateralNote = laterals > 0 ? ", of which " + laterals + " single-connection lateral(s) counted as separate standpipes (10.6.1.1.7)" : "";
 		if (extra > 0 && !input.floorAreaOver80000SqFt()) {
 			additional = 250.0 * extra;
-			lines.add(new DemandLine("10.6.1.1.4", extra + " additional standpipe(s) at 250 gpm each", additional));
+			lines.add(new DemandLine("10.6.1.1.4", extra + " additional standpipe(s) at 250 gpm each" + lateralNote, additional));
 		} else if (extra > 0) {
 			additional = 500;
-			lines.add(new DemandLine("10.6.1.1.4.1", "Floors over 80,000 sq ft: 500 gpm for the second standpipe", 500));
+			lines.add(new DemandLine("10.6.1.1.4.1", "Floors over 80,000 sq ft: 500 gpm for the second standpipe" + lateralNote, 500));
 			if (extra >= 2 && input.sprinklerProtection() == SprinklerProtection.NONE) {
 				additional += 250;
 				lines.add(new DemandLine("10.6.1.1.4.1", "Third standpipe, unsprinklered building: 250 gpm", 250));
@@ -231,15 +259,20 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				input.supplyDurationMinutes(), MINIMUM_SUPPLY_MINUTES, "min", null));
 	}
 
-	private void fdcCheck(StandpipeHydraulicInput input, int requiredInlets, double flowAtSupply, List<StandpipeCheck> checks) {
+	private void fdcCheck(StandpipeHydraulicInput input, InletSize size, int requiredInlets, List<StandpipeCheck> checks) {
 		Integer provided = input.fireDepartmentConnectionInlets();
+		String description = size.label() + " fire department connection inlets, one per " + (long) size.flowPerInletGpm() + " gpm";
+		String highRise = "At least two connections are needed per zone in high-rise buildings (10.7.2.2).";
+		String hose = size.largeDiameter()
+				? " The maximum operating pressure of the hose that supplies the connection (NFPA 1961) must be considered when choosing a large inlet (10.7.3.1.3)."
+				: "";
 		if (provided == null) {
-			checks.add(new StandpipeCheck("10.7.3", "2.5 in. fire department connection inlets, one per 250 gpm", CheckStatus.INFO, null,
-					(double) requiredInlets, "inlets", "No inlet count given to compare with. A 4 in. inlet counts as 500 gpm and a 5 in. inlet as "
-							+ "750 gpm (10.7.3.1); at least two connections are needed per zone in high-rise buildings (10.7.2.2)."));
+			checks.add(new StandpipeCheck(size.clause(), description, CheckStatus.INFO, null, (double) requiredInlets, "inlets",
+					"No inlet count given to compare with. " + highRise + hose));
 		} else {
-			checks.add(new StandpipeCheck("10.7.3", "2.5 in. fire department connection inlets, one per 250 gpm",
-					provided >= requiredInlets ? CheckStatus.PASS : CheckStatus.FAIL, (double) provided, (double) requiredInlets, "inlets", null));
+			checks.add(new StandpipeCheck(size.clause(), description,
+					provided >= requiredInlets ? CheckStatus.PASS : CheckStatus.FAIL, (double) provided, (double) requiredInlets, "inlets",
+					(highRise + hose).trim()));
 		}
 	}
 

@@ -18,7 +18,15 @@ import java.util.Set;
  * @param additionalStandpipes                 standpipes in the building besides the hydraulically most remote one
  * @param floorAreaOver80000SqFt               whether the floors exceed 80,000 sq ft each (10.6.1.1.4.1)
  * @param horizontalStandpipeOnThreeConnections whether a horizontal standpipe serves three or more connections on a floor (10.6.1.1.3)
- * @param fireDepartmentConnectionInlets       2.5 in. inlets provided on the fire department connections; nullable
+ * @param singleConnectionLaterals             lateral pipes that each serve a single hose connection; each is treated as served from
+ *                                             a separate standpipe for the minimum flow (10.6.1.1.7). Class I and III only
+ * @param risersEndAtDifferentLevels           whether the standpipes end at different floor levels, which needs a separate
+ *                                             calculation for the standpipes on each level (10.6.1.2.1.1)
+ * @param manualSystem                         whether the system is manual, so the path ends at the fire department connection and
+ *                                             the pressure found is the pressure the fire department must supply there
+ *                                             (10.2.6.1.2). Class I and III only
+ * @param fireDepartmentConnectionInletSize    size of the inlets provided; nullable, defaults to 2.5 in.
+ * @param fireDepartmentConnectionInlets       inlets of that size provided on the fire department connections; nullable
  * @param supplyDurationMinutes                duration the supply is sized for, minutes; nullable, defaults to 30 (5.2)
  * @param flowAddedAtSupplyGpm                 flow that joins at the supply end of the path with no friction of its own
  *                                             (other standpipes, the sprinkler allowance), gpm; nullable. When omitted for
@@ -35,6 +43,10 @@ public record StandpipeHydraulicInput(
 		int additionalStandpipes,
 		boolean floorAreaOver80000SqFt,
 		boolean horizontalStandpipeOnThreeConnections,
+		int singleConnectionLaterals,
+		boolean risersEndAtDifferentLevels,
+		boolean manualSystem,
+		InletSize fireDepartmentConnectionInletSize,
 		Integer fireDepartmentConnectionInlets,
 		Double supplyDurationMinutes,
 		Double flowAddedAtSupplyGpm,
@@ -57,6 +69,15 @@ public record StandpipeHydraulicInput(
 		}
 		if (additionalStandpipes < 0) {
 			throw new CalculationException("additionalStandpipes must not be negative");
+		}
+		if (singleConnectionLaterals < 0) {
+			throw new CalculationException("singleConnectionLaterals must not be negative");
+		}
+		if (manualSystem && standpipeClass == StandpipeClass.CLASS_II) {
+			throw new CalculationException("a manual system is for Class I or Class III; a Class II system is automatic");
+		}
+		if (fireDepartmentConnectionInletSize == null) {
+			fireDepartmentConnectionInletSize = InletSize.TWO_AND_HALF_INCH;
 		}
 		if (fireDepartmentConnectionInlets != null && fireDepartmentConnectionInlets < 0) {
 			throw new CalculationException("fireDepartmentConnectionInlets must not be negative");

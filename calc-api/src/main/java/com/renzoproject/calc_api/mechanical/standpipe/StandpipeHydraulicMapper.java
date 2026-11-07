@@ -2,6 +2,7 @@ package com.renzoproject.calc_api.mechanical.standpipe;
 
 import com.renzoproject.calc.core.mechanical.standpipe.CombinedHazard;
 import com.renzoproject.calc.core.mechanical.standpipe.HoseConnectionSize;
+import com.renzoproject.calc.core.mechanical.standpipe.InletSize;
 import com.renzoproject.calc.core.mechanical.standpipe.PipeRole;
 import com.renzoproject.calc.core.mechanical.standpipe.SprinklerProtection;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeClass;
@@ -32,6 +33,11 @@ public final class StandpipeHydraulicMapper {
 				request.additionalStandpipes(),
 				request.floorAreaOver80000SqFt(),
 				request.horizontalStandpipeOnThreeConnections(),
+				request.singleConnectionLaterals() == null ? 0 : request.singleConnectionLaterals(),
+				Boolean.TRUE.equals(request.risersEndAtDifferentLevels()),
+				Boolean.TRUE.equals(request.manualSystem()),
+				blank(request.fireDepartmentConnectionInletSize()) ? null
+						: EnumParsing.parse(InletSize.class, request.fireDepartmentConnectionInletSize(), "fire department connection inlet size"),
 				request.fireDepartmentConnectionInlets(),
 				request.supplyDurationMinutes(),
 				request.flowAddedAtSupplyGpm(),
@@ -73,6 +79,8 @@ public final class StandpipeHydraulicMapper {
 				result.totalFrictionLossPsi(),
 				result.totalElevationPsi(),
 				result.requiredFdcInlets(),
+				result.fdcInletSize().name(),
+				result.manualSystem(),
 				result.supplyDurationMinutes(),
 				result.waterSupplyVolumeGal(),
 				result.segments().stream().map(StandpipeHydraulicMapper::toDto).toList(),

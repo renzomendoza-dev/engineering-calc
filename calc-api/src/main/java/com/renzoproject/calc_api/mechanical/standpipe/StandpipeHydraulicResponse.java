@@ -18,6 +18,8 @@ public record StandpipeHydraulicResponse(
 		double totalFrictionLossPsi,
 		double totalElevationPsi,
 		int requiredFdcInlets,
+		String fdcInletSize,
+		boolean manualSystem,
 		double supplyDurationMinutes,
 		double waterSupplyVolumeGal,
 		List<StandpipeSegmentRowDto> segments,
