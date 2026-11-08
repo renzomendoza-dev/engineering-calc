@@ -156,7 +156,7 @@
     "sixtyPercentMm2": 1274,
     "oneWire53PercentMm2": 1125,
     "twoWires53PercentMm2": 658,
-    "nominalInternalDiameterMm": 52.0,
+    "nominalInternalDiameterMm": 52,
     "totalArea100PercentMm2": 2123
   },
   {
@@ -234,7 +234,7 @@
     "racewaySizeMm": 65,
     "over2Wires40PercentMm2": 1267,
     "sixtyPercentMm2": 1900,
-    "oneWire53PercentMm2": 1578,
+    "oneWire53PercentMm2": 1678,
     "twoWires53PercentMm2": 982,
     "nominalInternalDiameterMm": 63.5,
     "totalArea100PercentMm2": 3167
@@ -247,7 +247,7 @@
     "oneWire53PercentMm2": 2417,
     "twoWires53PercentMm2": 1414,
     "nominalInternalDiameterMm": 76.2,
-    "totalArea100PercentMm2": 4562
+    "totalArea100PercentMm2": 4560
   },
   {
     "conduitType": "FMC",
@@ -271,7 +271,7 @@
   },
   {
     "conduitType": "IMC",
-    "racewaySizeMm": 20,
+    "racewaySizeMm": 15,
     "over2Wires40PercentMm2": 89,
     "sixtyPercentMm2": 133,
     "oneWire53PercentMm2": 117,
@@ -281,13 +281,23 @@
   },
   {
     "conduitType": "IMC",
-    "racewaySizeMm": 25,
+    "racewaySizeMm": 20,
     "over2Wires40PercentMm2": 151,
-    "sixtyPercentMm2": 231,
+    "sixtyPercentMm2": 226,
     "oneWire53PercentMm2": 200,
     "twoWires53PercentMm2": 117,
     "nominalInternalDiameterMm": 21.9,
     "totalArea100PercentMm2": 377
+  },
+  {
+    "conduitType": "IMC",
+    "racewaySizeMm": 25,
+    "over2Wires40PercentMm2": 248,
+    "sixtyPercentMm2": 372,
+    "oneWire53PercentMm2": 329,
+    "twoWires53PercentMm2": 192,
+    "nominalInternalDiameterMm": 28.1,
+    "totalArea100PercentMm2": 620
   },
   {
     "conduitType": "IMC",
@@ -376,7 +386,7 @@
     "sixtyPercentMm2": 121,
     "oneWire53PercentMm2": 107,
     "twoWires53PercentMm2": 62,
-    "nominalInternalDiameterMm": 16.0,
+    "nominalInternalDiameterMm": 16,
     "totalArea100PercentMm2": 201
   },
   {
@@ -386,7 +396,7 @@
     "sixtyPercentMm2": 208,
     "oneWire53PercentMm2": 184,
     "twoWires53PercentMm2": 107,
-    "nominalInternalDiameterMm": 21.0,
+    "nominalInternalDiameterMm": 21,
     "totalArea100PercentMm2": 346
   },
   {
@@ -405,7 +415,7 @@
     "over2Wires40PercentMm2": 387,
     "sixtyPercentMm2": 581,
     "oneWire53PercentMm2": 513,
-    "twoWires53PercentMm2": 301,
+    "twoWires53PercentMm2": 300,
     "nominalInternalDiameterMm": 35.1,
     "totalArea100PercentMm2": 968
   },
@@ -493,7 +503,7 @@
     "conduitType": "LFNC-B",
     "racewaySizeMm": 50,
     "over2Wires40PercentMm2": 836,
-    "sixtyPercentMm2": 1108,
+    "sixtyPercentMm2": 1255,
     "oneWire53PercentMm2": 1108,
     "twoWires53PercentMm2": 648,
     "nominalInternalDiameterMm": 51.6,
@@ -507,7 +517,7 @@
     "oneWire53PercentMm2": 63.2,
     "twoWires53PercentMm2": 36.9,
     "nominalInternalDiameterMm": 12.3,
-    "totalArea100PercentMm2": 119.15
+    "totalArea100PercentMm2": 119.19
   },
   {
     "conduitType": "LFNC-C",
@@ -517,7 +527,7 @@
     "oneWire53PercentMm2": 103.2,
     "twoWires53PercentMm2": 60.4,
     "nominalInternalDiameterMm": 15.7,
-    "totalArea100PercentMm2": 194.773
+    "totalArea100PercentMm2": 194.778
   },
   {
     "conduitType": "LFNC-C",
@@ -527,17 +537,17 @@
     "oneWire53PercentMm2": 175.4,
     "twoWires53PercentMm2": 104.3,
     "nominalInternalDiameterMm": 20.7,
-    "totalArea100PercentMm2": 336.526
+    "totalArea100PercentMm2": 336.568
   },
   {
     "conduitType": "LFNC-C",
     "racewaySizeMm": 25,
-    "over2Wires40PercentMm2": 215.0,
+    "over2Wires40PercentMm2": 215,
     "sixtyPercentMm2": 322.5,
     "oneWire53PercentMm2": 284.9,
-    "twoWires53PercentMm2": 166.9,
+    "twoWires53PercentMm2": 166.6,
     "nominalInternalDiameterMm": 26.2,
-    "totalArea100PercentMm2": 537.565
+    "totalArea100PercentMm2": 537.566
   },
   {
     "conduitType": "LFNC-C",
@@ -546,8 +556,8 @@
     "sixtyPercentMm2": 570.6,
     "oneWire53PercentMm2": 504.1,
     "twoWires53PercentMm2": 294.8,
-    "nominalInternalDiameterMm": 34.5,
-    "totalArea100PercentMm2": 951.03
+    "nominalInternalDiameterMm": 34.8,
+    "totalArea100PercentMm2": 951.039
   },
   {
     "conduitType": "LFNC-C",
@@ -555,7 +565,7 @@
     "over2Wires40PercentMm2": 509.2,
     "sixtyPercentMm2": 763.8,
     "oneWire53PercentMm2": 674.7,
-    "twoWires53PercentMm2": 394.9,
+    "twoWires53PercentMm2": 394.6,
     "nominalInternalDiameterMm": 40.3,
     "totalArea100PercentMm2": 1272.963
   },
@@ -567,7 +577,7 @@
     "oneWire53PercentMm2": 1123.1,
     "twoWires53PercentMm2": 656.9,
     "nominalInternalDiameterMm": 51.9,
-    "totalArea100PercentMm2": 2119.115
+    "totalArea100PercentMm2": 2119.063
   },
   {
     "conduitType": "LFMC",
@@ -601,9 +611,9 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 32,
+    "racewaySizeMm": 25,
     "over2Wires40PercentMm2": 226,
-    "sixtyPercentMm2": 339,
+    "sixtyPercentMm2": 338,
     "oneWire53PercentMm2": 299,
     "twoWires53PercentMm2": 175,
     "nominalInternalDiameterMm": 26.8,
@@ -611,9 +621,9 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 40,
-    "over2Wires40PercentMm2": 391,
-    "sixtyPercentMm2": 586,
+    "racewaySizeMm": 32,
+    "over2Wires40PercentMm2": 394,
+    "sixtyPercentMm2": 591,
     "oneWire53PercentMm2": 522,
     "twoWires53PercentMm2": 305,
     "nominalInternalDiameterMm": 35.4,
@@ -621,7 +631,7 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 50,
+    "racewaySizeMm": 40,
     "over2Wires40PercentMm2": 510,
     "sixtyPercentMm2": 765,
     "oneWire53PercentMm2": 676,
@@ -631,8 +641,8 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 65,
-    "over2Wires40PercentMm2": 835,
+    "racewaySizeMm": 50,
+    "over2Wires40PercentMm2": 836,
     "sixtyPercentMm2": 1255,
     "oneWire53PercentMm2": 1108,
     "twoWires53PercentMm2": 648,
@@ -641,7 +651,7 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 80,
+    "racewaySizeMm": 65,
     "over2Wires40PercentMm2": 1259,
     "sixtyPercentMm2": 1888,
     "oneWire53PercentMm2": 1668,
@@ -651,7 +661,7 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 90,
+    "racewaySizeMm": 80,
     "over2Wires40PercentMm2": 1931,
     "sixtyPercentMm2": 2896,
     "oneWire53PercentMm2": 2559,
@@ -661,17 +671,17 @@
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 100,
+    "racewaySizeMm": 90,
     "over2Wires40PercentMm2": 2511,
     "sixtyPercentMm2": 3766,
     "oneWire53PercentMm2": 3327,
-    "twoWires53PercentMm2": 1949,
+    "twoWires53PercentMm2": 1946,
     "nominalInternalDiameterMm": 89.4,
     "totalArea100PercentMm2": 6277
   },
   {
     "conduitType": "LFMC",
-    "racewaySizeMm": 130,
+    "racewaySizeMm": 100,
     "over2Wires40PercentMm2": 3275,
     "sixtyPercentMm2": 4912,
     "oneWire53PercentMm2": 4339,
@@ -706,7 +716,7 @@
     "sixtyPercentMm2": 344,
     "oneWire53PercentMm2": 303,
     "twoWires53PercentMm2": 177,
-    "nominalInternalDiameterMm": 27.0,
+    "nominalInternalDiameterMm": 27,
     "totalArea100PercentMm2": 573
   },
   {
@@ -826,7 +836,7 @@
     "sixtyPercentMm2": 267,
     "oneWire53PercentMm2": 236,
     "twoWires53PercentMm2": 138,
-    "nominalInternalDiameterMm": 23.4,
+    "nominalInternalDiameterMm": 23.8,
     "totalArea100PercentMm2": 445
   },
   {
@@ -895,7 +905,7 @@
     "over2Wires40PercentMm2": 2907,
     "sixtyPercentMm2": 4361,
     "oneWire53PercentMm2": 3852,
-    "twoWires53PercentMm2": 2255,
+    "twoWires53PercentMm2": 2253,
     "nominalInternalDiameterMm": 96.2,
     "totalArea100PercentMm2": 7268
   },
@@ -916,7 +926,7 @@
     "sixtyPercentMm2": 9908,
     "oneWire53PercentMm2": 8752,
     "twoWires53PercentMm2": 5119,
-    "nominalInternalDiameterMm": 145.0,
+    "nominalInternalDiameterMm": 145,
     "totalArea100PercentMm2": 16513
   },
   {
@@ -976,7 +986,7 @@
     "sixtyPercentMm2": 1274,
     "oneWire53PercentMm2": 1126,
     "twoWires53PercentMm2": 658,
-    "nominalInternalDiameterMm": 52.0,
+    "nominalInternalDiameterMm": 52,
     "totalArea100PercentMm2": 2124
   },
   {
@@ -1116,7 +1126,7 @@
     "sixtyPercentMm2": 3169,
     "oneWire53PercentMm2": 2799,
     "twoWires53PercentMm2": 1637,
-    "nominalInternalDiameterMm": 82.0,
+    "nominalInternalDiameterMm": 82,
     "totalArea100PercentMm2": 5281
   },
   {
@@ -1167,7 +1177,7 @@
     "oneWire53PercentMm2": 3884,
     "twoWires53PercentMm2": 2272,
     "nominalInternalDiameterMm": 96.6,
-    "totalArea100PercentMm2": 7320
+    "totalArea100PercentMm2": 7329
   },
   {
     "conduitType": "PVC_TYPE_EB",
@@ -1186,7 +1196,7 @@
     "sixtyPercentMm2": 8588,
     "oneWire53PercentMm2": 7586,
     "twoWires53PercentMm2": 4437,
-    "nominalInternalDiameterMm": 135.0,
+    "nominalInternalDiameterMm": 135,
     "totalArea100PercentMm2": 14314
   },
   {

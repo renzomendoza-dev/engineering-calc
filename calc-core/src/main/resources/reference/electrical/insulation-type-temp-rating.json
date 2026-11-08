@@ -130,11 +130,6 @@
     "tempRatingCelsius": 90
   },
   {
-    "insulationType": "THHW",
-    "conductorMaterial": "COPPER",
-    "tempRatingCelsius": 90
-  },
-  {
     "insulationType": "THW-2",
     "conductorMaterial": "COPPER",
     "tempRatingCelsius": 90
@@ -151,11 +146,6 @@
   },
   {
     "insulationType": "XHH",
-    "conductorMaterial": "COPPER",
-    "tempRatingCelsius": 90
-  },
-  {
-    "insulationType": "XHHW",
     "conductorMaterial": "COPPER",
     "tempRatingCelsius": 90
   },
@@ -200,11 +190,6 @@
     "tempRatingCelsius": 90
   },
   {
-    "insulationType": "THHW",
-    "conductorMaterial": "ALUMINUM",
-    "tempRatingCelsius": 90
-  },
-  {
     "insulationType": "THW-2",
     "conductorMaterial": "ALUMINUM",
     "tempRatingCelsius": 90
@@ -221,11 +206,6 @@
   },
   {
     "insulationType": "XHH",
-    "conductorMaterial": "ALUMINUM",
-    "tempRatingCelsius": 90
-  },
-  {
-    "insulationType": "XHHW",
     "conductorMaterial": "ALUMINUM",
     "tempRatingCelsius": 90
   },

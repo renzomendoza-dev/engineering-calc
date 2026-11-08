@@ -12,6 +12,11 @@ import java.util.Map;
  * Loads the insulation-type-to-temperature-rating mapping from the classpath once, then
  * serves per insulation-type, per-material lookups of which {@link AmpacityTable} temperature
  * column applies.
+ *
+ * <p>PEC Table 3.10.3.1(A) rates THHW at 75 C in wet locations and 90 C in dry ones, and XHHW at
+ * 90 C in dry and damp locations; the ampacity table (3.10.2.6(B)(16)) lists both under 75 C. A
+ * lookup gives one rating, so THHW and XHHW are held to 75 C, the lower, which is right in a wet
+ * location and conservative in a dry one. The 90 C rows are not in the file for that reason.
  */
 public class InsulationTypeTempRating {
 
