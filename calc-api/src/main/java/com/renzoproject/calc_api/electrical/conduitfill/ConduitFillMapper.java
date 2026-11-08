@@ -26,7 +26,7 @@ public final class ConduitFillMapper {
 				.map(ConduitFillMapper::toEntry)
 				.toList();
 		ConduitType conduitType = ConduitType.fromLabel(request.conduitType());
-		return new ConduitFillInput(conductors, conduitType);
+		return new ConduitFillInput(conductors, conduitType, Boolean.TRUE.equals(request.nipple()));
 	}
 
 	private static ConductorFillEntry toEntry(ConductorFillEntryDto dto) {

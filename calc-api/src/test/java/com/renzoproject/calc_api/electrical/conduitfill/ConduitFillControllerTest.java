@@ -39,7 +39,7 @@ class ConduitFillControllerTest {
 		// actualFillPercent ~= 28.92%: over the 25% practical pull-ease threshold, but still
 		// within the legal 40% limit -> practicalFillAdvisory should flag mayBeDifficultToPull.
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("THHN", "100", 3)), "EMT");
+				List.of(new ConductorFillEntryDto("THHN", "100", 3)), "EMT", null);
 
 		double expectedArea = 208.7 * 3;
 		double expectedFillPercent = (expectedArea / 2165.0) * 100.0;
@@ -65,13 +65,48 @@ class ConduitFillControllerTest {
 		assertFalse(response.practicalFillAdvisory().note().isEmpty());
 	}
 
+	private ConduitFillResponse postForResponse(ConduitFillRequest request) throws Exception {
+		MvcResult mvcResult = mockMvc.perform(post(URL)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andReturn();
+		return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ConduitFillResponse.class);
+	}
+
+	@Test
+	void aNipple_isFilledTo60Percent_andTakesASmallerSize() throws Exception {
+		// The same 626.1 mm2 as the first test: EMT 50 mm as a run (40 % column), EMT 40 mm as a nipple (60 % column 788),
+		// PEC Chapter 10 note (4). A nipple is not pulled through, so there is no pull-ease advisory.
+		ConduitFillResponse nipple = postForResponse(new ConduitFillRequest(
+				List.of(new ConductorFillEntryDto("THHN", "100", 3)), "EMT", true));
+		ConduitFillResponse run = postForResponse(new ConduitFillRequest(
+				List.of(new ConductorFillEntryDto("THHN", "100", 3)), "EMT", false));
+
+		assertEquals("40", nipple.recommendedTradeSizeMm());
+		assertEquals(60.0, nipple.allowedFillPercent(), DELTA);
+		assertTrue(nipple.nippleFill());
+		assertFalse(nipple.practicalFillAdvisory().mayBeDifficultToPull());
+		assertEquals("50", run.recommendedTradeSizeMm());
+		assertFalse(run.nippleFill());
+	}
+
+	@Test
+	void leavingNippleOut_isTheSameAsNotANipple() throws Exception {
+		ConduitFillResponse response = postForResponse(new ConduitFillRequest(
+				List.of(new ConductorFillEntryDto("THHN", "100", 3)), "EMT", null));
+
+		assertFalse(response.nippleFill());
+		assertEquals(40.0, response.allowedFillPercent(), DELTA);
+	}
+
 	@Test
 	void fillWellUnder25Percent_practicalAdvisoryNotDifficult() throws Exception {
 		// TF "1.25" area = 7.1mm2 x4 = 28.4mm2. 4 conductors -> 40% rule, over2Wires40 column.
 		// PVC_SCHEDULE_40_HDPE 15mm: over2Wires40=74 (28.4 fits), totalArea100=184.
 		// actualFillPercent ~= 15.43%, well under the 25% practical threshold.
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("TF", "1.25", 4)), "PVC_SCHEDULE_40_HDPE");
+				List.of(new ConductorFillEntryDto("TF", "1.25", 4)), "PVC_SCHEDULE_40_HDPE", null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +127,7 @@ class ConduitFillControllerTest {
 	void oversizedLoad_returns200WithRequiresMultipleConduitsTrue() throws Exception {
 		// 50 x THHN "500" (870.9mm2 each) in FMC — far beyond FMC's largest entry. Not an error.
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("THHN", "500", 50)), "FMC");
+				List.of(new ConductorFillEntryDto("THHN", "500", 50)), "FMC", null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +147,7 @@ class ConduitFillControllerTest {
 	@Test
 	void unknownInsulationType_returns400() throws Exception {
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("NOT_REAL", "100", 1)), "EMT");
+				List.of(new ConductorFillEntryDto("NOT_REAL", "100", 1)), "EMT", null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -123,7 +158,7 @@ class ConduitFillControllerTest {
 	@Test
 	void unknownConduitType_returns400() throws Exception {
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("THHN", "100", 1)), "NOT_REAL");
+				List.of(new ConductorFillEntryDto("THHN", "100", 1)), "NOT_REAL", null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -133,7 +168,7 @@ class ConduitFillControllerTest {
 
 	@Test
 	void emptyConductorsList_returns400() throws Exception {
-		ConduitFillRequest request = new ConduitFillRequest(List.of(), "EMT");
+		ConduitFillRequest request = new ConduitFillRequest(List.of(), "EMT", null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +179,7 @@ class ConduitFillControllerTest {
 	@Test
 	void zeroQuantity_returns400() throws Exception {
 		ConduitFillRequest request = new ConduitFillRequest(
-				List.of(new ConductorFillEntryDto("THHN", "100", 0)), "EMT");
+				List.of(new ConductorFillEntryDto("THHN", "100", 0)), "EMT", null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)

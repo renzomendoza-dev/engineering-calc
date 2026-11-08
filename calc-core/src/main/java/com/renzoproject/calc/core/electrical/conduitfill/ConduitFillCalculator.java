@@ -10,7 +10,8 @@ import java.util.List;
 
 /**
  * Finds the smallest conduit trade size (for a given conduit type) that fits a set of
- * conductors, per PEC Table 10.1.1.1's fill percentage rule.
+ * conductors, per PEC Table 10.1.1.1's fill percentage rule, or the 60 percent of Chapter 10
+ * note (4) for a nipple of not more than 600 mm.
  *
  * <p>Unlike {@code VoltageDropCalculator}, this calculator needs reference data — it looks up
  * conductor cross-sectional areas via {@link ConductorDimensionTable} and conduit capacities
@@ -33,12 +34,12 @@ public class ConduitFillCalculator implements Calculator<ConduitFillInput, Condu
 			totalConductorCount += entry.quantity();
 		}
 
-		double allowedFillPercent = FillPercentageRule.allowedFillPercent(totalConductorCount);
+		double allowedFillPercent = FillPercentageRule.allowedFillPercent(totalConductorCount, input.nipple());
 
 		List<ConduitDimensionEntry> entries = conduitDimensionTable.getEntriesForType(input.conduitType());
 
 		for (ConduitDimensionEntry entry : entries) {
-			double maxUsableAreaMm2 = usableAreaColumn(entry, totalConductorCount);
+			double maxUsableAreaMm2 = input.nipple() ? entry.sixtyPercentMm2() : usableAreaColumn(entry, totalConductorCount);
 			if (maxUsableAreaMm2 >= totalConductorAreaMm2) {
 				double actualFillPercent = (totalConductorAreaMm2 / entry.totalArea100PercentMm2()) * 100.0;
 				return new ConduitFillResult(
@@ -48,7 +49,8 @@ public class ConduitFillCalculator implements Calculator<ConduitFillInput, Condu
 						allowedFillPercent,
 						actualFillPercent,
 						false,
-						buildPracticalFillAdvisory(actualFillPercent));
+						input.nipple() ? noPullAdvisory() : buildPracticalFillAdvisory(actualFillPercent),
+						input.nipple());
 			}
 		}
 
@@ -59,7 +61,13 @@ public class ConduitFillCalculator implements Calculator<ConduitFillInput, Condu
 				allowedFillPercent,
 				null,
 				true,
-				null);
+				null,
+				input.nipple());
+	}
+
+	/** A nipple of not more than 600 mm is not pulled through, so the pull-ease note does not apply. */
+	private static PracticalFillAdvisory noPullAdvisory() {
+		return new PracticalFillAdvisory(false, null);
 	}
 
 	/**

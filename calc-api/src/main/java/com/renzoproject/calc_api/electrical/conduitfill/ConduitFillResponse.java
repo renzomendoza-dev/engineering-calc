@@ -9,6 +9,9 @@ import com.renzoproject.calc.core.electrical.conduitfill.ConduitFillResult;
  * <p>{@code practicalFillAdvisory} is a separate field-experience pull-ease note — see
  * {@link PracticalFillAdvisoryDto} — kept as its own nested object rather than flattened in,
  * since it is explicitly NOT a PEC compliance result and must not be mistaken for one.
+ *
+ * <p>{@code nippleFill} is true when the run was taken as a nipple of not more than 600 mm, filled to
+ * 60 percent (PEC Chapter 10 note (4)).
  */
 public record ConduitFillResponse(
 		String recommendedTradeSizeMm,
@@ -17,7 +20,8 @@ public record ConduitFillResponse(
 		double allowedFillPercent,
 		Double actualFillPercentAtRecommendedSize,
 		boolean requiresMultipleConduits,
-		PracticalFillAdvisoryDto practicalFillAdvisory) {
+		PracticalFillAdvisoryDto practicalFillAdvisory,
+		boolean nippleFill) {
 
 	public static ConduitFillResponse from(ConduitFillResult result) {
 		PracticalFillAdvisoryDto advisoryDto = result.practicalFillAdvisory() == null
@@ -30,7 +34,8 @@ public record ConduitFillResponse(
 				result.allowedFillPercent(),
 				result.actualFillPercentAtRecommendedSize(),
 				result.requiresMultipleConduits(),
-				advisoryDto);
+				advisoryDto,
+				result.nippleFill());
 	}
 
 }

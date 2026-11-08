@@ -39,6 +39,63 @@ class ConduitFillCalculatorTest {
 	}
 
 	@Test
+	void aNipple_usesThe60PercentColumn_andTakesASmallerSize() {
+		// THHN 100 mm2 x3 = 626.1 mm2. As a run, EMT needs 50 mm (40 % column 866). As a nipple of not more than
+		// 600 mm, PEC Chapter 10 note (4) allows 60 %: EMT 60 % column 15->118, 20->206, 25->333, 32->581, 40->788.
+		var conductors = List.of(new ConductorFillEntry(InsulationType.THHN, "100", 3));
+
+		ConduitFillResult nipple = calculator.calculate(new ConduitFillInput(conductors, ConduitType.EMT, true));
+		ConduitFillResult run = calculator.calculate(new ConduitFillInput(conductors, ConduitType.EMT));
+
+		assertEquals("40", nipple.recommendedTradeSizeMm());
+		assertEquals(60.0, nipple.allowedFillPercent(), DELTA);
+		assertEquals(626.1 / 1314.0 * 100.0, nipple.actualFillPercentAtRecommendedSize(), DELTA);
+		assertTrue(nipple.nippleFill());
+		assertEquals("50", run.recommendedTradeSizeMm());
+		assertEquals(40.0, run.allowedFillPercent(), DELTA);
+		assertFalse(run.nippleFill());
+	}
+
+	@Test
+	void aNipple_takes60PercentForOneAndTwoConductorsToo() {
+		// Two THHN 22 mm2 = 105.6 mm2: a run takes EMT 20 mm (31 % column 106); a nipple fits EMT 15 mm (60 % column 118).
+		var two = List.of(new ConductorFillEntry(InsulationType.THHN, "22", 2));
+		assertEquals("20", calculator.calculate(new ConduitFillInput(two, ConduitType.EMT)).recommendedTradeSizeMm());
+		ConduitFillResult nippleTwo = calculator.calculate(new ConduitFillInput(two, ConduitType.EMT, true));
+		assertEquals("15", nippleTwo.recommendedTradeSizeMm());
+		assertEquals(60.0, nippleTwo.allowedFillPercent(), DELTA);
+
+		// One conductor is 53 % as a run and still 60 % as a nipple.
+		var one = List.of(new ConductorFillEntry(InsulationType.THHN, "14", 1));
+		assertEquals(53.0, calculator.calculate(new ConduitFillInput(one, ConduitType.EMT)).allowedFillPercent(), DELTA);
+		assertEquals(60.0, calculator.calculate(new ConduitFillInput(one, ConduitType.EMT, true)).allowedFillPercent(), DELTA);
+	}
+
+	@Test
+	void aNipple_hasNoPullEaseAdvisory_becauseItIsNotPulledThrough() {
+		// 47.6 % fill is far above the 25 % pull-ease threshold, which would flag a run.
+		var conductors = List.of(new ConductorFillEntry(InsulationType.THHN, "100", 3));
+
+		ConduitFillResult nipple = calculator.calculate(new ConduitFillInput(conductors, ConduitType.EMT, true));
+		ConduitFillResult run = calculator.calculate(new ConduitFillInput(conductors, ConduitType.EMT));
+
+		assertFalse(nipple.practicalFillAdvisory().mayBeDifficultToPull());
+		assertNull(nipple.practicalFillAdvisory().note());
+		assertTrue(run.practicalFillAdvisory().mayBeDifficultToPull());
+	}
+
+	@Test
+	void aNipple_stillNeedsMultipleConduitsWhenNothingFits() {
+		var tooMany = List.of(new ConductorFillEntry(InsulationType.THHN, "500", 40));
+
+		ConduitFillResult result = calculator.calculate(new ConduitFillInput(tooMany, ConduitType.EMT, true));
+
+		assertTrue(result.requiresMultipleConduits());
+		assertTrue(result.nippleFill());
+		assertNull(result.recommendedTradeSizeMm());
+	}
+
+	@Test
 	void oneConductor_usesOneWire53PercentColumn() {
 		// THHN "14" area = 33.2mm2. 1 conductor -> 53% rule, oneWire53 column.
 		// EMT oneWire53: 15->104 (first >= 33.2).

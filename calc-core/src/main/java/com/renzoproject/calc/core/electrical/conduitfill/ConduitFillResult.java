@@ -9,7 +9,7 @@ package com.renzoproject.calc.core.electrical.conduitfill;
  *                                              its quantity
  * @param totalConductorCount                  sum of all conductor quantities
  * @param allowedFillPercent                   the PEC Table 10.1.1.1 percentage that applies
- *                                              for this conductor count
+ *                                              for this conductor count, or 60 for a nipple
  * @param actualFillPercentAtRecommendedSize   fill percentage actually achieved at the
  *                                              recommended size, or {@code null} matching
  *                                              {@code recommendedTradeSizeMm}
@@ -21,7 +21,12 @@ package com.renzoproject.calc.core.electrical.conduitfill;
  *                                              {@link PracticalFillAdvisory}. {@code null}
  *                                              when {@code requiresMultipleConduits} is
  *                                              {@code true} (no valid trade size to evaluate
- *                                              pull-ease against)
+ *                                              pull-ease against), and for a nipple, which is
+ *                                              not pulled through
+ * @param nippleFill                           {@code true} when the run was taken as a nipple of
+ *                                              not more than 600 mm (Chapter 10 note (4)), filled
+ *                                              to 60 percent, with the 3.10.2.6(B)(3)(a) adjustment
+ *                                              factors not applying to it
  */
 public record ConduitFillResult(
 		String recommendedTradeSizeMm,
@@ -30,6 +35,7 @@ public record ConduitFillResult(
 		double allowedFillPercent,
 		Double actualFillPercentAtRecommendedSize,
 		boolean requiresMultipleConduits,
-		PracticalFillAdvisory practicalFillAdvisory) {
+		PracticalFillAdvisory practicalFillAdvisory,
+		boolean nippleFill) {
 
 }
