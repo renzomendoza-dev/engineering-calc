@@ -16,7 +16,11 @@ public record WireSizingResponse(
 		int numberOfParallelSets,
 		double requiredAmpacityPerSetAmps,
 		boolean meetsTerminationRating,
-		VoltageDropCheckResponseDto voltageDropCheckResult) {
+		VoltageDropCheckResponseDto voltageDropCheckResult,
+		Integer maximumOvercurrentDeviceAmps,
+		Double overcurrentDeviceAmps,
+		String ampacitySizeLabel,
+		boolean sizeRaisedForOvercurrentLimit) {
 
 	public static WireSizingResponse from(WireSizingResult result) {
 		VoltageDropCheckResponseDto voltageDropCheckResponseDto = result.voltageDropCheckResult() == null
@@ -32,7 +36,11 @@ public record WireSizingResponse(
 				result.numberOfParallelSets(),
 				result.requiredAmpacityPerSetAmps(),
 				result.meetsTerminationRating(),
-				voltageDropCheckResponseDto);
+				voltageDropCheckResponseDto,
+				result.maximumOvercurrentDeviceAmps(),
+				result.overcurrentDeviceAmps(),
+				result.ampacitySizeLabel(),
+				result.sizeRaisedForOvercurrentLimit());
 	}
 
 }

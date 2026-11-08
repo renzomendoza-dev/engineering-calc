@@ -18,6 +18,10 @@ import jakarta.validation.constraints.Positive;
  *
  * <p>{@code voltageDropCheck} is optional — {@code @Valid} cascades validation into it only
  * when present; a {@code null} value is not itself rejected.
+ *
+ * <p>{@code overcurrentDeviceAmps} is optional: the rating of the device that will protect the
+ * conductor. Given, a size whose PEC 2.40.1.4(D) small-conductor limit is below it is passed over
+ * for the next size up.
  */
 public record WireSizingRequest(
 		@Positive double loadCurrentAmps,
@@ -28,6 +32,7 @@ public record WireSizingRequest(
 		@NotBlank String insulationType,
 		@NotBlank String conductorMaterial,
 		@Min(60) int terminationTempRatingCelsius,
-		@Valid VoltageDropCheckRequestDto voltageDropCheck) {
+		@Valid VoltageDropCheckRequestDto voltageDropCheck,
+		@Positive Double overcurrentDeviceAmps) {
 
 }

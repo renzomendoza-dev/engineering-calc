@@ -38,7 +38,8 @@ public final class WireSizingMapper {
 				insulationType,
 				conductorMaterial,
 				request.terminationTempRatingCelsius(),
-				voltageDropCheck);
+				voltageDropCheck,
+				request.overcurrentDeviceAmps());
 	}
 
 	/**

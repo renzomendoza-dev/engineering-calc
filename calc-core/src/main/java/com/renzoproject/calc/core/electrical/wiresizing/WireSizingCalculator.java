@@ -9,6 +9,8 @@ import com.renzoproject.calc.core.electrical.reference.ConductorProperties;
 import com.renzoproject.calc.core.electrical.reference.ConductorPropertiesResolver;
 import com.renzoproject.calc.core.electrical.reference.ConductorSize;
 import com.renzoproject.calc.core.electrical.reference.InsulationTypeTempRating;
+import com.renzoproject.calc.core.electrical.reference.SmallConductorLimitEntry;
+import com.renzoproject.calc.core.electrical.reference.SmallConductorLimitTable;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropCalculator;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropInput;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropResult;
@@ -19,7 +21,8 @@ import java.util.List;
 /**
  * Recommends the smallest conductor size that satisfies PEC ampacity requirements (base
  * ampacity, ambient temperature correction, and conductor-count adjustment), with an optional
- * voltage drop cross-check.
+ * voltage drop cross-check. When the overcurrent device is given, a size that PEC 2.40.1.4(D)
+ * (Small Conductors) does not allow it to protect is passed over for the next one up.
  *
  * <p>Needs reference data beyond pure math — like {@code ConduitFillCalculator}, all reference
  * tables, plus (only exercised when a voltage drop check is requested)
@@ -37,6 +40,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 	private final ConductorCountAdjustmentTable conductorCountAdjustmentTable = new ConductorCountAdjustmentTable();
 	private final ConductorPropertiesResolver conductorPropertiesResolver = new ConductorPropertiesResolver();
 	private final VoltageDropCalculator voltageDropCalculator = new VoltageDropCalculator();
+	private final SmallConductorLimitTable smallConductorLimitTable = new SmallConductorLimitTable();
 
 	@Override
 	public WireSizingResult calculate(WireSizingInput input) {
@@ -52,6 +56,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 		List<ConductorSize> sizesAscending = ampacityTable.allSizesSortedAscendingByArea();
 
 		ConductorSize recommendedSize = null;
+		ConductorSize ampacitySize = null;
 		double baseAmpacityAmps = 0;
 		double deratedAmpacityAmps = 0;
 		for (ConductorSize size : sizesAscending) {
@@ -60,12 +65,20 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				continue;
 			}
 			double derated = baseAmpacity * tempCorrectionFactor * adjustmentFactor;
-			if (derated >= requiredAmpacityPerSetAmps) {
-				recommendedSize = size;
-				baseAmpacityAmps = baseAmpacity;
-				deratedAmpacityAmps = derated;
-				break;
+			if (derated < requiredAmpacityPerSetAmps) {
+				continue;
 			}
+			if (ampacitySize == null) {
+				ampacitySize = size;
+			}
+			// PEC 2.40.1.4(D): a small conductor cannot be protected by a device above its limit, whatever its ampacity.
+			if (exceedsSmallConductorLimit(input, size)) {
+				continue;
+			}
+			recommendedSize = size;
+			baseAmpacityAmps = baseAmpacity;
+			deratedAmpacityAmps = derated;
+			break;
 		}
 
 		if (recommendedSize == null) {
@@ -90,7 +103,22 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				input.numberOfParallelSets(),
 				requiredAmpacityPerSetAmps,
 				meetsTerminationRating,
-				voltageDropCheckResult);
+				voltageDropCheckResult,
+				smallConductorLimitTable.lookup(input.conductorMaterial(), recommendedSize.label())
+						.map(SmallConductorLimitEntry::maximumOvercurrentDeviceAmps).orElse(null),
+				input.overcurrentDeviceAmps(),
+				ampacitySize.label(),
+				!ampacitySize.equals(recommendedSize));
+	}
+
+	/** Whether the overcurrent device given is above the small-conductor limit of this size; false when no device is given. */
+	private boolean exceedsSmallConductorLimit(WireSizingInput input, ConductorSize size) {
+		if (input.overcurrentDeviceAmps() == null) {
+			return false;
+		}
+		return smallConductorLimitTable.lookup(input.conductorMaterial(), size.label())
+				.map(limit -> input.overcurrentDeviceAmps() > limit.maximumOvercurrentDeviceAmps())
+				.orElse(false);
 	}
 
 	/**

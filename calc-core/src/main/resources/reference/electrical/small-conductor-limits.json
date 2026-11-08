@@ -1,0 +1,50 @@
+{
+  "standard": "PEC 2017 (Philippine Electrical Code Part 1), 2.40.1.4(D) Small Conductors, printed page 84",
+  "edition": "PEC 2017",
+  "confidence": "verified",
+  "note": "Transcribed from the printed page. The overcurrent protection shall not exceed these values after the corrections for ambient temperature and the number of conductors have been applied, unless 2.40.1.4(E) (tap conductors) or (G) (specific conductor applications) permits otherwise. The FPN allows for other internationally accepted ratings, e.g. 16 A against 15 A and 32 A against 30 A. Aluminum rows apply to aluminum and copper-clad aluminum. The 0.75 and 1.25 mm2 sizes are not in the PEC ampacity table the wire sizing tool reads, so they are listed here for completeness and are never recommended.",
+  "limits": [
+    {
+      "conductorMaterial": "COPPER",
+      "sizeLabel": "0.75",
+      "maximumOvercurrentDeviceAmps": 7,
+      "conditions": "Only where all of these are met: continuous loads do not exceed 5.6 A; overcurrent protection is by branch-circuit-rated circuit breakers or fuses listed and marked for use with 0.75 mm2 (1.0 mm dia.) copper wire, or by Class CC, Class J or Class T fuses."
+    },
+    {
+      "conductorMaterial": "COPPER",
+      "sizeLabel": "1.25",
+      "maximumOvercurrentDeviceAmps": 10,
+      "conditions": "Only where all of these are met: continuous loads do not exceed 8 A; overcurrent protection is by branch-circuit-rated circuit breakers or fuses listed and marked for use with 1.25 mm2 (1.2 mm dia.) copper wire, or by Class CC, Class J or Class T fuses."
+    },
+    {
+      "conductorMaterial": "COPPER",
+      "sizeLabel": "2.0",
+      "maximumOvercurrentDeviceAmps": 15,
+      "conditions": null
+    },
+    {
+      "conductorMaterial": "ALUMINUM",
+      "sizeLabel": "3.5",
+      "maximumOvercurrentDeviceAmps": 15,
+      "conditions": null
+    },
+    {
+      "conductorMaterial": "COPPER",
+      "sizeLabel": "3.5",
+      "maximumOvercurrentDeviceAmps": 20,
+      "conditions": null
+    },
+    {
+      "conductorMaterial": "ALUMINUM",
+      "sizeLabel": "5.5",
+      "maximumOvercurrentDeviceAmps": 25,
+      "conditions": null
+    },
+    {
+      "conductorMaterial": "COPPER",
+      "sizeLabel": "5.5",
+      "maximumOvercurrentDeviceAmps": 30,
+      "conditions": null
+    }
+  ]
+}

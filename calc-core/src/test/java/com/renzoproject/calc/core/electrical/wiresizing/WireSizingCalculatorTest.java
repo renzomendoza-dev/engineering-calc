@@ -44,6 +44,89 @@ class WireSizingCalculatorTest {
 		assertNull(result.voltageDropCheckResult());
 	}
 
+	private WireSizingResult withDevice(double loadAmps, ConductorMaterial material, Double deviceAmps) {
+		return calculator.calculate(new WireSizingInput(
+				loadAmps, false, 30.0, 2, 1, InsulationType.THHN, material, 75, null, deviceAmps));
+	}
+
+	@Test
+	void smallConductorLimit_isReportedForTheRecommendedSize_whenNoDeviceIsGiven() {
+		// 20 A of THHN copper fits 2.0 mm2 by ampacity (25 A at 90 C). PEC 2.40.1.4(D)(3) caps its protection at 15 A.
+		WireSizingResult result = withDevice(20.0, ConductorMaterial.COPPER, null);
+
+		assertEquals("2.0", result.recommendedSizeLabel());
+		assertEquals(15, result.maximumOvercurrentDeviceAmps());
+		assertNull(result.overcurrentDeviceAmps());
+		assertEquals("2.0", result.ampacitySizeLabel());
+		assertFalse(result.sizeRaisedForOvercurrentLimit());
+	}
+
+	@Test
+	void aDeviceAtTheLimit_keepsTheAmpacitySize() {
+		WireSizingResult result = withDevice(12.0, ConductorMaterial.COPPER, 15.0);
+
+		assertEquals("2.0", result.recommendedSizeLabel());
+		assertFalse(result.sizeRaisedForOvercurrentLimit());
+		assertEquals(15.0, result.overcurrentDeviceAmps(), DELTA);
+	}
+
+	@Test
+	void aDeviceAboveTheLimit_raisesTheSizeToOneItMayProtect() {
+		// The same 20 A load behind a 20 A breaker: 2.0 mm2 copper (limit 15 A) is passed over for 3.5 mm2 (limit 20 A).
+		WireSizingResult result = withDevice(20.0, ConductorMaterial.COPPER, 20.0);
+
+		assertEquals("3.5", result.recommendedSizeLabel());
+		assertEquals("2.0", result.ampacitySizeLabel());
+		assertTrue(result.sizeRaisedForOvercurrentLimit());
+		assertEquals(20, result.maximumOvercurrentDeviceAmps());
+		assertEquals(30.0, result.baseAmpacityAmps(), DELTA);
+	}
+
+	@Test
+	void aLargerDevice_stepsUpThroughTheLimitsUntilTheCapsRunOut() {
+		// A 25 A device is above the 3.5 mm2 limit (20 A) as well, so the next size is 5.5 mm2 (limit 30 A).
+		assertEquals("5.5", withDevice(20.0, ConductorMaterial.COPPER, 25.0).recommendedSizeLabel());
+		assertEquals(30, withDevice(20.0, ConductorMaterial.COPPER, 25.0).maximumOvercurrentDeviceAmps());
+		// 40 A is above every small-conductor limit, so 8.0 mm2 upward, which the clause does not cap.
+		WireSizingResult large = withDevice(20.0, ConductorMaterial.COPPER, 40.0);
+		assertEquals("8.0", large.recommendedSizeLabel());
+		assertNull(large.maximumOvercurrentDeviceAmps());
+		assertTrue(large.sizeRaisedForOvercurrentLimit());
+	}
+
+	@Test
+	void aluminum_hasItsOwnLimits() {
+		// Aluminum starts at 3.5 mm2 (15 A limit); a 20 A device needs 5.5 mm2 (25 A limit).
+		WireSizingResult atLimit = withDevice(15.0, ConductorMaterial.ALUMINUM, 15.0);
+		assertEquals("3.5", atLimit.recommendedSizeLabel());
+		assertEquals(15, atLimit.maximumOvercurrentDeviceAmps());
+		WireSizingResult above = withDevice(15.0, ConductorMaterial.ALUMINUM, 20.0);
+		assertEquals("5.5", above.recommendedSizeLabel());
+		assertEquals("3.5", above.ampacitySizeLabel());
+		assertEquals(25, above.maximumOvercurrentDeviceAmps());
+	}
+
+	@Test
+	void aLoadThatNeedsAMediumSizeAnyway_isUnaffectedByTheDevice() {
+		// 60 A of load is well past the small conductors: no limit applies and nothing is raised.
+		WireSizingResult result = withDevice(60.0, ConductorMaterial.COPPER, 70.0);
+
+		assertNull(result.maximumOvercurrentDeviceAmps());
+		assertFalse(result.sizeRaisedForOvercurrentLimit());
+		assertEquals(result.ampacitySizeLabel(), result.recommendedSizeLabel());
+	}
+
+	@Test
+	void theInputWithoutADevice_isTheOldNineArgumentConstructor() {
+		WireSizingInput input = new WireSizingInput(15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);
+
+		assertNull(input.overcurrentDeviceAmps());
+		assertThrows(CalculationException.class, () -> new WireSizingInput(
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, 0.0));
+		assertThrows(CalculationException.class, () -> new WireSizingInput(
+				15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, -20.0));
+	}
+
 	@Test
 	void continuousLoad_appliesOneTwentyFivePercentFactor() {
 		WireSizingInput input = new WireSizingInput(

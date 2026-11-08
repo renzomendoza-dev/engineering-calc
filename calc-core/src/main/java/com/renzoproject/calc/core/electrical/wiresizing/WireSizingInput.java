@@ -35,6 +35,11 @@ import com.renzoproject.calc.core.exception.CalculationException;
  *                                            independent of the insulation's own temp rating
  * @param voltageDropCheck                   optional voltage drop cross-check; {@code null}
  *                                            skips it entirely
+ * @param overcurrentDeviceAmps              optional rating of the overcurrent device that will protect
+ *                                            the conductor, A; must be positive when given. A size
+ *                                            whose small-conductor limit (PEC 2.40.1.4(D)) is below
+ *                                            it is passed over for the next one up. {@code null} sizes
+ *                                            by ampacity alone and only reports the limit
  * @throws CalculationException if any validation rule above is violated
  */
 public record WireSizingInput(
@@ -46,9 +51,28 @@ public record WireSizingInput(
 		InsulationType insulationType,
 		ConductorMaterial conductorMaterial,
 		int terminationTempRatingCelsius,
-		VoltageDropCheckRequest voltageDropCheck) {
+		VoltageDropCheckRequest voltageDropCheck,
+		Double overcurrentDeviceAmps) {
+
+	/** The input without a stated overcurrent device: sized by ampacity alone. */
+	public WireSizingInput(
+			double loadCurrentAmps,
+			boolean isContinuousLoad,
+			double ambientTempCelsius,
+			int numberOfCurrentCarryingConductors,
+			int numberOfParallelSets,
+			InsulationType insulationType,
+			ConductorMaterial conductorMaterial,
+			int terminationTempRatingCelsius,
+			VoltageDropCheckRequest voltageDropCheck) {
+		this(loadCurrentAmps, isContinuousLoad, ambientTempCelsius, numberOfCurrentCarryingConductors, numberOfParallelSets,
+				insulationType, conductorMaterial, terminationTempRatingCelsius, voltageDropCheck, null);
+	}
 
 	public WireSizingInput {
+		if (overcurrentDeviceAmps != null && overcurrentDeviceAmps <= 0) {
+			throw new CalculationException("overcurrentDeviceAmps must be positive");
+		}
 		if (loadCurrentAmps <= 0) {
 			throw new CalculationException("loadCurrentAmps must be positive");
 		}

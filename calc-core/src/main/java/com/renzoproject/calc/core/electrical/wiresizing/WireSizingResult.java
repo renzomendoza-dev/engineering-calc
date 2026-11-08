@@ -26,6 +26,20 @@ package com.renzoproject.calc.core.electrical.wiresizing;
  *                                   {@code requiredAmpacityPerSetAmps}
  * @param voltageDropCheckResult     present only if a voltage drop check was requested in the
  *                                   input; {@code null} otherwise
+ * @param maximumOvercurrentDeviceAmps the largest overcurrent device that may protect
+ *                                   {@code recommendedSizeLabel} under PEC 2.40.1.4(D) Small
+ *                                   Conductors, A; {@code null} for a size the clause does not
+ *                                   cover (5.5 mm2 aluminum and 8.0 mm2 copper upward have no
+ *                                   such cap). Applied after the corrections for ambient
+ *                                   temperature and number of conductors
+ * @param overcurrentDeviceAmps      the overcurrent device rating given in the input; {@code null}
+ *                                   when none was
+ * @param ampacitySizeLabel          the smallest size that satisfies the ampacity alone, before the
+ *                                   small-conductor limit; equals {@code recommendedSizeLabel}
+ *                                   unless {@code sizeRaisedForOvercurrentLimit}
+ * @param sizeRaisedForOvercurrentLimit whether the overcurrent device given was above the
+ *                                   small-conductor limit of {@code ampacitySizeLabel}, so a
+ *                                   larger size is recommended
  */
 public record WireSizingResult(
 		String recommendedSizeLabel,
@@ -37,6 +51,10 @@ public record WireSizingResult(
 		int numberOfParallelSets,
 		double requiredAmpacityPerSetAmps,
 		boolean meetsTerminationRating,
-		VoltageDropCheckResult voltageDropCheckResult) {
+		VoltageDropCheckResult voltageDropCheckResult,
+		Integer maximumOvercurrentDeviceAmps,
+		Double overcurrentDeviceAmps,
+		String ampacitySizeLabel,
+		boolean sizeRaisedForOvercurrentLimit) {
 
 }
