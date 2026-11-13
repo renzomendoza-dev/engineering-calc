@@ -3,6 +3,8 @@ package com.renzoproject.calc_api.electrical.reference;
 import com.renzoproject.calc.core.electrical.reference.AmbientTempCorrectionTable;
 import com.renzoproject.calc.core.electrical.reference.AmpacityTable;
 import com.renzoproject.calc.core.electrical.reference.ConductorCountAdjustmentTable;
+import com.renzoproject.calc.core.electrical.reference.SmallConductorLimitTable;
+import com.renzoproject.calc.core.electrical.reference.StandardAmpereRatingTable;
 import com.renzoproject.calc.core.electrical.reference.ConductorDimensionTable;
 import com.renzoproject.calc.core.electrical.reference.ConductorMaterial;
 import com.renzoproject.calc.core.electrical.reference.ConductorPropertiesResolver;
@@ -47,6 +49,8 @@ public class ConductorReferenceService {
 	private final InsulationTypeTempRating insulationTypeTempRating = new InsulationTypeTempRating();
 	private final AmbientTempCorrectionTable ambientTempCorrectionTable = new AmbientTempCorrectionTable();
 	private final ConductorCountAdjustmentTable conductorCountAdjustmentTable = new ConductorCountAdjustmentTable();
+	private final SmallConductorLimitTable smallConductorLimitTable = new SmallConductorLimitTable();
+	private final StandardAmpereRatingTable standardAmpereRatingTable = new StandardAmpereRatingTable();
 
 	public ConductorReferenceService(ConductorPropertiesResolver resolver) {
 		this.resolver = resolver;
@@ -236,6 +240,18 @@ public class ConductorReferenceService {
 		return conductorCountAdjustmentTable.allEntries().stream()
 				.map(ConductorCountAdjustmentEntryDto::from)
 				.toList();
+	}
+
+	/** The lines of PEC 2.40.1.4(D) Small Conductors, in the order printed, for display. */
+	public List<SmallConductorLimitEntryDto> listSmallConductorLimitTable() {
+		return smallConductorLimitTable.allEntries().stream()
+				.map(SmallConductorLimitEntryDto::from)
+				.toList();
+	}
+
+	/** PEC Table 2.40.1.6(A), the standard ampere ratings of fuses and inverse time circuit breakers, for display. */
+	public StandardAmpereRatingsDto getStandardAmpereRatings() {
+		return StandardAmpereRatingsDto.from(standardAmpereRatingTable);
 	}
 
 }

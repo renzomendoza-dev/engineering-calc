@@ -207,4 +207,29 @@ class ConductorReferenceControllerTest {
 						.value(org.hamcrest.Matchers.contains(80.0)));
 	}
 
+	@Test
+	void smallConductorLimitTable_returnsTheSevenPrintedLines() throws Exception {
+		// PEC 2.40.1.4(D): 2.0 mm2 copper 15 A, 3.5 mm2 aluminum 15 A; only the 0.75 and 1.25 mm2 lines carry conditions.
+		mockMvc.perform(get(BASE_URL + "/small-conductor-limit-table"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(7))
+				.andExpect(jsonPath("$[?(@.conductorMaterial == 'COPPER' && @.sizeLabel == '2.0')].maximumOvercurrentDeviceAmps")
+						.value(org.hamcrest.Matchers.contains(15)))
+				.andExpect(jsonPath("$[?(@.conductorMaterial == 'ALUMINUM' && @.sizeLabel == '3.5')].maximumOvercurrentDeviceAmps")
+						.value(org.hamcrest.Matchers.contains(15)))
+				.andExpect(jsonPath("$[?(@.conditions != null)].sizeLabel").value(org.hamcrest.Matchers.contains("0.75", "1.25")));
+	}
+
+	@Test
+	void standardAmpereRatings_returnTable2_40_1_6A() throws Exception {
+		mockMvc.perform(get(BASE_URL + "/standard-ampere-ratings"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.ratings.length()").value(37))
+				.andExpect(jsonPath("$.ratings[0]").value(15))
+				.andExpect(jsonPath("$.ratings[16]").value(175))
+				.andExpect(jsonPath("$.ratings[36]").value(6000))
+				.andExpect(jsonPath("$.additionalFuseRatings").value(org.hamcrest.Matchers.contains(1, 3, 6, 10, 601)))
+				.andExpect(jsonPath("$.nextHigherRatingMaximumAmps").value(800));
+	}
+
 }

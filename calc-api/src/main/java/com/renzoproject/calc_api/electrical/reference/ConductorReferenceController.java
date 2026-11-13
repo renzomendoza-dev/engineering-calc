@@ -132,4 +132,14 @@ public class ConductorReferenceController {
 		return service.listConductorCountAdjustmentTable();
 	}
 
+	@GetMapping("/small-conductor-limit-table")
+	public List<SmallConductorLimitEntryDto> smallConductorLimitTable() {
+		return service.listSmallConductorLimitTable();
+	}
+
+	@GetMapping("/standard-ampere-ratings")
+	public StandardAmpereRatingsDto standardAmpereRatings() {
+		return service.getStandardAmpereRatings();
+	}
+
 }
