@@ -26,6 +26,10 @@ import jakarta.validation.constraints.Positive;
  * <p>{@code nipple} is optional (a nullable {@code Boolean} so requests without it stay valid):
  * {@code true} for a nipple of not more than 600 mm, where PEC Chapter 10 note (4) lets the
  * conductor-count adjustment go unapplied.
+ *
+ * <p>{@code multipleReceptacleBranchCircuit} is optional too: {@code true} for a branch circuit
+ * supplying more than one receptacle for cord-and-plug-connected portable loads, where PEC
+ * 2.40.1.4(B)(1) does not allow the next higher standard device rating.
  */
 public record WireSizingRequest(
 		@Positive double loadCurrentAmps,
@@ -38,6 +42,7 @@ public record WireSizingRequest(
 		@Min(60) int terminationTempRatingCelsius,
 		@Valid VoltageDropCheckRequestDto voltageDropCheck,
 		@Positive Double overcurrentDeviceAmps,
-		Boolean nipple) {
+		Boolean nipple,
+		Boolean multipleReceptacleBranchCircuit) {
 
 }

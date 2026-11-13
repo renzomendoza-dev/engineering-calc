@@ -37,12 +37,24 @@ package com.renzoproject.calc.core.electrical.wiresizing;
  * @param ampacitySizeLabel          the smallest size that satisfies the ampacity alone, before the
  *                                   small-conductor limit; equals {@code recommendedSizeLabel}
  *                                   unless {@code sizeRaisedForOvercurrentLimit}
- * @param sizeRaisedForOvercurrentLimit whether the overcurrent device given was above the
- *                                   small-conductor limit of {@code ampacitySizeLabel}, so a
- *                                   larger size is recommended
+ * @param sizeRaisedForOvercurrentLimit whether the overcurrent device given may not protect
+ *                                   {@code ampacitySizeLabel} under PEC 2.40.1.4, so a larger size
+ *                                   is recommended; {@code overcurrentLimitClause} says why
  * @param nipple                     echoed from the input: the run is a nipple of not more than
  *                                   600 mm, so {@code adjustmentFactor} is 1 whatever the number of
  *                                   conductors (PEC Chapter 10, note (4))
+ * @param protectedAmpacityAmps      the ampacity the overcurrent device protects: {@code
+ *                                   deratedAmpacityAmps} times {@code numberOfParallelSets}
+ * @param standardRatingLimitAmps    the largest standard rating of Table 2.40.1.6(A) that may protect
+ *                                   {@code protectedAmpacityAmps} under 2.40.1.4(B) and (C): equal to
+ *                                   the ampacity, or the next one above it up to 800 A, or else the
+ *                                   largest not above it. {@code null} when none fits. The (D) limit
+ *                                   ({@code maximumOvercurrentDeviceAmps}) can be lower still
+ * @param multipleReceptacleBranchCircuit echoed from the input: (B) does not apply, so the device
+ *                                   may not exceed the ampacity
+ * @param overcurrentLimitClause     the clause of 2.40.1.4 that did not let the given device protect
+ *                                   {@code ampacitySizeLabel}: {@code "2.40.1.4(D)"}, {@code "(B)"} or
+ *                                   {@code "(C)"}; {@code null} unless {@code sizeRaisedForOvercurrentLimit}
  */
 public record WireSizingResult(
 		String recommendedSizeLabel,
@@ -59,6 +71,10 @@ public record WireSizingResult(
 		Double overcurrentDeviceAmps,
 		String ampacitySizeLabel,
 		boolean sizeRaisedForOvercurrentLimit,
-		boolean nipple) {
+		boolean nipple,
+		double protectedAmpacityAmps,
+		Integer standardRatingLimitAmps,
+		boolean multipleReceptacleBranchCircuit,
+		String overcurrentLimitClause) {
 
 }

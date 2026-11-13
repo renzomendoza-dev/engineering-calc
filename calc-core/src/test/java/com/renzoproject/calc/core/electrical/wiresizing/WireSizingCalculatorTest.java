@@ -153,6 +153,78 @@ class WireSizingCalculatorTest {
 		assertTrue(behindBreaker.sizeRaisedForOvercurrentLimit());
 	}
 
+	private WireSizingResult protectedBy(double loadAmps, int parallelSets, Double deviceAmps, boolean multipleReceptacles) {
+		return calculator.calculate(new WireSizingInput(loadAmps, false, 30.0, 3, parallelSets, InsulationType.THHN,
+				ConductorMaterial.COPPER, 75, null, deviceAmps, false, multipleReceptacles));
+	}
+
+	@Test
+	void theNextStandardRatingAboveTheAmpacity_mayProtectIt() {
+		// 45 A of THHN copper: 5.5 mm2 (40 A) is short, 8.0 mm2 carries 55 A. 2.40.1.4(B) lets the next standard rating, 60 A, protect it.
+		WireSizingResult result = protectedBy(45.0, 1, 60.0, false);
+
+		assertEquals("8.0", result.recommendedSizeLabel());
+		assertFalse(result.sizeRaisedForOvercurrentLimit());
+		assertNull(result.overcurrentLimitClause());
+		assertEquals(55.0, result.protectedAmpacityAmps(), DELTA);
+		assertEquals(60, result.standardRatingLimitAmps());
+	}
+
+	@Test
+	void aDeviceAboveTheNextStandardRating_raisesTheSize() {
+		// A 70 A device is above 60 A, so 8.0 mm2 is passed over for 14 mm2 (75 A, next rating 80 A).
+		WireSizingResult result = protectedBy(45.0, 1, 70.0, false);
+
+		assertEquals("14", result.recommendedSizeLabel());
+		assertEquals("8.0", result.ampacitySizeLabel());
+		assertTrue(result.sizeRaisedForOvercurrentLimit());
+		assertEquals("2.40.1.4(B)", result.overcurrentLimitClause());
+		assertEquals(80, result.standardRatingLimitAmps());
+		assertNull(result.maximumOvercurrentDeviceAmps());
+	}
+
+	@Test
+	void aMultiReceptacleBranchCircuit_mayNotTakeTheNextRatingUp() {
+		// 2.40.1.4(B)(1): 8.0 mm2 (55 A) may take only 50 A, so a 60 A device needs 14 mm2 (75 A, 70 A).
+		WireSizingResult result = protectedBy(45.0, 1, 60.0, true);
+
+		assertEquals("14", result.recommendedSizeLabel());
+		assertEquals("2.40.1.4(B)", result.overcurrentLimitClause());
+		assertEquals(70, result.standardRatingLimitAmps());
+		assertTrue(result.multipleReceptacleBranchCircuit());
+	}
+
+	@Test
+	void above800Amperes_theAmpacityMustReachTheDevice() {
+		// 900 A in three parallel sets: 150 mm2 (320 A each, 960 A together) is enough for the load, but
+		// a 1000 A device is over 800 A, so 2.40.1.4(C) wants 1000 A of ampacity: 175 mm2 (3 x 345 = 1035 A).
+		WireSizingResult result = protectedBy(900.0, 3, 1000.0, false);
+
+		assertEquals("150", result.ampacitySizeLabel());
+		assertEquals("175", result.recommendedSizeLabel());
+		assertEquals("2.40.1.4(C)", result.overcurrentLimitClause());
+		assertEquals(1035.0, result.protectedAmpacityAmps(), DELTA);
+		assertEquals(1000, result.standardRatingLimitAmps());
+	}
+
+	@Test
+	void theSmallConductorLimit_isNamedWhenItIsWhatRaisesTheSize() {
+		WireSizingResult result = withDevice(20.0, ConductorMaterial.COPPER, 20.0);
+
+		assertEquals("2.40.1.4(D)", result.overcurrentLimitClause());
+	}
+
+	@Test
+	void withoutADevice_theStandardRatingLimitIsStillReported() {
+		// 2.0 mm2 carries 25 A, itself a standard rating.
+		WireSizingResult result = protectedBy(15.0, 1, null, false);
+
+		assertEquals("2.0", result.recommendedSizeLabel());
+		assertEquals(25, result.standardRatingLimitAmps());
+		assertNull(result.overcurrentLimitClause());
+		assertFalse(result.multipleReceptacleBranchCircuit());
+	}
+
 	@Test
 	void theTenArgumentInput_isNotANipple() {
 		WireSizingInput input = new WireSizingInput(15.0, false, 30.0, 7, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, null);

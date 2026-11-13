@@ -11,6 +11,7 @@ import com.renzoproject.calc.core.electrical.reference.ConductorSize;
 import com.renzoproject.calc.core.electrical.reference.InsulationTypeTempRating;
 import com.renzoproject.calc.core.electrical.reference.SmallConductorLimitEntry;
 import com.renzoproject.calc.core.electrical.reference.SmallConductorLimitTable;
+import com.renzoproject.calc.core.electrical.reference.StandardAmpereRatingTable;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropCalculator;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropInput;
 import com.renzoproject.calc.core.electrical.voltagedrop.VoltageDropResult;
@@ -21,8 +22,10 @@ import java.util.List;
 /**
  * Recommends the smallest conductor size that satisfies PEC ampacity requirements (base
  * ampacity, ambient temperature correction, and conductor-count adjustment), with an optional
- * voltage drop cross-check. When the overcurrent device is given, a size that PEC 2.40.1.4(D)
- * (Small Conductors) does not allow it to protect is passed over for the next one up. For a nipple
+ * voltage drop cross-check. When the overcurrent device is given, a size that PEC 2.40.1.4 does
+ * not allow it to protect is passed over for the next one up: below its (D) small-conductor limit,
+ * or with an ampacity the device exceeds by more than the next higher standard rating of
+ * Table 2.40.1.6(A) that (B) permits ((C) above 800 A). For a nipple
  * of not more than 600 mm (PEC Chapter 10, note (4)) the conductor-count adjustment is not made.
  *
  * <p>Needs reference data beyond pure math — like {@code ConduitFillCalculator}, all reference
@@ -42,6 +45,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 	private final ConductorPropertiesResolver conductorPropertiesResolver = new ConductorPropertiesResolver();
 	private final VoltageDropCalculator voltageDropCalculator = new VoltageDropCalculator();
 	private final SmallConductorLimitTable smallConductorLimitTable = new SmallConductorLimitTable();
+	private final StandardAmpereRatingTable standardAmpereRatingTable = new StandardAmpereRatingTable();
 
 	@Override
 	public WireSizingResult calculate(WireSizingInput input) {
@@ -59,6 +63,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 
 		ConductorSize recommendedSize = null;
 		ConductorSize ampacitySize = null;
+		String overcurrentLimitClause = null;
 		double baseAmpacityAmps = 0;
 		double deratedAmpacityAmps = 0;
 		for (ConductorSize size : sizesAscending) {
@@ -73,8 +78,12 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 			if (ampacitySize == null) {
 				ampacitySize = size;
 			}
-			// PEC 2.40.1.4(D): a small conductor cannot be protected by a device above its limit, whatever its ampacity.
-			if (exceedsSmallConductorLimit(input, size)) {
+			// PEC 2.40.1.4: a size the given device may not protect is passed over, whatever it carries.
+			String exceeded = overcurrentLimitExceeded(input, size, derated);
+			if (exceeded != null) {
+				if (overcurrentLimitClause == null) {
+					overcurrentLimitClause = exceeded;
+				}
 				continue;
 			}
 			recommendedSize = size;
@@ -88,6 +97,7 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 					+ (input.numberOfParallelSets() > 1 ? " (per conductor, splitting the load across " + input.numberOfParallelSets() + " parallel sets)" : ""));
 		}
 
+		double protectedAmpacityAmps = deratedAmpacityAmps * input.numberOfParallelSets();
 		boolean meetsTerminationRating = checkMeetsTerminationRating(input, recommendedSize, adjustmentFactor, requiredAmpacityPerSetAmps);
 
 		VoltageDropCheckResult voltageDropCheckResult = input.voltageDropCheck() == null
@@ -111,17 +121,39 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 				input.overcurrentDeviceAmps(),
 				ampacitySize.label(),
 				!ampacitySize.equals(recommendedSize),
-				input.nipple());
+				input.nipple(),
+				protectedAmpacityAmps,
+				standardRatingLimit(input, protectedAmpacityAmps),
+				input.multipleReceptacleBranchCircuit(),
+				ampacitySize.equals(recommendedSize) ? null : overcurrentLimitClause);
 	}
 
-	/** Whether the overcurrent device given is above the small-conductor limit of this size; false when no device is given. */
-	private boolean exceedsSmallConductorLimit(WireSizingInput input, ConductorSize size) {
-		if (input.overcurrentDeviceAmps() == null) {
-			return false;
+	/**
+	 * The clause of 2.40.1.4 that does not let the given device protect this size, or {@code null}
+	 * when it may (or no device is given). (D) is checked first: it caps a small conductor whatever
+	 * its ampacity.
+	 */
+	private String overcurrentLimitExceeded(WireSizingInput input, ConductorSize size, double deratedAmpacityAmps) {
+		Double device = input.overcurrentDeviceAmps();
+		if (device == null) {
+			return null;
 		}
-		return smallConductorLimitTable.lookup(input.conductorMaterial(), size.label())
-				.map(limit -> input.overcurrentDeviceAmps() > limit.maximumOvercurrentDeviceAmps())
+		boolean aboveSmallConductorLimit = smallConductorLimitTable.lookup(input.conductorMaterial(), size.label())
+				.map(limit -> device > limit.maximumOvercurrentDeviceAmps())
 				.orElse(false);
+		if (aboveSmallConductorLimit) {
+			return "2.40.1.4(D)";
+		}
+		Integer limit = standardRatingLimit(input, deratedAmpacityAmps * input.numberOfParallelSets());
+		if (limit == null || device > limit) {
+			return device > standardAmpereRatingTable.nextHigherRatingMaximumAmps() ? "2.40.1.4(C)" : "2.40.1.4(B)";
+		}
+		return null;
+	}
+
+	/** The largest standard device 2.40.1.4(B) and (C) let protect this ampacity (all parallel sets together). */
+	private Integer standardRatingLimit(WireSizingInput input, double protectedAmpacityAmps) {
+		return standardAmpereRatingTable.largestPermittedRating(protectedAmpacityAmps, !input.multipleReceptacleBranchCircuit());
 	}
 
 	/**

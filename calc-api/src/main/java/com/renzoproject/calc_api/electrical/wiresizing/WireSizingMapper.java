@@ -40,7 +40,8 @@ public final class WireSizingMapper {
 				request.terminationTempRatingCelsius(),
 				voltageDropCheck,
 				request.overcurrentDeviceAmps(),
-				Boolean.TRUE.equals(request.nipple()));
+				Boolean.TRUE.equals(request.nipple()),
+				Boolean.TRUE.equals(request.multipleReceptacleBranchCircuit()));
 	}
 
 	/**

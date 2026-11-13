@@ -36,16 +36,24 @@ import com.renzoproject.calc.core.exception.CalculationException;
  * @param voltageDropCheck                   optional voltage drop cross-check; {@code null}
  *                                            skips it entirely
  * @param overcurrentDeviceAmps              optional rating of the overcurrent device that will protect
- *                                            the conductor, A; must be positive when given. A size
- *                                            whose small-conductor limit (PEC 2.40.1.4(D)) is below
- *                                            it is passed over for the next one up. {@code null} sizes
- *                                            by ampacity alone and only reports the limit
+ *                                            the conductor, A; must be positive when given. A size it
+ *                                            may not protect under PEC 2.40.1.4 is passed over for the
+ *                                            next one up: one whose small-conductor limit (D) is below
+ *                                            it, or whose ampacity is below it by more than the next
+ *                                            higher standard rating that (B) allows ((C) above 800 A).
+ *                                            {@code null} sizes by ampacity alone and only reports the
+ *                                            limits
  * @param nipple                             whether the conductors run in a conduit or tubing nipple of
  *                                            not more than 600 mm between boxes, cabinets and similar
  *                                            enclosures. PEC 2017 Chapter 10, note (4): the adjustment
  *                                            factors of 3.10.2.6(B)(3)(a) need not apply to it, so no
  *                                            conductor-count adjustment is made. The ambient temperature
  *                                            correction and the small-conductor limit still apply
+ * @param multipleReceptacleBranchCircuit    whether the conductors are part of a branch circuit supplying
+ *                                            more than one receptacle for cord-and-plug-connected
+ *                                            portable loads. PEC 2.40.1.4(B)(1): the next higher
+ *                                            standard rating is then not permitted, and the device may
+ *                                            not exceed the ampacity
  * @throws CalculationException if any validation rule above is violated
  */
 public record WireSizingInput(
@@ -59,7 +67,26 @@ public record WireSizingInput(
 		int terminationTempRatingCelsius,
 		VoltageDropCheckRequest voltageDropCheck,
 		Double overcurrentDeviceAmps,
-		boolean nipple) {
+		boolean nipple,
+		boolean multipleReceptacleBranchCircuit) {
+
+	/** The input for anything but a multi-receptacle branch circuit: 2.40.1.4(B) may allow the next rating up. */
+	public WireSizingInput(
+			double loadCurrentAmps,
+			boolean isContinuousLoad,
+			double ambientTempCelsius,
+			int numberOfCurrentCarryingConductors,
+			int numberOfParallelSets,
+			InsulationType insulationType,
+			ConductorMaterial conductorMaterial,
+			int terminationTempRatingCelsius,
+			VoltageDropCheckRequest voltageDropCheck,
+			Double overcurrentDeviceAmps,
+			boolean nipple) {
+		this(loadCurrentAmps, isContinuousLoad, ambientTempCelsius, numberOfCurrentCarryingConductors, numberOfParallelSets,
+				insulationType, conductorMaterial, terminationTempRatingCelsius, voltageDropCheck, overcurrentDeviceAmps, nipple,
+				false);
+	}
 
 	/** A run that is not a nipple: the conductor-count adjustment applies. */
 	public WireSizingInput(
@@ -74,7 +101,8 @@ public record WireSizingInput(
 			VoltageDropCheckRequest voltageDropCheck,
 			Double overcurrentDeviceAmps) {
 		this(loadCurrentAmps, isContinuousLoad, ambientTempCelsius, numberOfCurrentCarryingConductors, numberOfParallelSets,
-				insulationType, conductorMaterial, terminationTempRatingCelsius, voltageDropCheck, overcurrentDeviceAmps, false);
+				insulationType, conductorMaterial, terminationTempRatingCelsius, voltageDropCheck, overcurrentDeviceAmps, false,
+				false);
 	}
 
 	/** The input without a stated overcurrent device: sized by ampacity alone. */

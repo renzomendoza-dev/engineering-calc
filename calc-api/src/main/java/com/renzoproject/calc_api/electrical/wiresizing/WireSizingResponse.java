@@ -21,7 +21,11 @@ public record WireSizingResponse(
 		Double overcurrentDeviceAmps,
 		String ampacitySizeLabel,
 		boolean sizeRaisedForOvercurrentLimit,
-		boolean nipple) {
+		boolean nipple,
+		double protectedAmpacityAmps,
+		Integer standardRatingLimitAmps,
+		boolean multipleReceptacleBranchCircuit,
+		String overcurrentLimitClause) {
 
 	public static WireSizingResponse from(WireSizingResult result) {
 		VoltageDropCheckResponseDto voltageDropCheckResponseDto = result.voltageDropCheckResult() == null
@@ -42,7 +46,11 @@ public record WireSizingResponse(
 				result.overcurrentDeviceAmps(),
 				result.ampacitySizeLabel(),
 				result.sizeRaisedForOvercurrentLimit(),
-				result.nipple());
+				result.nipple(),
+				result.protectedAmpacityAmps(),
+				result.standardRatingLimitAmps(),
+				result.multipleReceptacleBranchCircuit(),
+				result.overcurrentLimitClause());
 	}
 
 }
