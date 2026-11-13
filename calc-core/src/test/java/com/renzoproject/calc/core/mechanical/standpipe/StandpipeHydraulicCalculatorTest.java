@@ -354,10 +354,10 @@ class StandpipeHydraulicCalculatorTest {
 
 	@Test
 	void nominalSize_isReadAsInches() {
-		assertEquals(2.5, StandpipeHydraulicCalculator.nominalInches("2-1/2"), 1e-9);
-		assertEquals(4.0, StandpipeHydraulicCalculator.nominalInches("4"), 1e-9);
-		assertEquals(0.75, StandpipeHydraulicCalculator.nominalInches("3/4"), 1e-9);
-		assertThrows(CalculationException.class, () -> StandpipeHydraulicCalculator.nominalInches("big"));
+		assertEquals(2.5, StandpipePipeData.nominalInches("2-1/2"), 1e-9);
+		assertEquals(4.0, StandpipePipeData.nominalInches("4"), 1e-9);
+		assertEquals(0.75, StandpipePipeData.nominalInches("3/4"), 1e-9);
+		assertThrows(CalculationException.class, () -> StandpipePipeData.nominalInches("big"));
 	}
 
 	@Test
