@@ -116,6 +116,51 @@ class WireSizingCalculatorTest {
 		assertEquals(result.ampacitySizeLabel(), result.recommendedSizeLabel());
 	}
 
+	private WireSizingResult sevenConductors(double loadAmps, double ambientCelsius, Double deviceAmps, boolean nipple) {
+		return calculator.calculate(new WireSizingInput(
+				loadAmps, false, ambientCelsius, 7, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, deviceAmps, nipple));
+	}
+
+	@Test
+	void aNipple_takesNoConductorCountAdjustment() {
+		// 24 A on seven current-carrying THHN copper conductors. As a run, 3.10.2.6(B)(3)(a) gives 70 %:
+		// 3.5 mm2 (30 A x 0.7 = 21 A) is short, so 5.5 mm2. As a nipple of not more than 600 mm (PEC
+		// Chapter 10, note (4)) the factor need not apply: 2.0 mm2 (25 A) carries it.
+		WireSizingResult run = sevenConductors(24.0, 30.0, null, false);
+		assertEquals("5.5", run.recommendedSizeLabel());
+		assertEquals(0.7, run.adjustmentFactor(), DELTA);
+		assertFalse(run.nipple());
+
+		WireSizingResult nipple = sevenConductors(24.0, 30.0, null, true);
+		assertEquals("2.0", nipple.recommendedSizeLabel());
+		assertEquals(1.0, nipple.adjustmentFactor(), DELTA);
+		assertEquals(25.0, nipple.deratedAmpacityAmps(), DELTA);
+		assertTrue(nipple.nipple());
+	}
+
+	@Test
+	void aNipple_stillTakesTheAmbientCorrectionAndTheSmallConductorLimit() {
+		// At 40 C the 90 C column is corrected (0.91): 2.0 mm2 gives 22.75 A, short of 24 A, so 3.5 mm2.
+		WireSizingResult hot = sevenConductors(24.0, 40.0, null, true);
+		assertEquals(0.91, hot.tempCorrectionFactor(), DELTA);
+		assertEquals(1.0, hot.adjustmentFactor(), DELTA);
+		assertEquals("3.5", hot.recommendedSizeLabel());
+
+		// Behind a 20 A breaker 2.0 mm2 copper (2.40.1.4(D) limit 15 A) is passed over, nipple or not.
+		WireSizingResult behindBreaker = sevenConductors(15.0, 30.0, 20.0, true);
+		assertEquals("2.0", behindBreaker.ampacitySizeLabel());
+		assertEquals("3.5", behindBreaker.recommendedSizeLabel());
+		assertTrue(behindBreaker.sizeRaisedForOvercurrentLimit());
+	}
+
+	@Test
+	void theTenArgumentInput_isNotANipple() {
+		WireSizingInput input = new WireSizingInput(15.0, false, 30.0, 7, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null, null);
+
+		assertFalse(input.nipple());
+		assertEquals(0.7, calculator.calculate(input).adjustmentFactor(), DELTA);
+	}
+
 	@Test
 	void theInputWithoutADevice_isTheOldNineArgumentConstructor() {
 		WireSizingInput input = new WireSizingInput(15.0, false, 30.0, 2, 1, InsulationType.THHN, ConductorMaterial.COPPER, 75, null);

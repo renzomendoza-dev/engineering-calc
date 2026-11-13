@@ -40,6 +40,12 @@ import com.renzoproject.calc.core.exception.CalculationException;
  *                                            whose small-conductor limit (PEC 2.40.1.4(D)) is below
  *                                            it is passed over for the next one up. {@code null} sizes
  *                                            by ampacity alone and only reports the limit
+ * @param nipple                             whether the conductors run in a conduit or tubing nipple of
+ *                                            not more than 600 mm between boxes, cabinets and similar
+ *                                            enclosures. PEC 2017 Chapter 10, note (4): the adjustment
+ *                                            factors of 3.10.2.6(B)(3)(a) need not apply to it, so no
+ *                                            conductor-count adjustment is made. The ambient temperature
+ *                                            correction and the small-conductor limit still apply
  * @throws CalculationException if any validation rule above is violated
  */
 public record WireSizingInput(
@@ -52,7 +58,24 @@ public record WireSizingInput(
 		ConductorMaterial conductorMaterial,
 		int terminationTempRatingCelsius,
 		VoltageDropCheckRequest voltageDropCheck,
-		Double overcurrentDeviceAmps) {
+		Double overcurrentDeviceAmps,
+		boolean nipple) {
+
+	/** A run that is not a nipple: the conductor-count adjustment applies. */
+	public WireSizingInput(
+			double loadCurrentAmps,
+			boolean isContinuousLoad,
+			double ambientTempCelsius,
+			int numberOfCurrentCarryingConductors,
+			int numberOfParallelSets,
+			InsulationType insulationType,
+			ConductorMaterial conductorMaterial,
+			int terminationTempRatingCelsius,
+			VoltageDropCheckRequest voltageDropCheck,
+			Double overcurrentDeviceAmps) {
+		this(loadCurrentAmps, isContinuousLoad, ambientTempCelsius, numberOfCurrentCarryingConductors, numberOfParallelSets,
+				insulationType, conductorMaterial, terminationTempRatingCelsius, voltageDropCheck, overcurrentDeviceAmps, false);
+	}
 
 	/** The input without a stated overcurrent device: sized by ampacity alone. */
 	public WireSizingInput(

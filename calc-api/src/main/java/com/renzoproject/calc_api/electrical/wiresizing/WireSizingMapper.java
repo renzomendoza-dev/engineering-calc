@@ -39,7 +39,8 @@ public final class WireSizingMapper {
 				conductorMaterial,
 				request.terminationTempRatingCelsius(),
 				voltageDropCheck,
-				request.overcurrentDeviceAmps());
+				request.overcurrentDeviceAmps(),
+				Boolean.TRUE.equals(request.nipple()));
 	}
 
 	/**

@@ -22,7 +22,8 @@ import java.util.List;
  * Recommends the smallest conductor size that satisfies PEC ampacity requirements (base
  * ampacity, ambient temperature correction, and conductor-count adjustment), with an optional
  * voltage drop cross-check. When the overcurrent device is given, a size that PEC 2.40.1.4(D)
- * (Small Conductors) does not allow it to protect is passed over for the next one up.
+ * (Small Conductors) does not allow it to protect is passed over for the next one up. For a nipple
+ * of not more than 600 mm (PEC Chapter 10, note (4)) the conductor-count adjustment is not made.
  *
  * <p>Needs reference data beyond pure math — like {@code ConduitFillCalculator}, all reference
  * tables, plus (only exercised when a voltage drop check is requested)
@@ -51,7 +52,8 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 
 		int tempRatingCelsius = insulationTypeTempRating.lookup(input.insulationType(), input.conductorMaterial());
 		double tempCorrectionFactor = ambientTempCorrectionTable.lookup(input.ambientTempCelsius(), tempRatingCelsius);
-		double adjustmentFactor = conductorCountAdjustmentTable.lookup(input.numberOfCurrentCarryingConductors());
+		// PEC Chapter 10, note (4): the 3.10.2.6(B)(3)(a) adjustment factors need not apply to a nipple of not more than 600 mm.
+		double adjustmentFactor = input.nipple() ? 1.0 : conductorCountAdjustmentTable.lookup(input.numberOfCurrentCarryingConductors());
 
 		List<ConductorSize> sizesAscending = ampacityTable.allSizesSortedAscendingByArea();
 
@@ -108,7 +110,8 @@ public class WireSizingCalculator implements Calculator<WireSizingInput, WireSiz
 						.map(SmallConductorLimitEntry::maximumOvercurrentDeviceAmps).orElse(null),
 				input.overcurrentDeviceAmps(),
 				ampacitySize.label(),
-				!ampacitySize.equals(recommendedSize));
+				!ampacitySize.equals(recommendedSize),
+				input.nipple());
 	}
 
 	/** Whether the overcurrent device given is above the small-conductor limit of this size; false when no device is given. */

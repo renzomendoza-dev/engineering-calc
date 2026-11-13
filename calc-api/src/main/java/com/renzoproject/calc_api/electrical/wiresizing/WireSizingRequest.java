@@ -22,6 +22,10 @@ import jakarta.validation.constraints.Positive;
  * <p>{@code overcurrentDeviceAmps} is optional: the rating of the device that will protect the
  * conductor. Given, a size whose PEC 2.40.1.4(D) small-conductor limit is below it is passed over
  * for the next size up.
+ *
+ * <p>{@code nipple} is optional (a nullable {@code Boolean} so requests without it stay valid):
+ * {@code true} for a nipple of not more than 600 mm, where PEC Chapter 10 note (4) lets the
+ * conductor-count adjustment go unapplied.
  */
 public record WireSizingRequest(
 		@Positive double loadCurrentAmps,
@@ -33,6 +37,7 @@ public record WireSizingRequest(
 		@NotBlank String conductorMaterial,
 		@Min(60) int terminationTempRatingCelsius,
 		@Valid VoltageDropCheckRequestDto voltageDropCheck,
-		@Positive Double overcurrentDeviceAmps) {
+		@Positive Double overcurrentDeviceAmps,
+		Boolean nipple) {
 
 }

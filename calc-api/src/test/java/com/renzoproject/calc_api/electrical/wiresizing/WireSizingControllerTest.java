@@ -35,7 +35,7 @@ class WireSizingControllerTest {
 		// THHN copper -> 90C column. 30C ambient, 90C factor = 1.0. count=2 -> no adjustment.
 		// COPPER "2.0" @ 90C = 25A >= 15A required -> recommended immediately.
 		WireSizingRequest request = new WireSizingRequest(
-				15.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, null);
+				15.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +67,7 @@ class WireSizingControllerTest {
 	@Test
 	void withoutAnOvercurrentDevice_theSmallConductorLimitIsStillReported() throws Exception {
 		// 20 A of THHN copper fits 2.0 mm2 by ampacity; PEC 2.40.1.4(D)(3) caps its protection at 15 A.
-		WireSizingResponse response = postForResponse(new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, null));
+		WireSizingResponse response = postForResponse(new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, null, null));
 
 		assertEquals("2.0", response.recommendedSizeLabel());
 		assertEquals(15, response.maximumOvercurrentDeviceAmps());
@@ -77,7 +77,7 @@ class WireSizingControllerTest {
 
 	@Test
 	void aDeviceAboveTheSmallConductorLimit_raisesTheRecommendedSize() throws Exception {
-		WireSizingResponse response = postForResponse(new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, 20.0));
+		WireSizingResponse response = postForResponse(new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, 20.0, null));
 
 		assertEquals("3.5", response.recommendedSizeLabel());
 		assertEquals("2.0", response.ampacitySizeLabel());
@@ -87,8 +87,38 @@ class WireSizingControllerTest {
 	}
 
 	@Test
+	void aNipple_takesNoConductorCountAdjustment() throws Exception {
+		// 24 A on seven conductors: 5.5 mm2 with the 70 % factor as a run, 2.0 mm2 as a nipple (PEC Chapter 10 note 4).
+		WireSizingResponse run = postForResponse(new WireSizingRequest(24.0, false, 30.0, 7, 1, "THHN", "COPPER", 75, null, null, false));
+		WireSizingResponse nipple = postForResponse(new WireSizingRequest(24.0, false, 30.0, 7, 1, "THHN", "COPPER", 75, null, null, true));
+
+		assertEquals("5.5", run.recommendedSizeLabel());
+		assertEquals(0.7, run.adjustmentFactor(), DELTA);
+		assertFalse(run.nipple());
+		assertEquals("2.0", nipple.recommendedSizeLabel());
+		assertEquals(1.0, nipple.adjustmentFactor(), DELTA);
+		assertTrue(nipple.nipple());
+	}
+
+	@Test
+	void aRequestWithoutTheNippleField_isARun() throws Exception {
+		String json = """
+				{"loadCurrentAmps": 24, "isContinuousLoad": false, "ambientTempCelsius": 30,
+				 "numberOfCurrentCarryingConductors": 7, "numberOfParallelSets": 1, "insulationType": "THHN",
+				 "conductorMaterial": "COPPER", "terminationTempRatingCelsius": 75}""";
+
+		MvcResult mvcResult = mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())
+				.andReturn();
+		WireSizingResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), WireSizingResponse.class);
+
+		assertFalse(response.nipple());
+		assertEquals("5.5", response.recommendedSizeLabel());
+	}
+
+	@Test
 	void aNonPositiveOvercurrentDevice_returns400() throws Exception {
-		WireSizingRequest request = new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, 0.0);
+		WireSizingRequest request = new WireSizingRequest(20.0, false, 30.0, 2, 1, "THHN", "COPPER", 75, null, 0.0, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +130,7 @@ class WireSizingControllerTest {
 	void voltageDropCheck_ampacityBasedSizeAlsoPasses_upsizedRecommendationNull() throws Exception {
 		WireSizingRequest request = new WireSizingRequest(
 				15.0, false, 30.0, 2, 1, "THHN", "COPPER", 75,
-				new VoltageDropCheckRequestDto("SINGLE_PHASE_AC", 5.0, 0.9, 230.0, "PVC", 1), null);
+				new VoltageDropCheckRequestDto("SINGLE_PHASE_AC", 5.0, 0.9, 230.0, "PVC", 1), null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -123,7 +153,7 @@ class WireSizingControllerTest {
 		// Same ampacity scenario, but a 200m run pushes voltage drop at "2.0" far past 3%.
 		WireSizingRequest request = new WireSizingRequest(
 				15.0, false, 30.0, 2, 1, "THHN", "COPPER", 75,
-				new VoltageDropCheckRequestDto("SINGLE_PHASE_AC", 200.0, 0.9, 230.0, "PVC", 1), null);
+				new VoltageDropCheckRequestDto("SINGLE_PHASE_AC", 200.0, 0.9, 230.0, "PVC", 1), null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +173,7 @@ class WireSizingControllerTest {
 	@Test
 	void unknownInsulationType_returns400() throws Exception {
 		WireSizingRequest request = new WireSizingRequest(
-				15.0, false, 30.0, 2, 1, "NOT_REAL", "COPPER", 75, null, null);
+				15.0, false, 30.0, 2, 1, "NOT_REAL", "COPPER", 75, null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +184,7 @@ class WireSizingControllerTest {
 	@Test
 	void unknownConductorMaterial_returns400() throws Exception {
 		WireSizingRequest request = new WireSizingRequest(
-				15.0, false, 30.0, 2, 1, "THHN", "NOT_REAL", 75, null, null);
+				15.0, false, 30.0, 2, 1, "THHN", "NOT_REAL", 75, null, null, null);
 
 		mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -166,7 +196,7 @@ class WireSizingControllerTest {
 	void noSizeSatisfiesRequiredAmpacity_returns400WithErrorMessage() throws Exception {
 		// 10,000A is far beyond even the largest published size (500 COPPER @ 90C = 595A).
 		WireSizingRequest request = new WireSizingRequest(
-				10000.0, false, 30.0, 1, 1, "THHN", "COPPER", 75, null, null);
+				10000.0, false, 30.0, 1, 1, "THHN", "COPPER", 75, null, null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +213,7 @@ class WireSizingControllerTest {
 		// Same worked example as WireSizingCalculatorTest's parallel-sets test: 1000A total,
 		// 90C COPPER column, 2 sets -> each conductor only needs 500A -> "375" (530A @ 90C).
 		WireSizingRequest request = new WireSizingRequest(
-				1000.0, false, 30.0, 2, 2, "THHN", "COPPER", 90, null, null);
+				1000.0, false, 30.0, 2, 2, "THHN", "COPPER", 90, null, null, null);
 
 		MvcResult mvcResult = mockMvc.perform(post(URL)
 						.contentType(MediaType.APPLICATION_JSON)

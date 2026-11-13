@@ -40,6 +40,9 @@ package com.renzoproject.calc.core.electrical.wiresizing;
  * @param sizeRaisedForOvercurrentLimit whether the overcurrent device given was above the
  *                                   small-conductor limit of {@code ampacitySizeLabel}, so a
  *                                   larger size is recommended
+ * @param nipple                     echoed from the input: the run is a nipple of not more than
+ *                                   600 mm, so {@code adjustmentFactor} is 1 whatever the number of
+ *                                   conductors (PEC Chapter 10, note (4))
  */
 public record WireSizingResult(
 		String recommendedSizeLabel,
@@ -55,6 +58,7 @@ public record WireSizingResult(
 		Integer maximumOvercurrentDeviceAmps,
 		Double overcurrentDeviceAmps,
 		String ampacitySizeLabel,
-		boolean sizeRaisedForOvercurrentLimit) {
+		boolean sizeRaisedForOvercurrentLimit,
+		boolean nipple) {
 
 }
