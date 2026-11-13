@@ -1,5 +1,6 @@
 package com.renzoproject.calc.core.smokecontrol.naturalventing;
 
+import com.renzoproject.calc.core.compliance.CheckStatus;
 import com.renzoproject.calc.core.exception.CalculationException;
 
 /**

@@ -1,7 +1,8 @@
-package com.renzoproject.calc.core.smokecontrol.naturalventing;
+package com.renzoproject.calc.core.compliance;
 
 /**
- * Outcome of one {@link VentingCheck}.
+ * Outcome of one {@link ComplianceCheck}, shared by every calculator that reports a compliance
+ * table.
  */
 public enum CheckStatus {
 

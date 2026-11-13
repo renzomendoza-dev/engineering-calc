@@ -1,5 +1,6 @@
 package com.renzoproject.calc_api.mechanical.standpipe;
 
+import com.renzoproject.calc_api.compliance.ComplianceCheckDto;
 import java.util.List;
 
 /**
@@ -26,6 +27,6 @@ public record StandpipeHydraulicResponse(
 		Double highestFdcPressurePsi,
 		Double staticPressureAtLowestConnectionPsi,
 		List<StandpipeSegmentRowDto> segments,
-		List<StandpipeCheckDto> checks) {
+		List<ComplianceCheckDto> checks) {
 
 }

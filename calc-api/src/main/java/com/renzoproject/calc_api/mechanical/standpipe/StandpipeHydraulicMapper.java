@@ -9,12 +9,13 @@ import com.renzoproject.calc.core.mechanical.standpipe.StandpipeClass;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeFdcLine;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeFitting;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicInput;
-import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.DemandLine;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.FdcLineRow;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.SegmentRow;
+import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeSegment;
 import com.renzoproject.calc_api.common.EnumParsing;
+import com.renzoproject.calc_api.compliance.ComplianceCheckDto;
 
 /**
  * Pure mapping between the request/response DTOs and calc-core, no logic.
@@ -97,7 +98,7 @@ public final class StandpipeHydraulicMapper {
 				result.highestFdcPressurePsi(),
 				result.staticPressureAtLowestConnectionPsi(),
 				result.segments().stream().map(StandpipeHydraulicMapper::toDto).toList(),
-				result.checks().stream().map(StandpipeCheckDto::from).toList());
+				result.checks().stream().map(ComplianceCheckDto::from).toList());
 	}
 
 	private static DemandLineDto toDto(DemandLine line) {

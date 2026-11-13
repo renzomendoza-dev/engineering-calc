@@ -1,5 +1,7 @@
 package com.renzoproject.calc.core.smokecontrol.naturalventing;
 
+import com.renzoproject.calc.core.compliance.CheckBasis;
+import com.renzoproject.calc.core.compliance.CheckStatus;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.FireCaseResult;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.Regime;

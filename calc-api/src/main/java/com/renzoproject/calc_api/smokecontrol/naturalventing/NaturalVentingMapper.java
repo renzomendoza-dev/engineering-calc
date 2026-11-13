@@ -3,11 +3,12 @@ package com.renzoproject.calc_api.smokecontrol.naturalventing;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.FireCase;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.FireCaseKind;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingInput;
-import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.FireCaseResult;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.ZoneResult;
+import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.VentZone;
 import com.renzoproject.calc_api.common.EnumParsing;
+import com.renzoproject.calc_api.compliance.ComplianceCheckDto;
 
 /**
  * Pure mapping between the request/response DTOs and calc-core, no logic.
@@ -58,7 +59,7 @@ public final class NaturalVentingMapper {
 				r.convectiveHeatReleaseRate(), r.plumeMassFlow(), r.layerTemperatureRise(), r.layerTemperature(), r.layerDensity(),
 				r.aerodynamicVentArea(), r.requiredVentArea(), r.inletCorrection(), r.requiredInletArea(), r.inletAreaForVelocityLimit(),
 				r.inletVelocity(), r.floorRadiantFlux(), r.feasibleHeatReleaseRate(), r.minimumAisleWidth(),
-				r.checks().stream().map(VentingCheckDto::from).toList(),
+				r.checks().stream().map(ComplianceCheckDto::from).toList(),
 				r.imageFire() == null ? null : new ImageFireDto(toDto(r.imageFire().wall()), toDto(r.imageFire().corner())),
 				r.transientInterface() == null ? null : new TransientInterfaceDto(r.transientInterface().endTime(),
 						r.transientInterface().interfaceHeightAtEnd(), r.transientInterface().timeToDesignHeight(),
@@ -71,7 +72,7 @@ public final class NaturalVentingMapper {
 	}
 
 	private static ZoneResultDto toDto(ZoneResult zone) {
-		return new ZoneResultDto(zone.name(), zone.checks().stream().map(VentingCheckDto::from).toList());
+		return new ZoneResultDto(zone.name(), zone.checks().stream().map(ComplianceCheckDto::from).toList());
 	}
 
 }

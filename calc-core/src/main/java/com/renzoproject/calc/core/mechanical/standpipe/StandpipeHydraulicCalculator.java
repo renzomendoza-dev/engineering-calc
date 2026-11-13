@@ -1,6 +1,8 @@
 package com.renzoproject.calc.core.mechanical.standpipe;
 
 import com.renzoproject.calc.core.Calculator;
+import com.renzoproject.calc.core.compliance.CheckStatus;
+import com.renzoproject.calc.core.compliance.ComplianceCheck;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.HazenWilliams;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
@@ -59,7 +61,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 
 	@Override
 	public StandpipeHydraulicResult calculate(StandpipeHydraulicInput input) {
-		List<StandpipeCheck> checks = new ArrayList<>();
+		List<ComplianceCheck> checks = new ArrayList<>();
 		Demand demand = demand(input, checks);
 
 		List<SegmentRow> rows = new ArrayList<>();
@@ -92,7 +94,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 					raised = !first;
 					remotePressure = OTHER_STANDPIPE_RESIDUAL_PSI;
 				}
-				checks.add(new StandpipeCheck("10.6.1.2.1", segment.label() + ": another standpipe's connection point, residual pressure at least the minimum",
+				checks.add(new ComplianceCheck("10.6.1.2.1", segment.label() + ": another standpipe's connection point, residual pressure at least the minimum",
 						CheckStatus.PASS, remotePressure, OTHER_STANDPIPE_RESIDUAL_PSI, "psi",
 						"Taken as the minimum residual, or the pressure the path gives there if that is higher. Its " + Math.round(segment.flowAddedGpm())
 								+ " gpm is not balanced to the higher pressure at the connection point (10.6.1.2.4)."));
@@ -143,7 +145,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				pumperChecks("Fire department connection", pressure, flowAtSupply, inletSize, checks);
 			}
 			if (input.standpipeClass() == StandpipeClass.CLASS_III) {
-				checks.add(new StandpipeCheck("A.8.2.3.3.1", "Manual wet system on a Class III standpipe: attached supply gives 100 gpm at 65 psi to the most remote 1.5 in. hose connection",
+				checks.add(new ComplianceCheck("A.8.2.3.3.1", "Manual wet system on a Class III standpipe: attached supply gives 100 gpm at 65 psi to the most remote 1.5 in. hose connection",
 						CheckStatus.CONFIRM, null, null, null,
 						"A manual wet standpipe can satisfy the demand of a Class III system as long as the water supply can provide 100 gpm at 65 psi to the "
 								+ "most remote 1.5 in. hose connection. The fire department provides the rest of the demand through the fire department connection."));
@@ -168,24 +170,24 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * (10.2.4.2 for 2.5 in., 10.2.4.1.3 for 1.5 in.). The highest static pressure at a hose connection
 	 * is at the lowest one, the supply static pressure less the head of its height above the supply.
 	 */
-	private void staticChecks(StandpipeHydraulicInput input, Double staticAtLowest, List<StandpipeCheck> checks) {
+	private void staticChecks(StandpipeHydraulicInput input, Double staticAtLowest, List<ComplianceCheck> checks) {
 		Double supplyStatic = input.supplyStaticPressurePsi();
 		if (supplyStatic == null) {
-			checks.add(new StandpipeCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi", CheckStatus.OPEN, null,
+			checks.add(new ComplianceCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi", CheckStatus.OPEN, null,
 					STATIC_PRESSURE_LIMIT_PSI, "psi",
 					"Give the static pressure at the supply. For a fire pump it is the pump boost at churn plus the supply pressure at the "
 							+ "suction (A.10.2). Above 175 psi static a listed pressure-regulating device is required at a 2.5 in. connection "
 							+ "(10.2.4.2) and at a 1.5 in. connection (10.2.4.1.3)."));
 			return;
 		}
-		checks.add(new StandpipeCheck("10.2.1", "Static pressure at the supply not above 400 psi", supplyStatic <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS
+		checks.add(new ComplianceCheck("10.2.1", "Static pressure at the supply not above 400 psi", supplyStatic <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS
 				: CheckStatus.FAIL, supplyStatic, MAXIMUM_PRESSURE_PSI, "psi",
 				"The maximum system pressure is normally at pump churn and includes both the pump boost and the supply pressure (A.10.2). "
 						+ "Express mains to vertical zones may exceed 400 psi where their listings allow, with no hose valves on them (10.2.3)."));
 		boolean above = staticAtLowest > STATIC_PRESSURE_LIMIT_PSI;
 		double height = input.lowestHoseConnectionHeightFt() == null ? 0.0 : input.lowestHoseConnectionHeightFt();
 		String basis = "Supply static " + Math.round(supplyStatic) + " psi, less 0.433 psi per foot over " + trim(height) + " ft.";
-		checks.add(new StandpipeCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi",
+		checks.add(new ComplianceCheck("10.2.4.2", "Static pressure at the lowest hose connection not above 175 psi",
 				above ? CheckStatus.CONFIRM : CheckStatus.PASS, staticAtLowest, STATIC_PRESSURE_LIMIT_PSI, "psi",
 				above
 						? basis + " A listed pressure-regulating device is required to limit the static and residual pressure at the hose "
@@ -201,7 +203,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * (10.6.1.2.1, 10.6.1.2.4, A.10.6.1.2.3). Those not placed on the path join at the supply end, so the
 	 * pressure required there is at least that residual. Returns the pressure required at the supply end.
 	 */
-	private double otherStandpipesAtTheSupply(StandpipeHydraulicInput input, double flowAdded, double pressure, List<StandpipeCheck> checks) {
+	private double otherStandpipesAtTheSupply(StandpipeHydraulicInput input, double flowAdded, double pressure, List<ComplianceCheck> checks) {
 		boolean others = input.standpipeClass() != StandpipeClass.CLASS_II
 				&& input.additionalStandpipes() + input.singleConnectionLaterals() > 0 && flowAdded > 0;
 		if (!others) {
@@ -209,7 +211,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		}
 		boolean raised = pressure < OTHER_STANDPIPE_RESIDUAL_PSI;
 		double required = Math.max(pressure, OTHER_STANDPIPE_RESIDUAL_PSI);
-		checks.add(new StandpipeCheck("10.6.1.2.1", "Other standpipes joining at the supply end: residual pressure at their connection point at least the minimum",
+		checks.add(new ComplianceCheck("10.6.1.2.1", "Other standpipes joining at the supply end: residual pressure at their connection point at least the minimum",
 				CheckStatus.PASS, required, OTHER_STANDPIPE_RESIDUAL_PSI, "psi",
 				(raised ? "The path gives " + trim(pressure) + " psi there, so the pressure required at the supply is raised to the minimum residual. "
 						: "The path gives more than the minimum there. ")
@@ -226,10 +228,10 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * is given, as 10.7.3.2 allows for several connections).
 	 */
 	private List<FdcLineRow> fdcLines(StandpipeHydraulicInput input, InletSize inletSize, double flowAtSupply, double pressureAtSystem,
-			List<StandpipeCheck> checks) {
+			List<ComplianceCheck> checks) {
 		if (input.fireDepartmentConnections().isEmpty()) {
 			if (input.standpipeClass() != StandpipeClass.CLASS_II) {
-				checks.add(new StandpipeCheck("10.4.1", "Each fire department connection shown able to supply the system demand",
+				checks.add(new ComplianceCheck("10.4.1", "Each fire department connection shown able to supply the system demand",
 						CheckStatus.OPEN, null, flowAtSupply, "gpm",
 						"Give the piping of each fire department connection to find the pressure the fire department must deliver at it (A.10.4.1)."));
 			}
@@ -264,25 +266,25 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			}
 			lines.add(new FdcLineRow(line.label(), flow, line.inlets(), List.copyOf(rows), friction, elevation, pressureAtSystem, pressure));
 
-			checks.add(new StandpipeCheck("10.4.1", line.label() + ": pressure required at the connection to supply " + Math.round(flow) + " gpm",
+			checks.add(new ComplianceCheck("10.4.1", line.label() + ": pressure required at the connection to supply " + Math.round(flow) + " gpm",
 					CheckStatus.INFO, pressure, null, "psi",
 					"Starts from " + Math.round(pressureAtSystem) + " psi at the system end. The fire department pumper must be able to deliver "
 							+ "this (10.4.4)."));
-			checks.add(new StandpipeCheck("10.2.1", line.label() + ": pressure at the connection not above 400 psi",
+			checks.add(new ComplianceCheck("10.2.1", line.label() + ": pressure at the connection not above 400 psi",
 					pressure <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS : CheckStatus.FAIL, pressure, MAXIMUM_PRESSURE_PSI, "psi", null));
-			checks.add(new StandpipeCheck("10.2.2", line.label() + ": pressure required at the connection not above the working pressure of the components",
+			checks.add(new ComplianceCheck("10.2.2", line.label() + ": pressure required at the connection not above the working pressure of the components",
 					CheckStatus.CONFIRM, pressure, null, "psi", "Compare with the working pressure of the piping, valves and the connection."));
 			pumperChecks(line.label(), pressure, flow, inletSize, checks);
 			if (line.inlets() != null) {
 				double capacity = line.inlets() * inletSize.flowPerInletGpm();
-				checks.add(new StandpipeCheck(inletSize.clause(), line.label() + ": " + inletSize.label() + " inlets, one per "
+				checks.add(new ComplianceCheck(inletSize.clause(), line.label() + ": " + inletSize.label() + " inlets, one per "
 						+ (long) inletSize.flowPerInletGpm() + " gpm, carry the flow of the connection",
 						capacity >= flow ? CheckStatus.PASS : CheckStatus.FAIL, flow, capacity, "gpm", null));
 			}
 		}
 
 		if (sharedFlow) {
-			checks.add(new StandpipeCheck("10.7.3.2", "The fire department connections together carry the system demand",
+			checks.add(new ComplianceCheck("10.7.3.2", "The fire department connections together carry the system demand",
 					carried >= flowAtSupply - 1e-9 ? CheckStatus.PASS : CheckStatus.FAIL, carried, flowAtSupply, "gpm",
 					"Where several connections share the demand, 10.7.3.2 and 10.7.3.3 allow the inlets to be on more than one connection or "
 							+ "location, as the AHJ allows."));
@@ -294,18 +296,18 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * A manual system has no attached supply: the calculation ends at the fire department connection and the
 	 * pressure found is what the fire department must pump in (10.2.6.1.2).
 	 */
-	private void manualChecks(double pressureAtFdc, double flowAtSupply, boolean checkComponents, List<StandpipeCheck> checks) {
-		checks.add(new StandpipeCheck("10.2.6.1.2", "Manual system: 100 psi at the most remote 2.5 in. hose connection, calculated back to the fire department connection",
+	private void manualChecks(double pressureAtFdc, double flowAtSupply, boolean checkComponents, List<ComplianceCheck> checks) {
+		checks.add(new ComplianceCheck("10.2.6.1.2", "Manual system: 100 psi at the most remote 2.5 in. hose connection, calculated back to the fire department connection",
 				CheckStatus.INFO, pressureAtFdc, null, "psi",
 				checkComponents
 						? "The pressure at the supply is the pressure required at the fire department connection, at " + Math.round(flowAtSupply) + " gpm."
 						: "The highest pressure required at any fire department connection given, at " + Math.round(flowAtSupply) + " gpm."));
-		checks.add(new StandpipeCheck("10.4.4", "The local fire department is consulted on the water supply its apparatus can deliver",
+		checks.add(new ComplianceCheck("10.4.4", "The local fire department is consulted on the water supply its apparatus can deliver",
 				CheckStatus.CONFIRM, pressureAtFdc, null, "psi",
 				"Confirm the pumpers can deliver " + Math.round(flowAtSupply) + " gpm at this pressure."));
 		// With the connections' own piping given, each already has this check.
 		if (checkComponents) {
-			checks.add(new StandpipeCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
+			checks.add(new ComplianceCheck("10.2.2", "Pressure required at the fire department connection not above the working pressure of the components",
 					CheckStatus.CONFIRM, pressureAtFdc, null, "psi", "Compare with the working pressure of the piping, valves and the fire department connection."));
 		}
 	}
@@ -316,7 +318,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * pressure is taken from the supply static pressure where given, the pressure required at the supply
 	 * and the pressure required at any fire department connection.
 	 */
-	private void highestPressureCheck(StandpipeHydraulicInput input, double pressureAtSupply, Double highestFdcPressure, List<StandpipeCheck> checks) {
+	private void highestPressureCheck(StandpipeHydraulicInput input, double pressureAtSupply, Double highestFdcPressure, List<ComplianceCheck> checks) {
 		double highest = pressureAtSupply;
 		String where = "the pressure required at the supply";
 		if (highestFdcPressure != null && highestFdcPressure > highest) {
@@ -328,7 +330,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 			where = "the static pressure at the supply";
 		}
 		boolean below = highest < STANDARD_WEIGHT_LIMIT_PSI;
-		checks.add(new StandpipeCheck("A.7.1", "Highest pressure in the system below 175 psi, where standard-weight valves and fittings are acceptable",
+		checks.add(new ComplianceCheck("A.7.1", "Highest pressure in the system below 175 psi, where standard-weight valves and fittings are acceptable",
 				below ? CheckStatus.PASS : CheckStatus.CONFIRM, highest, STANDARD_WEIGHT_LIMIT_PSI, "psi",
 				below ? "The highest is " + where + "."
 						: "The highest is " + where + ". Use valves and fittings rated for it: standard-weight ones are confined to the upper stories of "
@@ -342,7 +344,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	 * above it is confirmed against the local apparatus rather than failed. The second applies to 4 in. and
 	 * 5 in. inlets, whose supply hose is rated 185 psi.
 	 */
-	private void pumperChecks(String who, double pressure, double flow, InletSize inletSize, List<StandpipeCheck> checks) {
+	private void pumperChecks(String who, double pressure, double flow, InletSize inletSize, List<ComplianceCheck> checks) {
 		Double available = null;
 		if (flow <= PUMPER_RATED_FLOW_GPM + 1e-9) {
 			for (double[] point : PUMPER_RATING_POINTS_GPM_PSI) {
@@ -355,15 +357,15 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		String basis = " The Annex's conservative basis is a 1,000 gpm pumper at the NFPA 1901 rating points: 1,000 gpm at 150 psi, 700 gpm at 200 psi "
 				+ "and 500 gpm at 250 psi. It is not a limit; the local fire department's apparatus governs (A.10.7).";
 		if (available == null) {
-			checks.add(new StandpipeCheck("A.10.7", who + ": flow within one 1,000 gpm pumper",
+			checks.add(new ComplianceCheck("A.10.7", who + ": flow within one 1,000 gpm pumper",
 					CheckStatus.CONFIRM, flow, PUMPER_RATED_FLOW_GPM, "gpm",
 					"More than one pumper, or a larger one, is needed to supply " + Math.round(flow) + " gpm." + basis));
 		} else {
-			checks.add(new StandpipeCheck("A.10.7", who + ": pressure required at the connection within what one 1,000 gpm pumper delivers at " + Math.round(flow) + " gpm",
+			checks.add(new ComplianceCheck("A.10.7", who + ": pressure required at the connection within what one 1,000 gpm pumper delivers at " + Math.round(flow) + " gpm",
 					pressure <= available + 1e-9 ? CheckStatus.PASS : CheckStatus.CONFIRM, pressure, available, "psi", basis.trim()));
 		}
 		if (inletSize.largeDiameter()) {
-			checks.add(new StandpipeCheck("A.10.7.3.1.3", who + ": pressure required at the connection not above the " + (long) LARGE_HOSE_WORKING_PRESSURE_PSI
+			checks.add(new ComplianceCheck("A.10.7.3.1.3", who + ": pressure required at the connection not above the " + (long) LARGE_HOSE_WORKING_PRESSURE_PSI
 					+ " psi working pressure of 4 in. and larger supply hose",
 					pressure <= LARGE_HOSE_WORKING_PRESSURE_PSI + 1e-9 ? CheckStatus.PASS : CheckStatus.CONFIRM, pressure, LARGE_HOSE_WORKING_PRESSURE_PSI, "psi",
 					"Above this, 2½ in. inlets are used unless hose rated for the higher pressure is approved (NFPA 1961)."));
@@ -374,12 +376,12 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 	}
 
 	/** 10.6: the flow the system must deliver, built up the way the clauses do. */
-	private Demand demand(StandpipeHydraulicInput input, List<StandpipeCheck> checks) {
+	private Demand demand(StandpipeHydraulicInput input, List<ComplianceCheck> checks) {
 		List<DemandLine> lines = new ArrayList<>();
 		if (input.standpipeClass() == StandpipeClass.CLASS_II) {
 			lines.add(new DemandLine("10.6.2.1.1", "Class II: most remote hose connection", 100));
 			if (input.additionalStandpipes() > 0) {
-				checks.add(new StandpipeCheck("10.6.2.1.2", "Class II: no additional flow where more than one hose connection is provided",
+				checks.add(new ComplianceCheck("10.6.2.1.2", "Class II: no additional flow where more than one hose connection is provided",
 						CheckStatus.INFO, null, null, null, "The additional standpipes add no flow."));
 			}
 			return new Demand(lines, 100, 100, false);
@@ -391,7 +393,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				: new DemandLine("10.6.1.1.1", "Most remote standpipe: 250 gpm at each of the two most remote 2.5 in. connections", 500));
 
 		if (input.risersEndAtDifferentLevels()) {
-			checks.add(new StandpipeCheck("10.6.1.2.1.1", "Standpipes ending at different floor levels need a separate calculation for each level",
+			checks.add(new ComplianceCheck("10.6.1.2.1.1", "Standpipes ending at different floor levels need a separate calculation for each level",
 					CheckStatus.CONFIRM, null, null, null,
 					"This calculation follows one path. Run it again for the standpipes that exist on each level, and in each run count only "
 							+ "the standpipes that exist on that level as additional standpipes (10.6.1.2.1.2)."));
@@ -412,7 +414,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				additional += 250;
 				lines.add(new DemandLine("10.6.1.1.4.1", "Third standpipe, unsprinklered building: 250 gpm", 250));
 			} else if (extra >= 2) {
-				checks.add(new StandpipeCheck("10.6.1.1.4.1", "Floors over 80,000 sq ft with more than one additional standpipe",
+				checks.add(new ComplianceCheck("10.6.1.1.4.1", "Floors over 80,000 sq ft with more than one additional standpipe",
 						CheckStatus.CONFIRM, null, null, null,
 						"The printed rule gives 250 gpm for the third standpipe only where the additional flow is required for an unsprinklered building; confirm what applies here."));
 			}
@@ -424,7 +426,7 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		if (capped) {
 			standpipeFlow = maximum;
 			lines.add(new DemandLine("10.6.1.1.6", "Limited to the maximum flow for the building", maximum));
-			checks.add(new StandpipeCheck("10.6.1.1.6", "Standpipe flow limited to the maximum for the building", CheckStatus.CONFIRM,
+			checks.add(new ComplianceCheck("10.6.1.1.6", "Standpipe flow limited to the maximum for the building", CheckStatus.CONFIRM,
 					base + additional, maximum, "gpm", null));
 		}
 
@@ -446,28 +448,28 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		return new Demand(lines, total, base, capped);
 	}
 
-	private void connectionChecks(StandpipeHydraulicInput input, StandpipeSegment segment, double pressure, List<StandpipeCheck> checks) {
+	private void connectionChecks(StandpipeHydraulicInput input, StandpipeSegment segment, double pressure, List<ComplianceCheck> checks) {
 		HoseConnectionSize size = segment.hoseConnectionSize();
 		String name = segment.label();
 		if (input.standpipeClass() == StandpipeClass.CLASS_I && size == HoseConnectionSize.ONE_AND_HALF_INCH) {
-			checks.add(new StandpipeCheck("8.2.1", name + ": a Class I system has 2.5 in. hose connections", CheckStatus.FAIL, null, null, null, null));
+			checks.add(new ComplianceCheck("8.2.1", name + ": a Class I system has 2.5 in. hose connections", CheckStatus.FAIL, null, null, null, null));
 		}
-		checks.add(new StandpipeCheck("10.6.3", name + ": flow not above the most a connection of this size is required to deliver",
+		checks.add(new ComplianceCheck("10.6.3", name + ": flow not above the most a connection of this size is required to deliver",
 				segment.flowAddedGpm() <= size.maximumFlowGpm() ? CheckStatus.PASS : CheckStatus.FAIL,
 				segment.flowAddedGpm(), size.maximumFlowGpm(), "gpm", null));
-		checks.add(new StandpipeCheck("10.2.6.1", name + ": residual pressure at the outlet at least the minimum for its size", CheckStatus.PASS,
+		checks.add(new ComplianceCheck("10.2.6.1", name + ": residual pressure at the outlet at least the minimum for its size", CheckStatus.PASS,
 				pressure, size.minimumResidualPsi(), "psi", "Taken as the minimum residual, or the pressure the path gives there if that is higher."));
 		Double design = segment.designResidualPressurePsi();
 		if (design != null) {
 			boolean small = size == HoseConnectionSize.ONE_AND_HALF_INCH;
 			double limit = small ? PRD_RESIDUAL_LIMIT_PSI : STATIC_PRESSURE_LIMIT_PSI;
-			checks.add(new StandpipeCheck("A.10.2.6", name + ": residual pressure at the outlet held at the pressure the designer gave for the fire department's hose and nozzle",
+			checks.add(new ComplianceCheck("A.10.2.6", name + ": residual pressure at the outlet held at the pressure the designer gave for the fire department's hose and nozzle",
 					CheckStatus.INFO, pressure, design, "psi",
 					design <= size.minimumResidualPsi()
 							? "Not above the " + trim(size.minimumResidualPsi()) + " psi minimum for this size, so the minimum applies (10.2.6.1)."
 							: "Above the " + trim(size.minimumResidualPsi()) + " psi minimum for this size (10.2.6.1), so the outlet is held at it. How much pressure a "
 									+ "hose and nozzle need varies with the hose, and the fire department should flow test its own choice (A.10.2.6)."));
-			checks.add(new StandpipeCheck(small ? "10.2.4.1" : "10.2.4.2",
+			checks.add(new ComplianceCheck(small ? "10.2.4.1" : "10.2.4.2",
 					name + ": pressure required at the outlet not above " + trim(limit) + " psi, to which a pressure-regulating device limits the residual pressure",
 					design <= limit ? CheckStatus.PASS : CheckStatus.FAIL, design, limit, "psi",
 					design <= limit ? null
@@ -476,13 +478,13 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 									+ "static and residual pressure to " + trim(limit) + " psi: the equipment cannot be given what it needs there."));
 		}
 		if (size == HoseConnectionSize.ONE_AND_HALF_INCH && pressure > PRD_RESIDUAL_LIMIT_PSI) {
-			checks.add(new StandpipeCheck("10.2.4.1", name + ": residual pressure at a 1.5 in. connection above 100 psi needs a listed pressure-regulating device",
+			checks.add(new ComplianceCheck("10.2.4.1", name + ": residual pressure at a 1.5 in. connection above 100 psi needs a listed pressure-regulating device",
 					CheckStatus.CONFIRM, pressure, PRD_RESIDUAL_LIMIT_PSI, "psi",
 					"Does not apply to a 1.5 in. outlet on a 2.5 x 1.5 in. reducer (10.2.4.1.1) or where no hose is required (10.2.4.1.2)."));
 		}
 	}
 
-	private void sizeCheck(StandpipeHydraulicInput input, StandpipeSegment segment, List<StandpipeCheck> checks) {
+	private void sizeCheck(StandpipeHydraulicInput input, StandpipeSegment segment, List<ComplianceCheck> checks) {
 		if (input.standpipeClass() == StandpipeClass.CLASS_II) {
 			return;
 		}
@@ -490,20 +492,20 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 		if (segment.role() == PipeRole.STANDPIPE) {
 			boolean partial = input.sprinklerProtection() == SprinklerProtection.PARTIAL;
 			double limit = partial ? 6 : 4;
-			checks.add(new StandpipeCheck(partial ? "10.3.1.2" : "10.3.1.1", segment.label() + ": standpipe at least " + (long) limit + " in."
+			checks.add(new ComplianceCheck(partial ? "10.3.1.2" : "10.3.1.1", segment.label() + ": standpipe at least " + (long) limit + " in."
 					+ (partial ? " in a partly sprinklered building" : ""), size >= limit ? CheckStatus.PASS : CheckStatus.FAIL, size, limit, "in", null));
 		} else if (segment.role() == PipeRole.BRANCH_LINE) {
-			checks.add(new StandpipeCheck("10.3.1.4", segment.label() + ": branch line at least 2.5 in.", size >= 2.5 ? CheckStatus.PASS : CheckStatus.FAIL,
+			checks.add(new ComplianceCheck("10.3.1.4", segment.label() + ": branch line at least 2.5 in.", size >= 2.5 ? CheckStatus.PASS : CheckStatus.FAIL,
 					size, 2.5, "in", null));
 		}
 	}
 
 	private void supplyChecks(StandpipeHydraulicInput input, Demand demand, double hoseConnectionFlow, double flowAtSupply,
-			double flowAdded, boolean automatic, double pressure, List<StandpipeCheck> checks) {
-		checks.add(new StandpipeCheck(input.standpipeClass() == StandpipeClass.CLASS_II ? "10.6.2.1.1" : "10.6.1.1",
+			double flowAdded, boolean automatic, double pressure, List<ComplianceCheck> checks) {
+		checks.add(new ComplianceCheck(input.standpipeClass() == StandpipeClass.CLASS_II ? "10.6.2.1.1" : "10.6.1.1",
 				"Hose connection flow on the path at least the flow required of the most remote standpipe",
 				hoseConnectionFlow >= demand.mostRemoteGpm() ? CheckStatus.PASS : CheckStatus.FAIL, hoseConnectionFlow, demand.mostRemoteGpm(), "gpm", null));
-		checks.add(new StandpipeCheck("10.6", "Flow at the supply at least the system demand",
+		checks.add(new ComplianceCheck("10.6", "Flow at the supply at least the system demand",
 				flowAtSupply >= demand.totalGpm() ? CheckStatus.PASS : CheckStatus.FAIL, flowAtSupply, demand.totalGpm(), "gpm",
 				flowAtSupply < demand.totalGpm()
 						? "Add the other standpipes and the sprinkler allowance as flow added at the supply."
@@ -511,15 +513,15 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 								? "The " + Math.round(flowAdded) + " gpm of other standpipes and sprinkler allowance was worked out from the "
 										+ "demand rules and joins at the supply as flow only: its own pressure is not checked."
 								: "Other standpipes and the sprinkler allowance enter as flow only: their own pressure is not checked."));
-		checks.add(new StandpipeCheck("10.2.1", "Pressure not above 400 psi",
+		checks.add(new ComplianceCheck("10.2.1", "Pressure not above 400 psi",
 				pressure <= MAXIMUM_PRESSURE_PSI ? CheckStatus.PASS : CheckStatus.FAIL, pressure, MAXIMUM_PRESSURE_PSI, "psi",
 				"Pump churn pressure and the city static pressure must also be kept within the limit."));
-		checks.add(new StandpipeCheck("5.2", "Water supply duration at least 30 minutes",
+		checks.add(new ComplianceCheck("5.2", "Water supply duration at least 30 minutes",
 				input.supplyDurationMinutes() >= MINIMUM_SUPPLY_MINUTES ? CheckStatus.PASS : CheckStatus.FAIL,
 				input.supplyDurationMinutes(), MINIMUM_SUPPLY_MINUTES, "min", null));
 	}
 
-	private void fdcCheck(StandpipeHydraulicInput input, InletSize size, int requiredInlets, List<StandpipeCheck> checks) {
+	private void fdcCheck(StandpipeHydraulicInput input, InletSize size, int requiredInlets, List<ComplianceCheck> checks) {
 		Integer provided = input.fireDepartmentConnectionInlets();
 		String description = size.label() + " fire department connection inlets, one per " + (long) size.flowPerInletGpm() + " gpm";
 		String highRise = "At least two connections are needed per zone in high-rise buildings (10.7.2.2).";
@@ -527,10 +529,10 @@ public class StandpipeHydraulicCalculator implements Calculator<StandpipeHydraul
 				? " The maximum operating pressure of the hose that supplies the connection (NFPA 1961) must be considered when choosing a large inlet (10.7.3.1.3)."
 				: "";
 		if (provided == null) {
-			checks.add(new StandpipeCheck(size.clause(), description, CheckStatus.INFO, null, (double) requiredInlets, "inlets",
+			checks.add(new ComplianceCheck(size.clause(), description, CheckStatus.INFO, null, (double) requiredInlets, "inlets",
 					"No inlet count given to compare with. " + highRise + hose));
 		} else {
-			checks.add(new StandpipeCheck(size.clause(), description,
+			checks.add(new ComplianceCheck(size.clause(), description,
 					provided >= requiredInlets ? CheckStatus.PASS : CheckStatus.FAIL, (double) provided, (double) requiredInlets, "inlets",
 					(highRise + hose).trim()));
 		}

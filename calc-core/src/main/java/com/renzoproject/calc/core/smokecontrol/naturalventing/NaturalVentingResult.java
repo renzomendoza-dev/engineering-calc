@@ -1,5 +1,6 @@
 package com.renzoproject.calc.core.smokecontrol.naturalventing;
 
+import com.renzoproject.calc.core.compliance.ComplianceCheck;
 import java.util.List;
 
 /**
@@ -136,7 +137,7 @@ public record NaturalVentingResult(
 			double floorRadiantFlux,
 			double feasibleHeatReleaseRate,
 			Double minimumAisleWidth,
-			List<VentingCheck> checks,
+			List<ComplianceCheck> checks,
 			ImageFire imageFire,
 			TransientInterface transientInterface) {
 
@@ -146,7 +147,7 @@ public record NaturalVentingResult(
 	 * @param name   the zone
 	 * @param checks geometry and spacing checks that do not depend on the fire
 	 */
-	public record ZoneResult(String name, List<VentingCheck> checks) {
+	public record ZoneResult(String name, List<ComplianceCheck> checks) {
 
 	}
 

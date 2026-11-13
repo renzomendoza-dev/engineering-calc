@@ -1,6 +1,9 @@
 package com.renzoproject.calc.core.smokecontrol.naturalventing;
 
 import com.renzoproject.calc.core.Calculator;
+import com.renzoproject.calc.core.compliance.CheckBasis;
+import com.renzoproject.calc.core.compliance.CheckStatus;
+import com.renzoproject.calc.core.compliance.ComplianceCheck;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.FireCaseResult;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.ImageFire;
@@ -54,7 +57,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	private FireCaseResult calculateCase(NaturalVentingInput input, VentZone zone, FireCase fireCase) {
 		double ambientK = input.ambientTemperature() + KELVIN_OFFSET;
 		double ambientDensity = input.ambientDensity();
-		List<VentingCheck> checks = new ArrayList<>();
+		List<ComplianceCheck> checks = new ArrayList<>();
 
 		if (fireCase.smokeLayerHeight() > zone.ceilingHeight()) {
 			throw new CalculationException("fire case " + fireCase.name() + ": smokeLayerHeight is above the ceiling of zone " + zone.name());
@@ -90,12 +93,12 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 
 		if (fireCase.kind() == FireCaseKind.GROWING) {
 			double atInterval = fireCase.designInterval() + detectionTime;
-			checks.add(new VentingCheck("8.3.5", "Design fire at the end of the design interval, Q = c((tr + td)/tg)^2 with c = "
+			checks.add(new ComplianceCheck("8.3.5", "Design fire at the end of the design interval, Q = c((tr + td)/tg)^2 with c = "
 					+ trim(input.growthConstant()), CheckBasis.NFPA_204, CheckStatus.INFO, uncappedQ, null, "kW",
 					"Evaluated at tr + td = " + trim(atInterval) + " s; tr is measured from detection (3.3.8)."));
 		}
 		if (capped) {
-			checks.add(new VentingCheck("8.1.1", "Growing fire limited to its maximum heat release rate", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("8.1.1", "Growing fire limited to its maximum heat release rate", CheckBasis.NFPA_204,
 					CheckStatus.CONFIRM, q, uncappedQ, "kW",
 					"The fuel available must really limit the fire to this size; confirm with the fuel load."));
 		}
@@ -112,11 +115,11 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 			if (zs < 4 * wf) {
 				lineFireFactor = Math.pow(4 * wf / zs, 2.0 / 3.0);
 				plumeFlow *= lineFireFactor;
-				checks.add(new VentingCheck("9.2.3.5", "Line-like fire: layer boundary below four times the largest fire dimension, so the "
+				checks.add(new ComplianceCheck("9.2.3.5", "Line-like fire: layer boundary below four times the largest fire dimension, so the "
 						+ "smoke production is increased by [4Wf/zs]^(2/3)", CheckBasis.NFPA_204, CheckStatus.INFO, zs, 4 * wf, "m",
 						"Factor applied: " + trim(lineFireFactor) + "."));
 			} else {
-				checks.add(new VentingCheck("9.2.3.4", "Line-like fire: layer boundary at least four times the largest fire dimension",
+				checks.add(new ComplianceCheck("9.2.3.4", "Line-like fire: layer boundary at least four times the largest fire dimension",
 						CheckBasis.NFPA_204, CheckStatus.PASS, zs, 4 * wf, "m", null));
 			}
 		}
@@ -126,7 +129,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		double layerTemperature = ambientK + temperatureRise;
 		double layerDensity = ambientDensity * ambientK / layerTemperature;
 		if (input.layerEnergyFraction() != NaturalVentingInput.DEFAULT_LAYER_ENERGY_FRACTION) {
-			checks.add(new VentingCheck("9.2.4.4", "K other than 0.5 needs an analysis acceptable to the AHJ", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("9.2.4.4", "K other than 0.5 needs an analysis acceptable to the AHJ", CheckBasis.NFPA_204,
 					CheckStatus.CONFIRM, input.layerEnergyFraction(), NaturalVentingInput.DEFAULT_LAYER_ENERGY_FRACTION, null, null));
 		}
 
@@ -149,10 +152,10 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 			if (restriction > 0) {
 				inletCorrection = 1 / Math.sqrt(restriction);
 				requiredVentArea = aerodynamicArea / cdVent * inletCorrection;
-				checks.add(new VentingCheck("9.2.5.2", "Inlet area provided passes the plume flow", CheckBasis.NFPA_204, CheckStatus.PASS,
+				checks.add(new ComplianceCheck("9.2.5.2", "Inlet area provided passes the plume flow", CheckBasis.NFPA_204, CheckStatus.PASS,
 						zone.inletNetArea(), null, "m2", "Inlet term M = " + trim(inletCorrection) + "."));
 			} else {
-				checks.add(new VentingCheck("9.2.5.2", "Inlet area provided cannot pass the plume flow at this layer temperature, "
+				checks.add(new ComplianceCheck("9.2.5.2", "Inlet area provided cannot pass the plume flow at this layer temperature, "
 						+ "so no vent area is large enough", CheckBasis.NFPA_204, CheckStatus.FAIL, cdInletArea,
 						aerodynamicArea * Math.sqrt(temperatureRatio), "m2",
 						"Cd,i x Ai must exceed Aa x (To/T)^0.5. Enlarge the inlets."));
@@ -163,23 +166,23 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 			requiredVentArea = aerodynamicArea / cdVent * inletCorrection;
 			requiredInletArea = zone.inletAreaRatio() * requiredVentArea;
 			inletArea = requiredInletArea;
-			checks.add(new VentingCheck("9.2.5.2", "Inlet area taken as " + trim(zone.inletAreaRatio()) + " times the vent area",
+			checks.add(new ComplianceCheck("9.2.5.2", "Inlet area taken as " + trim(zone.inletAreaRatio()) + " times the vent area",
 					CheckBasis.NFPA_204, CheckStatus.INFO, requiredInletArea, null, "m2",
 					"Inlet term M = " + trim(inletCorrection) + ". Provide at least this inlet area."));
 		} else {
 			requiredVentArea = aerodynamicArea / cdVent;
-			checks.add(new VentingCheck("9.2.5.2", "No inlet area or inlet ratio given: the required vent area ignores the inlet term",
+			checks.add(new ComplianceCheck("9.2.5.2", "No inlet area or inlet ratio given: the required vent area ignores the inlet term",
 					CheckBasis.NFPA_204, CheckStatus.OPEN, null, null, "m2",
 					"The inlet area must be sized with the vents (9.2.5.2); the vent area below is a lower bound."));
 		}
 
 		// Vent area provided against required.
 		if (zone.ventTotalArea() != null && requiredVentArea != null) {
-			checks.add(new VentingCheck("9.2.5.1", "Total geometric vent area provided is at least the area required to hold the layer",
+			checks.add(new ComplianceCheck("9.2.5.1", "Total geometric vent area provided is at least the area required to hold the layer",
 					CheckBasis.NFPA_204, zone.ventTotalArea() >= requiredVentArea ? CheckStatus.PASS : CheckStatus.FAIL,
 					zone.ventTotalArea(), requiredVentArea, "m2", null));
 		} else if (requiredVentArea != null) {
-			checks.add(new VentingCheck("9.2.5.1", "Required total geometric vent area", CheckBasis.NFPA_204, CheckStatus.INFO,
+			checks.add(new ComplianceCheck("9.2.5.1", "Required total geometric vent area", CheckBasis.NFPA_204, CheckStatus.INFO,
 					null, requiredVentArea, "m2", "No vent area provided to compare with."));
 		}
 
@@ -187,7 +190,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		double inletForVelocityLimit = plumeFlow / (ambientDensity * INLET_VELOCITY_LIMIT);
 		Double inletVelocity = inletArea == null ? null : plumeFlow / (ambientDensity * inletArea);
 		if (inletVelocity != null) {
-			checks.add(new VentingCheck("6.6.3", "Air velocity through the inlets not above 1 m/s", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("6.6.3", "Air velocity through the inlets not above 1 m/s", CheckBasis.NFPA_204,
 					inletVelocity <= INLET_VELOCITY_LIMIT ? CheckStatus.PASS : CheckStatus.FAIL, inletVelocity, INLET_VELOCITY_LIMIT, "m/s",
 					"The standard limits the velocity at the plume; applying it at the inlet face is conservative."));
 		}
@@ -196,17 +199,17 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		Double unitArea = unitVentArea(zone);
 		if (unitArea != null) {
 			double limit = 2 * layerDepth * layerDepth;
-			checks.add(new VentingCheck("5.4.1.1", "Area of one vent not above 2d^2", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("5.4.1.1", "Area of one vent not above 2d^2", CheckBasis.NFPA_204,
 					unitArea <= limit ? CheckStatus.PASS : CheckStatus.FAIL, unitArea, limit, "m2", "d = " + trim(layerDepth) + " m."));
 		} else {
-			checks.add(new VentingCheck("5.4.1.1", "Area of one vent not above 2d^2", CheckBasis.NFPA_204, CheckStatus.OPEN,
+			checks.add(new ComplianceCheck("5.4.1.1", "Area of one vent not above 2d^2", CheckBasis.NFPA_204, CheckStatus.OPEN,
 					null, 2 * layerDepth * layerDepth, "m2", "Give the vent size, or the vent count and total area."));
 		}
 		if (zone.ventUnitLength() != null && zone.ventUnitWidth() != null) {
 			double length = Math.max(zone.ventUnitLength(), zone.ventUnitWidth());
 			double width = Math.min(zone.ventUnitLength(), zone.ventUnitWidth());
 			if (length / width > 2) {
-				checks.add(new VentingCheck("5.4.1.2", "A vent with length over twice its width: width not above d", CheckBasis.NFPA_204,
+				checks.add(new ComplianceCheck("5.4.1.2", "A vent with length over twice its width: width not above d", CheckBasis.NFPA_204,
 						width <= layerDepth ? CheckStatus.PASS : CheckStatus.FAIL, width, layerDepth, "m", null));
 			}
 		}
@@ -214,41 +217,41 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		// 9.2.2.2: boundary at or above the bottom of the curtains.
 		if (zone.curtainDepth() != null) {
 			double curtainBottom = zone.ceilingHeight() - zone.curtainDepth();
-			checks.add(new VentingCheck("9.2.2.2", "Smoke layer boundary at or above the bottom of the draft curtains", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("9.2.2.2", "Smoke layer boundary at or above the bottom of the draft curtains", CheckBasis.NFPA_204,
 					fireCase.smokeLayerHeight() >= curtainBottom ? CheckStatus.PASS : CheckStatus.FAIL,
 					fireCase.smokeLayerHeight(), curtainBottom, "m", null));
 		}
 
 		// 4.1: layer temperature objective, and the Annex D floor heat flux.
 		if (zone.maxLayerTemperatureRise() != null) {
-			checks.add(new VentingCheck("4.1", "Smoke layer temperature rise within the design objective", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("4.1", "Smoke layer temperature rise within the design objective", CheckBasis.NFPA_204,
 					temperatureRise <= zone.maxLayerTemperatureRise() ? CheckStatus.PASS : CheckStatus.FAIL,
 					temperatureRise, zone.maxLayerTemperatureRise(), "K", null));
 		} else {
-			checks.add(new VentingCheck("4.1", "No maximum allowable layer temperature given; the design objectives must include one",
+			checks.add(new ComplianceCheck("4.1", "No maximum allowable layer temperature given; the design objectives must include one",
 					CheckBasis.NFPA_204, CheckStatus.OPEN, temperatureRise, null, "K", null));
 		}
 		double floorFlux = STEFAN_BOLTZMANN_KW * Math.pow(layerTemperature, 4);
 		if (zone.maxFloorRadiantFlux() != null) {
-			checks.add(new VentingCheck("Annex D.5", "Radiant heat flux from the layer to the floor within the objective",
+			checks.add(new ComplianceCheck("Annex D.5", "Radiant heat flux from the layer to the floor within the objective",
 					CheckBasis.SUPPLEMENTARY, floorFlux <= zone.maxFloorRadiantFlux() ? CheckStatus.PASS : CheckStatus.FAIL,
 					floorFlux, zone.maxFloorRadiantFlux(), "kW/m2", "sigma T^4 with emissivity and configuration factor 1."));
 		}
 
 		// 1.3.4: the standard is not valid while the smoke layer is above 600 C.
 		double maximumLayerK = MAXIMUM_LAYER_TEMPERATURE_C + KELVIN_OFFSET;
-		checks.add(new VentingCheck("1.3.4", "Smoke layer temperature not above 600 C, above which a vent design is not valid", CheckBasis.NFPA_204,
+		checks.add(new ComplianceCheck("1.3.4", "Smoke layer temperature not above 600 C, above which a vent design is not valid", CheckBasis.NFPA_204,
 				layerTemperature <= maximumLayerK ? CheckStatus.PASS : CheckStatus.FAIL, layerTemperature, maximumLayerK, "K",
 				"Above 600 C the radiation from the layer can ignite the combustibles under the curtained area (A.1.3.4)."));
 
 		// 1.3.5: the standard is not valid for a fire above Qfeasible. Annex D prints a different coefficient for the same check.
 		double feasibleQ = FEASIBLE_FIRE_COEFFICIENT * Math.pow(zs, 2.5);
-		checks.add(new VentingCheck("1.3.5", "Design fire not above the feasible fire for this layer height, 12,000 zs^(5/2), above which the "
+		checks.add(new ComplianceCheck("1.3.5", "Design fire not above the feasible fire for this layer height, 12,000 zs^(5/2), above which the "
 				+ "standard is not valid", CheckBasis.NFPA_204, q <= feasibleQ ? CheckStatus.PASS : CheckStatus.FAIL, q, feasibleQ, "kW",
 				"Venting a larger fire needs more vent area than this calculation gives, and a fire near ventilation control may not support a "
 						+ "clear layer (A.1.3.5)."));
 		double annexDFeasibleQ = ANNEX_D_FEASIBLE_FIRE_COEFFICIENT * Math.pow(zs, 2.5);
-		checks.add(new VentingCheck("Annex D.7h", "Annex D checks the same limit with 23,200 zs^(5/2); equation 1.3.5 prints 12,000, which governs",
+		checks.add(new ComplianceCheck("Annex D.7h", "Annex D checks the same limit with 23,200 zs^(5/2); equation 1.3.5 prints 12,000, which governs",
 				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, q, annexDFeasibleQ, "kW", null));
 
 		// Supplementary, not NFPA 204: a fire against a wall or in a corner, and the layer boundary while the fire grows.
@@ -262,7 +265,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 		if (fireCase.kind() == FireCaseKind.STEADY) {
 			minimumAisle = AISLE_COEFFICIENT * Math.sqrt(q);
 			if (zone.aisleWidth() != null) {
-				checks.add(new VentingCheck("8.2.3", "Aisle width at least 0.042 Q^(1/2) to stop lateral fire spread by radiation",
+				checks.add(new ComplianceCheck("8.2.3", "Aisle width at least 0.042 Q^(1/2) to stop lateral fire spread by radiation",
 						CheckBasis.NFPA_204, zone.aisleWidth() >= minimumAisle ? CheckStatus.PASS : CheckStatus.FAIL,
 						zone.aisleWidth(), minimumAisle, "m", null));
 			}
@@ -283,7 +286,7 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	 * supplementary. The line-fire factor is not applied, which keeps the temperature on the high side.
 	 */
 	private ImageFire imageFire(NaturalVentingInput input, VentZone zone, FireCase fireCase, double q, double qc, double diameter, double zs,
-			List<VentingCheck> checks) {
+			List<ComplianceCheck> checks) {
 		double ambientK = input.ambientTemperature() + KELVIN_OFFSET;
 		ImageFireScenario wall = imageScenario(input, fireCase, 2, q, qc, diameter, zs, ambientK);
 		ImageFireScenario corner = imageScenario(input, fireCase, 4, q, qc, diameter, zs, ambientK);
@@ -303,16 +306,16 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	}
 
 	private void addImageFireCheck(VentZone zone, String clause, String what, ImageFireScenario scenario, NaturalVentingInput input,
-			List<VentingCheck> checks) {
+			List<ComplianceCheck> checks) {
 		String note = "Treated as " + trim(scenario.multiplier()) + " x Q in open space with the plume flow divided by " + trim(scenario.multiplier())
 				+ ", K = " + trim(input.layerEnergyFraction()) + ", no line-fire factor. A screening estimate from the smoke management "
 				+ "literature, not NFPA 204, which applies the entrainment equations to a single fire (4.5.3.1).";
 		if (zone.maxLayerTemperatureRise() != null) {
-			checks.add(new VentingCheck(clause, what + ": smoke layer temperature rise within the design objective", CheckBasis.SUPPLEMENTARY,
+			checks.add(new ComplianceCheck(clause, what + ": smoke layer temperature rise within the design objective", CheckBasis.SUPPLEMENTARY,
 					scenario.layerTemperatureRise() <= zone.maxLayerTemperatureRise() ? CheckStatus.PASS : CheckStatus.FAIL,
 					scenario.layerTemperatureRise(), zone.maxLayerTemperatureRise(), "K", note));
 		} else {
-			checks.add(new VentingCheck(clause, what + ": smoke layer temperature rise", CheckBasis.SUPPLEMENTARY, CheckStatus.INFO,
+			checks.add(new ComplianceCheck(clause, what + ": smoke layer temperature rise", CheckBasis.SUPPLEMENTARY, CheckStatus.INFO,
 					scenario.layerTemperatureRise(), null, "K", note));
 		}
 	}
@@ -322,9 +325,9 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	 * and total vent area: without them the check is reported open.
 	 */
 	private TransientInterface transientInterface(NaturalVentingInput input, VentZone zone, FireCase fireCase, double ambientK,
-			double ambientDensity, double lineFireFactor, double zs, double detectionTime, List<VentingCheck> checks) {
+			double ambientDensity, double lineFireFactor, double zs, double detectionTime, List<ComplianceCheck> checks) {
 		if (zone.zoneLength() == null || zone.zoneWidth() == null || zone.ventTotalArea() == null) {
-			checks.add(new VentingCheck("Time-stepping", "Smoke layer boundary at the end of the design interval, stepped as the fire grows",
+			checks.add(new ComplianceCheck("Time-stepping", "Smoke layer boundary at the end of the design interval, stepped as the fire grows",
 					CheckBasis.SUPPLEMENTARY, CheckStatus.OPEN, null, null, "m",
 					"Give the length and width of the curtained area and the total vent area to run it. Not NFPA 204, which sizes the vents for equilibrium (9.2.2.3)."));
 			return null;
@@ -352,13 +355,13 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 				+ trim(input.layerEnergyFraction()) + ", the vent flow of 9.2.4.1 with the inlet term, and the volume of a "
 				+ (zone.eaveHeight() == null ? "flat" : "gable") + " reservoir (the volume inside a roof monitor is neglected). "
 				+ "Not NFPA 204, which sizes the vents for equilibrium (9.2.2.3); a CFD or other analysis the AHJ accepts governs.";
-		checks.add(new VentingCheck("Time-stepping", "Smoke layer boundary at or above the design height at the end of the design interval, stepped as the fire grows",
+		checks.add(new ComplianceCheck("Time-stepping", "Smoke layer boundary at or above the design height at the end of the design interval, stepped as the fire grows",
 				CheckBasis.SUPPLEMENTARY, result.interfaceHeightAtEnd() >= fireCase.smokeLayerHeight() - 1e-9 ? CheckStatus.PASS : CheckStatus.FAIL,
 				result.interfaceHeightAtEnd(), fireCase.smokeLayerHeight(), "m", "Read at tr + td = " + trim(endTime) + " s. " + basis));
-		checks.add(new VentingCheck("Time-stepping", "Time for the boundary to fall below the design height with the vents working, if the fire kept growing",
+		checks.add(new ComplianceCheck("Time-stepping", "Time for the boundary to fall below the design height with the vents working, if the fire kept growing",
 				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, result.timeToDesignHeight(), null, "s",
 				result.timeToDesignHeight() == null ? "Not reached within " + trim(result.horizon() / 60) + " minutes." : "From ignition."));
-		checks.add(new VentingCheck("Time-stepping", "Time for the boundary to fall below the design height with no venting",
+		checks.add(new ComplianceCheck("Time-stepping", "Time for the boundary to fall below the design height with no venting",
 				CheckBasis.SUPPLEMENTARY, CheckStatus.INFO, result.timeToDesignHeightWithoutVents(), null, "s",
 				result.timeToDesignHeightWithoutVents() == null ? "Not reached within " + trim(result.horizon() / 60) + " minutes." : "From ignition."));
 		return result;
@@ -368,22 +371,22 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	 * td of the smoke detector that controls detection, from the time its location reaches the
 	 * activation temperature rise (9.2.5.4.3). H is the ceiling height above the base of the fire.
 	 */
-	private double smokeDetectorDetectionTime(VentZone zone, FireCase fireCase, List<VentingCheck> checks) {
+	private double smokeDetectorDetectionTime(VentZone zone, FireCase fireCase, List<ComplianceCheck> checks) {
 		double height = zone.ceilingHeight() - fireCase.fireBaseHeight();
 		boolean minimum = fireCase.detectorTemperatureRise() == null;
 		double rise = minimum ? SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE : fireCase.detectorTemperatureRise();
 		double td = SmokeDetectorDetectionTime.timeToTemperatureRise(fireCase.growthTime(), height, fireCase.detectorDistance(), rise);
-		checks.add(new VentingCheck("9.2.5.4.3", "Detection time of the smoke detector, from the gas temperature rise at its location",
+		checks.add(new ComplianceCheck("9.2.5.4.3", "Detection time of the smoke detector, from the gas temperature rise at its location",
 				CheckBasis.NFPA_204, CheckStatus.INFO, td, null, "s",
 				"Rise of " + trim(rise) + " C at " + trim(fireCase.detectorDistance()) + " m from the fire axis, H = " + trim(height)
 						+ " m, tg = " + trim(fireCase.growthTime()) + " s. The fire is taken at the farthest distance from the detector that "
 						+ "controls detection (9.2.5.4.2). From the printed equation, not DETACT-QS."));
 		if (minimum) {
-			checks.add(new VentingCheck("9.2.5.4.3.2", "Temperature rise for activation taken as the 20 C minimum", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("9.2.5.4.3.2", "Temperature rise for activation taken as the 20 C minimum", CheckBasis.NFPA_204,
 					CheckStatus.INFO, rise, SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE, "C",
 					"Used because no test data are given for the detector and the fuel (9.2.5.4.3.1)."));
 		} else if (rise < SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE) {
-			checks.add(new VentingCheck("9.2.5.4.3.1", "Temperature rise below the 20 C minimum needs dedicated test data", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("9.2.5.4.3.1", "Temperature rise below the 20 C minimum needs dedicated test data", CheckBasis.NFPA_204,
 					CheckStatus.CONFIRM, rise, SmokeDetectorDetectionTime.MINIMUM_TEMPERATURE_RISE, "C",
 					"The rise must come from tests, or the equivalent, for the combustibles of the occupancy and the detector model to be installed."));
 		}
@@ -391,42 +394,42 @@ public class NaturalVentingCalculator implements Calculator<NaturalVentingInput,
 	}
 
 	private ZoneResult zoneChecks(VentZone zone) {
-		List<VentingCheck> checks = new ArrayList<>();
+		List<ComplianceCheck> checks = new ArrayList<>();
 		double h = zone.ceilingHeight();
 
 		if (zone.curtainDepth() != null) {
-			checks.add(new VentingCheck("7.3.1", "Draft curtain depth at least 20 percent of the ceiling height", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("7.3.1", "Draft curtain depth at least 20 percent of the ceiling height", CheckBasis.NFPA_204,
 					zone.curtainDepth() >= 0.2 * h ? CheckStatus.PASS : CheckStatus.FAIL, zone.curtainDepth(), 0.2 * h, "m", null));
 		} else {
-			checks.add(new VentingCheck("7.3.1", "Draft curtain depth at least 20 percent of the ceiling height", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("7.3.1", "Draft curtain depth at least 20 percent of the ceiling height", CheckBasis.NFPA_204,
 					CheckStatus.OPEN, null, 0.2 * h, "m", "Give the curtain depth."));
 		}
 		if (zone.zoneLength() != null && zone.zoneWidth() != null) {
 			double longest = Math.max(zone.zoneLength(), zone.zoneWidth());
-			checks.add(new VentingCheck("7.4.1", "Neither length nor width of the curtained area above eight times the ceiling height",
+			checks.add(new ComplianceCheck("7.4.1", "Neither length nor width of the curtained area above eight times the ceiling height",
 					CheckBasis.NFPA_204, longest <= 8 * h ? CheckStatus.PASS : CheckStatus.FAIL, longest, 8 * h, "m", null));
 			if (zone.curtainDepth() != null && zone.curtainDepth() < 0.3 * h) {
 				double shortest = Math.min(zone.zoneLength(), zone.zoneWidth());
-				checks.add(new VentingCheck("7.4.2", "Curtains less than 30 percent of the ceiling height deep: spacing not below the "
+				checks.add(new ComplianceCheck("7.4.2", "Curtains less than 30 percent of the ceiling height deep: spacing not below the "
 						+ "ceiling height", CheckBasis.NFPA_204, shortest >= h ? CheckStatus.PASS : CheckStatus.FAIL, shortest, h, "m", null));
 			}
 		} else {
-			checks.add(new VentingCheck("7.4.1", "Neither length nor width of the curtained area above eight times the ceiling height",
+			checks.add(new ComplianceCheck("7.4.1", "Neither length nor width of the curtained area above eight times the ceiling height",
 					CheckBasis.NFPA_204, CheckStatus.OPEN, null, 8 * h, "m", "Give the length and width of the curtained area."));
 		}
 		if (zone.ventSpacing() != null) {
-			checks.add(new VentingCheck("5.4.2", "Vent centre-to-centre spacing not above 4H", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("5.4.2", "Vent centre-to-centre spacing not above 4H", CheckBasis.NFPA_204,
 					zone.ventSpacing() <= 4 * h ? CheckStatus.PASS : CheckStatus.FAIL, zone.ventSpacing(), 4 * h, "m", null));
 		} else {
-			checks.add(new VentingCheck("5.4.2", "Vent centre-to-centre spacing not above 4H", CheckBasis.NFPA_204,
+			checks.add(new ComplianceCheck("5.4.2", "Vent centre-to-centre spacing not above 4H", CheckBasis.NFPA_204,
 					CheckStatus.OPEN, null, 4 * h, "m", "Give the vent spacing."));
 		}
 		if (zone.ventToWallDistance() != null) {
-			checks.add(new VentingCheck("5.4.3", "Horizontal distance from a wall or curtain to the nearest vent not above 2.8H",
+			checks.add(new ComplianceCheck("5.4.3", "Horizontal distance from a wall or curtain to the nearest vent not above 2.8H",
 					CheckBasis.NFPA_204, zone.ventToWallDistance() <= 2.8 * h ? CheckStatus.PASS : CheckStatus.FAIL,
 					zone.ventToWallDistance(), 2.8 * h, "m", null));
 		} else {
-			checks.add(new VentingCheck("5.4.3", "Horizontal distance from a wall or curtain to the nearest vent not above 2.8H",
+			checks.add(new ComplianceCheck("5.4.3", "Horizontal distance from a wall or curtain to the nearest vent not above 2.8H",
 					CheckBasis.NFPA_204, CheckStatus.OPEN, null, 2.8 * h, "m", "Give the distance from the walls and curtains to the nearest vent."));
 		}
 		return new ZoneResult(zone.name(), List.copyOf(checks));

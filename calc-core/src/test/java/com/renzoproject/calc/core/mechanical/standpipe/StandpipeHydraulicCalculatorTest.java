@@ -1,5 +1,6 @@
 package com.renzoproject.calc.core.mechanical.standpipe;
 
+import com.renzoproject.calc.core.compliance.CheckStatus;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.pipe.JsonPipeDimensionResolver;
 import com.renzoproject.calc.core.mechanical.standpipe.StandpipeHydraulicResult.SegmentRow;

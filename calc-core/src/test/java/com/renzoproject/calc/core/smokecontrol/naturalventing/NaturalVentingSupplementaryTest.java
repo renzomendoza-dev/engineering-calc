@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.renzoproject.calc.core.compliance.CheckBasis;
+import com.renzoproject.calc.core.compliance.CheckStatus;
+import com.renzoproject.calc.core.compliance.ComplianceCheck;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.smokecontrol.naturalventing.NaturalVentingResult.FireCaseResult;
 import java.util.List;
@@ -47,7 +50,7 @@ class NaturalVentingSupplementaryTest {
 		return calculator.calculate(input(zone, fireCase)).fireCases().get(0);
 	}
 
-	private static VentingCheck check(FireCaseResult result, String clause, String descriptionPart) {
+	private static ComplianceCheck check(FireCaseResult result, String clause, String descriptionPart) {
 		return result.checks().stream().filter(c -> c.clause().equals(clause) && c.description().contains(descriptionPart)).findFirst().orElseThrow();
 	}
 

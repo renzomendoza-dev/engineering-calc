@@ -1,5 +1,6 @@
 package com.renzoproject.calc_api.smokecontrol.naturalventing;
 
+import com.renzoproject.calc_api.compliance.ComplianceCheckDto;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public record FireCaseResultDto(
 		double floorRadiantFlux,
 		double feasibleHeatReleaseRate,
 		Double minimumAisleWidth,
-		List<VentingCheckDto> checks,
+		List<ComplianceCheckDto> checks,
 		ImageFireDto imageFire,
 		TransientInterfaceDto transientInterface) {
 
