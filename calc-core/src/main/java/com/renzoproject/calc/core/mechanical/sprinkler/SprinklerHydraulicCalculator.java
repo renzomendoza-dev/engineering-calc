@@ -3,26 +3,16 @@ package com.renzoproject.calc.core.mechanical.sprinkler;
 import com.renzoproject.calc.core.Calculator;
 import com.renzoproject.calc.core.exception.CalculationException;
 import com.renzoproject.calc.core.mechanical.HazenWilliams;
-import com.renzoproject.calc.core.mechanical.firepump.FirePumpUnits;
 import com.renzoproject.calc.core.mechanical.pipe.PipeDimensionResolver;
-import com.renzoproject.calc.core.mechanical.pipe.PipeSizingMode;
-import com.renzoproject.calc.core.mechanical.pipe.PipeSizingResult;
 import com.renzoproject.calc.core.mechanical.pipe.PipeVelocityCalculator;
-import com.renzoproject.calc.core.mechanical.pipe.PipeVelocityInput;
-import com.renzoproject.calc.core.mechanical.pipe.RawDiameter;
-import com.renzoproject.calc.core.mechanical.pipe.VelocityResult;
-import tech.units.indriya.quantity.Quantities;
+import com.renzoproject.calc.core.mechanical.sprinkler.WaterSupplyEvaluator.EvaluatedSupply;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.DoubleUnaryOperator;
 
 /**
  * NFPA 13 hydraulic calculation for a sprinkler system's remote design area, worked from the most
@@ -67,12 +57,9 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 
 	private static final double PRESSURE_EPSILON_PSI = 1e-9;
 
-	private static final String VERIFIED_CONFIDENCE = "verified";
-
-	private final PipeDimensionResolver dimensionResolver;
-	private final FittingEquivalentLengthResolver fittingResolver;
-	private final PipeVelocityCalculator velocityCalculator;
 	private final RemoteAreaRulesResolver remoteAreaRulesResolver;
+	private final SegmentRowBuilder segmentRows;
+	private final WaterSupplyEvaluator supplyEvaluator;
 
 	/**
 	 * @param dimensionResolver resolves each segment's actual inside diameter from
@@ -100,14 +87,13 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			PipeVelocityCalculator velocityCalculator,
 			RemoteAreaRulesResolver remoteAreaRulesResolver) {
 		this.remoteAreaRulesResolver = remoteAreaRulesResolver;
-		this.dimensionResolver = dimensionResolver;
-		this.fittingResolver = fittingResolver;
-		this.velocityCalculator = velocityCalculator;
+		this.segmentRows = new SegmentRowBuilder(dimensionResolver, fittingResolver, velocityCalculator);
+		this.supplyEvaluator = new WaterSupplyEvaluator(dimensionResolver, segmentRows);
 	}
 
 	@Override
 	public SprinklerHydraulicResult calculate(SprinklerHydraulicInput input) {
-		Network network = Network.build(input);
+		SprinklerNetwork network = SprinklerNetwork.build(input);
 		Set<String> warnings = new LinkedHashSet<>();
 
 		Trace trace = new Trace(new ArrayList<>(), new LinkedHashSet<>());
@@ -139,7 +125,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					List.copyOf(warnings), identicalRows, List.copyOf(supply.sprinklers()));
 		}
 
-		EvaluatedSupply evaluated = evaluateSupply(input.waterSupply(), warnings);
+		EvaluatedSupply evaluated = supplyEvaluator.evaluateSupply(input.waterSupply(), warnings);
 		double availablePsi = evaluated.pressureAtFlow().applyAsDouble(demandGpm);
 		double marginPsi = availablePsi - requiredPsi;
 		double marginPercent = availablePsi == 0 ? 0 : (marginPsi / availablePsi) * 100.0;
@@ -158,63 +144,10 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				marginPsi,
 				marginPercent,
 				passes,
-				sampleSupplyCurve(evaluated, demandGpm),
+				WaterSupplyEvaluator.sampleSupplyCurve(evaluated, demandGpm),
 				List.copyOf(warnings),
 				identicalRows,
 				List.copyOf(supply.sprinklers()));
-	}
-
-	/**
-	 * Turns a supply spec into something that can state a pressure at a flow.
-	 *
-	 * <p>A flow test already knows its own curve. A gravity tank's has to be built here, because it
-	 * depends on pipe bores and fitting equivalent lengths that only this class holds resolvers
-	 * for: full head at no flow, less the friction in the run down to the connection as flow rises.
-	 */
-	private EvaluatedSupply evaluateSupply(WaterSupply supply, Set<String> warnings) {
-		return switch (supply) {
-			case SupplyCurve curve -> new EvaluatedSupply(curve::availablePressurePsi, curve.flowAtResidualGpm());
-			case GravityTankSupply tank -> evaluateGravityTank(tank, warnings);
-		};
-	}
-
-	private EvaluatedSupply evaluateGravityTank(GravityTankSupply tank, Set<String> warnings) {
-		double staticPsi = tank.staticPressurePsi();
-		List<ResolvedRun> runs = tank.outletRuns().stream().map(run -> {
-			double insideDiameterInch = dimensionResolver
-					.resolve(run.pipeMaterial(), run.schedule(), run.nominalSize())
-					.internalDiameter()
-					.to(SprinklerUnits.INCH)
-					.getValue()
-					.doubleValue();
-			FittingLengths fittings = fittingEquivalentLengthFt(
-					run.nominalSize(), run.cFactor(), run.fittings(), warnings);
-			return new ResolvedRun(insideDiameterInch, run.cFactor(), run.pipeLengthFt() + fittings.totalFt());
-		}).toList();
-
-		if (runs.isEmpty()) {
-			warnings.add("The gravity tank was given no outlet piping, so its full head is credited at every flow "
-					+ "-- the friction between tank and connection is real, so this reads better than the system "
-					+ "will perform");
-		}
-
-		DoubleUnaryOperator pressureAtFlow = flowGpm -> {
-			double loss = runs.stream()
-					.mapToDouble(run -> HazenWilliams.frictionLossPsiPerFoot(flowGpm, run.cFactor(), run.insideDiameterInch())
-							* run.totalLengthFt())
-					.sum();
-			// A tank that has run out of head at this flow delivers nothing, not a negative push.
-			return Math.max(0, staticPsi - loss);
-		};
-		return new EvaluatedSupply(pressureAtFlow, 0);
-	}
-
-	/** A supply reduced to "what pressure at this flow", plus a flow to scale a plot by. */
-	private record EvaluatedSupply(DoubleUnaryOperator pressureAtFlow, double nominalFlowGpm) {
-	}
-
-	/** One gravity tank outlet run with its reference data already resolved. */
-	private record ResolvedRun(double insideDiameterInch, double cFactor, double totalLengthFt) {
 	}
 
 	/**
@@ -222,7 +155,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * arriving there, and the calculation rows for everything upstream of it (most remote first).
 	 */
 	private SolvedNode solve(
-			String nodeId, Network network, SprinklerHydraulicInput input, Set<String> warnings, Trace trace) {
+			String nodeId, SprinklerNetwork network, SprinklerHydraulicInput input, Set<String> warnings, Trace trace) {
 		List<SprinklerPipeSegment> incoming = network.incoming(nodeId);
 		List<IdenticalBranch> copies = network.copiesJoiningAt(nodeId);
 		Optional<RemoteAreaSprinkler> sprinkler = network.sprinklerAt(nodeId);
@@ -245,7 +178,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		List<Branch> branches = new ArrayList<>();
 		for (SprinklerPipeSegment segment : incoming) {
 			SolvedNode upstream = solve(segment.fromNodeId(), network, input, warnings, trace);
-			SegmentFlowRow row = computeRow(segment, upstream.flowGpm(), upstream.pressurePsi(), warnings);
+			SegmentFlowRow row = segmentRows.computeRow(segment, upstream.flowGpm(), upstream.pressurePsi(), warnings);
 			List<SegmentFlowRow> rows = new ArrayList<>(upstream.rows());
 			rows.add(row);
 			branches.add(new Branch(
@@ -282,7 +215,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 				}
 				factor = Math.sqrt(governingPsi / branch.arrivalPressurePsi());
 			}
-			List<SegmentFlowRow> balanced = factor == 1.0 ? branch.rows() : rescale(branch.rows(), factor);
+			List<SegmentFlowRow> balanced = factor == 1.0 ? branch.rows() : segmentRows.rescale(branch.rows(), factor);
 			double flowGpm = branch.flowGpm() * factor;
 
 			if (branch.copy() == null) {
@@ -337,7 +270,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 */
 	private Branch copyOf(
 			IdenticalBranch copy,
-			Network network,
+			SprinklerNetwork network,
 			SprinklerHydraulicInput input,
 			Set<String> warnings,
 			Trace trace) {
@@ -352,7 +285,7 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 			// is internal to it) -- recording it again here would list it twice.
 			SolvedNode own = solve(reference, network, input, warnings,
 					new Trace(new ArrayList<>(), trace.activeReferences()));
-			SegmentFlowRow row = computeRow(leaving, own.flowGpm(), own.pressurePsi(), warnings);
+			SegmentFlowRow row = segmentRows.computeRow(leaving, own.flowGpm(), own.pressurePsi(), warnings);
 			List<SegmentFlowRow> rows = new ArrayList<>(own.rows());
 			rows.add(row);
 			return new Branch(own.flowGpm(), row.endPressurePsi(), rows, own.sprinklerCount(), own.sprinklers(),
@@ -362,11 +295,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		}
 	}
 
-	/**
-	 * The starting pressure at the most remote sprinkler: the greater of the pressure its minimum
-	 * required flow ({@code density * coverage area}) needs, and the caller's assumed starting
-	 * pressure.
-	 */
 	/**
 	 * The pressure the most remote sprinkler starts at: the greatest of what its share of the
 	 * design density needs, the caller's assumed figure, and the minimum operating pressure.
@@ -397,49 +325,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 		return SprinklerMath.pressurePsi(sprinkler.kFactor(), minimumFlowGpm);
 	}
 
-	private SegmentFlowRow computeRow(
-			SprinklerPipeSegment segment, double flowGpm, double upstreamPressurePsi, Set<String> warnings) {
-		double insideDiameterInch = dimensionResolver
-				.resolve(segment.pipeMaterial(), segment.schedule(), segment.nominalSize())
-				.internalDiameter()
-				.to(SprinklerUnits.INCH)
-				.getValue()
-				.doubleValue();
-		FittingLengths fittingLengths = fittingEquivalentLengthFt(segment, warnings);
-		return buildRow(segment, flowGpm, upstreamPressurePsi, insideDiameterInch, fittingLengths);
-	}
-
-	private SegmentFlowRow buildRow(
-			SprinklerPipeSegment segment,
-			double flowGpm,
-			double upstreamPressurePsi,
-			double insideDiameterInch,
-			FittingLengths fittingLengths) {
-		double fittingLengthFt = fittingLengths.totalFt();
-		double totalLengthFt = segment.pipeLengthFt() + fittingLengthFt;
-		double psiPerFoot = HazenWilliams.frictionLossPsiPerFoot(flowGpm, segment.cFactor(), insideDiameterInch);
-		double frictionPsi = psiPerFoot * totalLengthFt;
-		double elevationPsi = ElevationPressure.psiForRise(segment.elevationChangeFt());
-		double endPressurePsi = upstreamPressurePsi + frictionPsi + elevationPsi;
-
-		return new SegmentFlowRow(
-				segment.fromNodeId(),
-				segment.toNodeId(),
-				flowGpm,
-				segment.nominalSize(),
-				insideDiameterInch,
-				segment.cFactor(),
-				segment.pipeLengthFt(),
-				fittingLengthFt,
-				fittingLengths.cFactorAdjustment(),
-				totalLengthFt,
-				psiPerFoot,
-				frictionPsi,
-				elevationPsi,
-				endPressurePsi,
-				velocityFps(flowGpm, insideDiameterInch));
-	}
-
 	private static SprinklerFlowRow sprinklerRow(
 			RemoteAreaSprinkler sprinkler, double flowGpm, double pressurePsi, SprinklerHydraulicInput input) {
 		return new SprinklerFlowRow(
@@ -467,132 +352,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 					row.minimumFlowGpm()));
 		}
 		return scaled;
-	}
-
-	/**
-	 * Rescales a branch's rows to a higher flow after junction balancing. Each row keeps its
-	 * original upstream pressure and has its own friction loss recomputed at the scaled flow --
-	 * see this class's Javadoc for why that is the standard approximation rather than a full
-	 * re-solve.
-	 */
-	private List<SegmentFlowRow> rescale(List<SegmentFlowRow> rows, double factor) {
-		List<SegmentFlowRow> rescaled = new ArrayList<>(rows.size());
-		for (SegmentFlowRow row : rows) {
-			double upstreamPressurePsi = row.endPressurePsi() - row.frictionLossPsi() - row.elevationPressurePsi();
-			double scaledFlowGpm = row.flowGpm() * factor;
-			double psiPerFoot = HazenWilliams.frictionLossPsiPerFoot(scaledFlowGpm, row.cFactor(), row.insideDiameterInch());
-			double frictionPsi = psiPerFoot * row.totalLengthFt();
-
-			rescaled.add(new SegmentFlowRow(
-					row.fromNodeId(),
-					row.toNodeId(),
-					scaledFlowGpm,
-					row.nominalSize(),
-					row.insideDiameterInch(),
-					row.cFactor(),
-					row.pipeLengthFt(),
-					row.fittingEquivalentLengthFt(),
-					row.fittingCFactorAdjustment(),
-					row.totalLengthFt(),
-					psiPerFoot,
-					frictionPsi,
-					row.elevationPressurePsi(),
-					upstreamPressurePsi + frictionPsi + row.elevationPressurePsi(),
-					velocityFps(scaledFlowGpm, row.insideDiameterInch())));
-		}
-		return rescaled;
-	}
-
-	/**
-	 * Sums a segment's fittings. Lengths looked up from the published chart are rescaled from its
-	 * C=120 basis to the segment's own C, as NFPA 13 requires; an explicitly supplied length is
-	 * used exactly as given, because the caller's basis is unknown and silently rescaling someone
-	 * else's number would be worse than leaving it alone.
-	 */
-	private FittingLengths fittingEquivalentLengthFt(SprinklerPipeSegment segment, Set<String> warnings) {
-		return fittingEquivalentLengthFt(segment.nominalSize(), segment.cFactor(), segment.fittings(), warnings);
-	}
-
-	/**
-	 * Takes the three things that actually matter rather than a segment, so a gravity tank's outlet
-	 * runs resolve their fittings through exactly this code -- including the C factor rescaling and
-	 * the unverified-data warning -- instead of a parallel copy that could drift from it.
-	 */
-	private FittingLengths fittingEquivalentLengthFt(
-			String nominalSize, double cFactor, List<SegmentFitting> fittings, Set<String> warnings) {
-		double publishedFtTotal = 0;
-		double explicitFtTotal = 0;
-
-		for (SegmentFitting fitting : fittings) {
-			if (fitting.explicitEquivalentLengthFt() != null) {
-				explicitFtTotal += fitting.quantity() * fitting.explicitEquivalentLengthFt();
-				continue;
-			}
-
-			FittingEquivalentLengthRow row = fittingResolver.resolve(fitting.fittingType());
-			Double publishedFt = row.equivalentLengthFtByNominalSize().get(nominalSize);
-			if (publishedFt == null) {
-				throw new CalculationException("No published equivalent length for fitting " + fitting.fittingType()
-						+ " at nominal size " + nominalSize + " (reference data confidence: "
-						+ row.confidence() + ") -- supply NFPA 13 Table 27.2.3.1.1 in "
-						+ "reference/sprinkler/fitting-equivalent-lengths.json, or pass an "
-						+ "explicitEquivalentLengthFt on the fitting");
-			}
-			if (!VERIFIED_CONFIDENCE.equalsIgnoreCase(row.confidence())) {
-				warnings.add("Fitting equivalent length for " + row.fittingType() + " is reference data tagged '"
-						+ row.confidence() + "' -- confirm against NFPA 13 Table 27.2.3.1.1 before relying on this "
-						+ "calculation");
-			}
-			publishedFtTotal += fitting.quantity() * publishedFt;
-		}
-
-		if (publishedFtTotal == 0) {
-			return new FittingLengths(explicitFtTotal, 1.0);
-		}
-
-		double adjustment = HazenWilliams.equivalentLengthAdjustmentFactor(
-				cFactor, fittingResolver.cFactorBasis());
-		return new FittingLengths(publishedFtTotal * adjustment + explicitFtTotal, adjustment);
-	}
-
-	/** Reuses {@link PipeVelocityCalculator} rather than repeating {@code V = Q/A}. */
-	private double velocityFps(double flowGpm, double insideDiameterInch) {
-		if (flowGpm <= 0) {
-			return 0;
-		}
-		PipeVelocityInput velocityInput = new PipeVelocityInput(
-				PipeSizingMode.VELOCITY_FROM_DIAMETER,
-				Quantities.getQuantity(flowGpm, FirePumpUnits.GPM),
-				new RawDiameter(Quantities.getQuantity(insideDiameterInch, SprinklerUnits.INCH)),
-				null,
-				null,
-				null);
-		PipeSizingResult result = velocityCalculator.calculate(velocityInput);
-		if (result instanceof VelocityResult velocity) {
-			return velocity.velocity().to(SprinklerUnits.FOOT_PER_SECOND).getValue().doubleValue();
-		}
-		throw new CalculationException("PipeVelocityCalculator returned " + result.getClass().getSimpleName()
-				+ " for a VELOCITY_FROM_DIAMETER request, which should never happen");
-	}
-
-	/**
-	 * Samples the supply at quarter points of its own flow scale plus the system's own demand, so a
-	 * caller can plot demand against supply without re-deriving the curve.
-	 *
-	 * <p>A flow test sets that scale from the flow it was measured at. A gravity tank has no test
-	 * flow to scale by, so the plot spans twice the demand instead -- enough to show the curve
-	 * falling away on both sides of the point that matters.
-	 */
-	private static List<SupplyCurvePoint> sampleSupplyCurve(EvaluatedSupply supply, double demandGpm) {
-		double scale = supply.nominalFlowGpm() > 0 ? supply.nominalFlowGpm() : demandGpm * 2;
-		Set<Double> flows = new TreeSet<>();
-		for (double fraction : new double[] {0, 0.25, 0.5, 0.75, 1.0}) {
-			flows.add(scale * fraction);
-		}
-		flows.add(demandGpm);
-		return flows.stream()
-				.map(flow -> new SupplyCurvePoint(flow, supply.pressureAtFlow().applyAsDouble(flow)))
-				.toList();
 	}
 
 	/**
@@ -641,13 +400,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	}
 
 	/**
-	 * A segment's total fitting equivalent length and the C factor adjustment that produced it
-	 * ({@code 1.0} when nothing was looked up from the published chart).
-	 */
-	private record FittingLengths(double totalFt, double cFactorAdjustment) {
-	}
-
-	/**
 	 * Pressure and flow at a node, with the calculation rows for everything upstream of it and the
 	 * number of flowing sprinklers that feed it.
 	 */
@@ -680,127 +432,6 @@ public class SprinklerHydraulicCalculator implements Calculator<SprinklerHydraul
 	 * recursing for ever.
 	 */
 	private record Trace(List<IdenticalBranchRow> identicalRows, Set<String> activeReferences) {
-	}
-
-	/**
-	 * The validated network shape: who feeds whom, where the supply is, and which nodes have
-	 * sprinklers. Built once per calculation so the recursive solve can stay simple.
-	 */
-	private record Network(
-			String supplyNodeId,
-			Map<String, List<SprinklerPipeSegment>> incomingByNode,
-			Map<String, SprinklerPipeSegment> outgoingByNode,
-			Map<String, RemoteAreaSprinkler> sprinklersByNode,
-			Map<String, List<IdenticalBranch>> copiesByJoinNode) {
-
-		static Network build(SprinklerHydraulicInput input) {
-			Map<String, SprinklerPipeSegment> outgoingByNode = new LinkedHashMap<>();
-			Map<String, List<SprinklerPipeSegment>> incomingByNode = new LinkedHashMap<>();
-			Set<String> nodes = new LinkedHashSet<>();
-
-			for (SprinklerPipeSegment segment : input.segments()) {
-				SprinklerPipeSegment existing = outgoingByNode.putIfAbsent(segment.fromNodeId(), segment);
-				if (existing != null) {
-					throw new CalculationException("Node " + segment.fromNodeId() + " has more than one outgoing "
-							+ "segment (to " + existing.toNodeId() + " and to " + segment.toNodeId() + ") -- this "
-							+ "calculator solves tree networks only, where flow from a node has exactly one path "
-							+ "toward the supply");
-				}
-				incomingByNode.computeIfAbsent(segment.toNodeId(), key -> new ArrayList<>()).add(segment);
-				nodes.add(segment.fromNodeId());
-				nodes.add(segment.toNodeId());
-			}
-
-			List<String> terminals = nodes.stream().filter(node -> !outgoingByNode.containsKey(node)).toList();
-			if (terminals.size() != 1) {
-				throw new CalculationException("The network must have exactly one supply point (a node with no "
-						+ "outgoing segment), but found " + terminals.size() + ": " + terminals
-						+ " -- check the segment directions, which must all point toward the supply");
-			}
-			String supplyNodeId = terminals.get(0);
-
-			for (String node : nodes) {
-				Set<String> visited = new LinkedHashSet<>();
-				String current = node;
-				while (current != null && !current.equals(supplyNodeId)) {
-					if (!visited.add(current)) {
-						throw new CalculationException("The network contains a loop through node " + current
-								+ " -- this calculator solves tree networks only; a looped or gridded system needs "
-								+ "a simultaneous network solution it does not implement");
-					}
-					SprinklerPipeSegment next = outgoingByNode.get(current);
-					current = next == null ? null : next.toNodeId();
-				}
-			}
-
-			Map<String, RemoteAreaSprinkler> sprinklersByNode = new LinkedHashMap<>();
-			for (RemoteAreaSprinkler sprinkler : input.sprinklers()) {
-				if (!nodes.contains(sprinkler.nodeId())) {
-					throw new CalculationException("Sprinkler node " + sprinkler.nodeId() + " is not an end of any "
-							+ "pipe segment -- every sprinkler must be connected to the network");
-				}
-				sprinklersByNode.put(sprinkler.nodeId(), sprinkler);
-			}
-
-			if (input.hoseStreamGpm() > 0 && !nodes.contains(input.hoseStreamNodeId())) {
-				throw new CalculationException("Hose stream node " + input.hoseStreamNodeId() + " is not an end of "
-						+ "any pipe segment");
-			}
-
-			Map<String, List<IdenticalBranch>> copiesByJoinNode = new LinkedHashMap<>();
-			for (IdenticalBranch copy : input.identicalBranches()) {
-				if (!nodes.contains(copy.joinNodeId())) {
-					throw new CalculationException("An identical branch joins at node " + copy.joinNodeId()
-							+ ", which is not an end of any pipe segment -- it has to arrive at a junction of the "
-							+ "network");
-				}
-				if (!outgoingByNode.containsKey(copy.referenceNodeId())) {
-					throw new CalculationException("The identical branch joining at " + copy.joinNodeId()
-							+ " repeats node " + copy.referenceNodeId() + ", which has no pipe leaving it -- name "
-							+ "the last node of the branch to repeat, the one its final pipe leaves from");
-				}
-				if (isUpstreamOf(copy.joinNodeId(), copy.referenceNodeId(), incomingByNode)) {
-					throw new CalculationException("The identical branch joining at " + copy.joinNodeId()
-							+ " repeats " + copy.referenceNodeId() + ", which is fed through " + copy.joinNodeId()
-							+ " itself -- a branch cannot be a copy of something it is part of");
-				}
-				copiesByJoinNode.computeIfAbsent(copy.joinNodeId(), key -> new ArrayList<>()).add(copy);
-			}
-
-			return new Network(supplyNodeId, incomingByNode, outgoingByNode, sprinklersByNode, copiesByJoinNode);
-		}
-
-		/** Whether {@code candidate} is {@code node} or anything that feeds it, by the listed pipes. */
-		private static boolean isUpstreamOf(
-				String candidate, String node, Map<String, List<SprinklerPipeSegment>> incomingByNode) {
-			if (candidate.equals(node)) {
-				return true;
-			}
-			for (SprinklerPipeSegment segment : incomingByNode.getOrDefault(node, List.of())) {
-				if (isUpstreamOf(candidate, segment.fromNodeId(), incomingByNode)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		List<SprinklerPipeSegment> incoming(String nodeId) {
-			return incomingByNode.getOrDefault(nodeId, List.of());
-		}
-
-		Optional<RemoteAreaSprinkler> sprinklerAt(String nodeId) {
-			return Optional.ofNullable(sprinklersByNode.get(nodeId));
-		}
-
-		/** The one pipe leaving a node; only asked of nodes already checked to have one. */
-		SprinklerPipeSegment outgoing(String nodeId) {
-			return outgoingByNode.get(nodeId);
-		}
-
-		List<IdenticalBranch> copiesJoiningAt(String nodeId) {
-			return copiesByJoinNode.getOrDefault(nodeId, List.of());
-		}
-
 	}
 
 }
